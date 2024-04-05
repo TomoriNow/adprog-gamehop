@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
+@Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -29,6 +31,8 @@ public class User {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
+
+    public User() {}
 
     public User(String userId, String username, String email, String password, int balance, String bio, byte[] profilePicture) {
         this.userId = userId;
