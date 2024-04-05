@@ -5,6 +5,8 @@ import lombok.Setter;
 import jakarta.persistence.*;
 
 @Getter @Setter
+@Entity
+@Table(name = "games")
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +28,7 @@ public class Game {
     @JoinColumn(name = "ownerId", referencedColumnName = "userId")
     private User owner;
 
+    public Game() {}
     public Game(String productId, int price, String description, int quantity, String category, User owner) {
         this.productId = productId;
         this.price = price;

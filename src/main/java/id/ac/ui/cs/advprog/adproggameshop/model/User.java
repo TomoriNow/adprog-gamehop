@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
-@Table(name="users_table")
 @Getter @Setter
+@Table(name = "users")
 public class User {
 
     @Id
@@ -35,6 +35,7 @@ public class User {
     @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
 
+<<<<<<< HEAD
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
