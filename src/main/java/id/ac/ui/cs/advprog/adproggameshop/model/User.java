@@ -14,7 +14,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String userId;
+    private Long userId;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -70,8 +70,7 @@ public class User {
         this.password = password;
     }
 
-    public User(String userId, String username, String email, String password, int balance, String bio, byte[] profilePicture) {
-        this.userId = userId;
+    public User(String username, String email, String password, int balance, String bio, byte[] profilePicture) {
         this.username = username;
         this.email = email;
         this.password = password;

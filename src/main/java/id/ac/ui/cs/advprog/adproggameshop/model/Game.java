@@ -10,7 +10,7 @@ import jakarta.persistence.*;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String productId;
+    private Long productId;
 
     @Column(name = "price", nullable = false)
     private int price;
@@ -29,8 +29,7 @@ public class Game {
     private User owner;
 
     public Game() {}
-    public Game(String productId, int price, String description, int quantity, String category, User owner) {
-        this.productId = productId;
+    public Game(int price, String description, int quantity, String category, User owner) {
         this.price = price;
         this.description = description;
         this.quantity = quantity;

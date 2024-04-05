@@ -15,15 +15,20 @@ public class UserServiceImpl implements UserService{
     @Override
     public User registerUser(String username, String password, String email) {
         if (username != null && password != null && email != null) {
-            return null;
-        } else {
             User newUser = new User(username, password, email);
             return userRepository.save(newUser);
+        } else {
+            return null;
         }
     }
 
     @Override
     public User authenticate(String username, String password) {
         return userRepository.findByUsernameAndPassword(username, password).orElse(null);
+    }
+
+    @Override
+    public User save(User user){
+        return userRepository.save(user);
     }
 }
