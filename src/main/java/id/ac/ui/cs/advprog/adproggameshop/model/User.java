@@ -35,7 +35,6 @@ public class User {
     @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
 
-<<<<<<< HEAD
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,6 +61,8 @@ public class User {
                 ", profilePicture=" + Arrays.toString(profilePicture) +
                 '}';
     }
+
+    public User() {}
 
     public User(String username, String email, String password) {
         this.username = username;
