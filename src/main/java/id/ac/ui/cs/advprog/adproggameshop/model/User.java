@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+import java.util.Objects;
+
+@Entity
+@Table(name="users_table")
 @Getter @Setter
 public class User {
 
@@ -30,6 +35,39 @@ public class User {
     @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return balance == user.balance && Objects.equals(userId, user.userId) && Objects.equals(username, user.username) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(bio, user.bio) && Arrays.equals(profilePicture, user.profilePicture);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(userId, username, email, password, balance, bio);
+        result = 31 * result + Arrays.hashCode(profilePicture);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", balance=" + balance +
+                ", bio='" + bio + '\'' +
+                ", profilePicture=" + Arrays.toString(profilePicture) +
+                '}';
+    }
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     public User(String userId, String username, String email, String password, int balance, String bio, byte[] profilePicture) {
         this.userId = userId;
         this.username = username;
@@ -38,6 +76,5 @@ public class User {
         this.balance = balance;
         this.bio = bio;
         this.profilePicture = profilePicture;
-
     }
 }
