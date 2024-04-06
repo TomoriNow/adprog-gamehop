@@ -93,4 +93,31 @@ class GameController {
         model.addAttribute("games", games);
         return "gameList";
     }
+
+
+    @GetMapping("/list/personal")
+    public String personalGameListPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        List<Game> games = gameService.findAllByOwner(user);
+        model.addAttribute("games", games);
+        return "personalGameList";
+    }
+
+    @GetMapping("/create")
+    public String addGamePage(Model model) {
+        Game game = new Game();
+        List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
+                .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
+                .collect(Collectors.toList());
+        model.addAttribute("categoryOptions", optionsList);
+        model.addAttribute("game", game);
+        return "addGame";
+    }
+
+    @PostMapping("/create")
+    public String addGamePost(@ModelAttribute Game game, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        gameService.saveWithOwner(game, user);
+        return "redirect:list";
+    }
 }

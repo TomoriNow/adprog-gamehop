@@ -11,5 +11,11 @@ public interface GameService {
 
     List<Game> findAllByCategory(String category);
 
+    List<Game> findAllByOwnerId(Long ownerid);
+
     List<Game> findAllByOwner(User owner);
+
+    Game saveWithOwner(Game game, Long owner_id);
+
+    Game saveWithOwner(Game game, User owner);
 }
