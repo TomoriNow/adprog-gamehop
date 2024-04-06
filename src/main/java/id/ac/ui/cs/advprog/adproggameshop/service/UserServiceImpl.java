@@ -15,6 +15,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public User registerUser(String username, String password, String email) {
         if (username != null && password != null && email != null) {
+            if (userRepository.findFirstByUsername(username).isPresent()) {
+                System.out.println("Duplicate user, please enter a different username");
+                return null;
+            }
             User newUser = new User(username, password, email);
             return userRepository.save(newUser);
         } else {
