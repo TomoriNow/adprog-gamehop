@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService{
                 System.out.println("Duplicate user, please enter a different username");
                 return null;
             }
-            User newUser = new User(username, password, email);
+            User newUser = new User(username, email, password);
             return userRepository.save(newUser);
         } else {
             return null;

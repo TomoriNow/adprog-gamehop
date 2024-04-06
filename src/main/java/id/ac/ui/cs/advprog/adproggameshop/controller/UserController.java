@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
+import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ import java.util.List;
 @Controller
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @GetMapping("/register")
     public String getRegisterPage(Model model) {
@@ -41,10 +42,10 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute User user, Model model) {
-        System.out.println("Register request: " + user);
+        System.out.println("Login request: " + user);
         User authenticated = userService.authenticate(user.getUsername(), user.getPassword());
         if (authenticated != null) {
-            model.addAttribute("userLogin", authenticated.getUserId());
+            model.addAttribute("userLogin", authenticated.getUsername());
             return "personal_page";
         } else {
             return "error_page";
