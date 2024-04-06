@@ -35,6 +35,9 @@ public class User {
     @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
 
+    @Column(name = "is_seller")
+    private boolean is_seller;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,14 +71,17 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
+        this.balance = 0;
+        this.is_seller = false;
     }
 
-    public User(String username, String email, String password, int balance, String bio, byte[] profilePicture) {
+    public User(String username, String email, String password, int balance, String bio, byte[] profilePicture, boolean is_seller) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.balance = balance;
         this.bio = bio;
         this.profilePicture = profilePicture;
+        this.is_seller = is_seller;
     }
 }

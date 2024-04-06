@@ -66,7 +66,7 @@ class GameController {
     @GetMapping("/test")
     public ResponseEntity<String> test() {
         byte[] byteArray = {1, 2, 3, 4, 5};
-        User owner = new User("username", "email", "password", 100, "bio", byteArray);
+        User owner = new User("username", "email", "password", 100, "bio", byteArray, false);
         User owner1 = userService.save(owner);
         Game game = new Game("name", 10, "description", 5, "category", owner1);
         Game game1 = gameService.save(game);
