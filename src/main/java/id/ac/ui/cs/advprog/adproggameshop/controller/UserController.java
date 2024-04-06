@@ -32,7 +32,7 @@ class GameController {
         byte[] byteArray = {1, 2, 3, 4, 5};
         User owner = new User("username", "email", "password", 100, "bio", byteArray);
         User owner1 = userService.save(owner);
-        Game game = new Game(10, "description", 5, "category", owner1);
+        Game game = new Game("name", 10, "description", 5, "category", owner1);
         Game game1 = gameService.save(game);
         return ResponseEntity.ok(game1.toString());
     }

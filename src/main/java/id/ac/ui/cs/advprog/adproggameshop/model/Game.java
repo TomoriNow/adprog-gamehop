@@ -12,6 +12,9 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "price", nullable = false)
     private int price;
 
@@ -29,7 +32,8 @@ public class Game {
     private User owner;
 
     public Game() {}
-    public Game(int price, String description, int quantity, String category, User owner) {
+    public Game(String name, int price, String description, int quantity, String category, User owner) {
+        this.name = name;
         this.price = price;
         this.description = description;
         this.quantity = quantity;
