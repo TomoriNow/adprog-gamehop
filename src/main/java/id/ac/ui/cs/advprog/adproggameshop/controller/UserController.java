@@ -1,5 +1,7 @@
 package id.ac.ui.cs.advprog.adproggameshop.controller;
 
+import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.model.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
@@ -11,12 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -43,11 +44,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute User user, Model model) {
+    public String login(@ModelAttribute User user, HttpSession session, Model model) {
         System.out.println("Login request: " + user);
         User authenticated = userService.authenticate(user.getUsername(), user.getPassword());
         if (authenticated != null) {
             model.addAttribute("userLogin", authenticated.getUsername());
+            session.setAttribute("userLogin", authenticated);
             return "personal_page";
         } else {
             return "error_page";
