@@ -44,7 +44,7 @@ public class UserController {
         System.out.println("Register request: " + user);
         User authenticated = userService.authenticate(user.getUsername(), user.getPassword());
         if (authenticated != null) {
-            model.addAttribute("userLogin", authenticated.getUsername());
+            model.addAttribute("userLogin", authenticated.getUserId());
             return "personal_page";
         } else {
             return "error_page";
