@@ -50,10 +50,17 @@ public class UserController {
         if (authenticated != null) {
             model.addAttribute("userLogin", authenticated.getUsername());
             session.setAttribute("userLogin", authenticated);
-            return "personal_page";
+            return "redirect:/personal-page";
         } else {
             return "error_page";
         }
+    }
+
+    @GetMapping("/personal-page")
+    public  String personalPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("authenticated", user);
+        return "personal_page";
     }
 
     @GetMapping("/logout")
@@ -65,6 +72,25 @@ public class UserController {
         return "redirect:/login";
     }
 
+    @PostMapping("/change-role")
+    public String changeRole(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        user.set_seller(true);
+        userService.save(user);
+        return "redirect:/personal-page";
+    }
+
+    @GetMapping("/topUp")
+    public String topUp(HttpSession session, Model model) {
+        return "topUp";
+    }
+
+    @PostMapping("/topUp")
+    public String submitInteger(@RequestParam("topUpAmount") int topUpAmount, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        userService.topUp(user, topUpAmount);
+        return "redirect:/personal-page";
+    }
 }
 
 @Controller
@@ -118,6 +144,6 @@ class GameController {
     public String addGamePost(@ModelAttribute Game game, HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
         gameService.saveWithOwner(game, user);
-        return "redirect:list";
+        return "redirect:/personal-page";
     }
 }

@@ -35,4 +35,12 @@ public class UserServiceImpl implements UserService{
     public User save(User user){
         return userRepository.save(user);
     }
+
+    @Override
+    public int topUp(User user, int topUpAmount) {
+        int newBalance = user.getBalance() + topUpAmount;
+        user.setBalance(newBalance);
+        User user1 = userRepository.save(user);
+        return user1.getBalance();
+    }
 }
