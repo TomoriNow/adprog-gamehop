@@ -7,8 +7,11 @@ import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -37,4 +40,10 @@ class GameController {
         return ResponseEntity.ok(game1.toString());
     }
 
+    @GetMapping("/list")
+    public String gameListPage(Model model) {
+        List<Game> games = gameService.findAll();
+        model.addAttribute("games", games);
+        return "gameList";
+    }
 }
