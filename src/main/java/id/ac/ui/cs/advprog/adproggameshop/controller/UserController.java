@@ -46,10 +46,17 @@ public class UserController {
         if (authenticated != null) {
             model.addAttribute("userLogin", authenticated.getUsername());
             session.setAttribute("userLogin", authenticated);
-            return "personal_page";
+            return "redirect:/personal-page";
         } else {
             return "error_page";
         }
+    }
+
+    @GetMapping("/personal-page")
+    public  String personalPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("authenticated", user);
+        return "personal_page";
     }
 
     @GetMapping("/logout")
