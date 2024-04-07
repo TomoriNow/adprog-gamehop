@@ -8,6 +8,9 @@
 <h1>Welcome to your Personal Page! <span th:text="${authenticated.username}"></span></h1>
 <p>Balance : </p><p th:text="${authenticated.balance}"></p>
 <a href="/logout">Logout User</a>
+<a href="/topUp">Top Up</a>
+<a th:if="${authenticated.is_seller}" href="/game/list/personal">Personal Game List</a>
+<a href="/game/list">Full Game List</a>
 <form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
     <button type="submit" class="btn btn-primary btn-sm mb-3">Change Role To Seller</button>
 </form>
