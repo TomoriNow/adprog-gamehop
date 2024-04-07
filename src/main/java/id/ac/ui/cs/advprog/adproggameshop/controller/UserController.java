@@ -1,7 +1,5 @@
 package id.ac.ui.cs.advprog.adproggameshop.controller;
 
-import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
-import id.ac.ui.cs.advprog.adproggameshop.model.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
@@ -15,9 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
