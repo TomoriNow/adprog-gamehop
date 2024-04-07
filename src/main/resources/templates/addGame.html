@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Product</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERd`knLPMO" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container">
+    <h3>Create New Product</h3>
+
+    <form th:action="@{/game/create}" th:object="${game}" method="post">
+        <div class="form-group">
+            <label for="nameInput">Name</label>
+            <input th:field="*{name}" type="text" class="form-control mb-4 col-4" id="nameInput" placeholder="Enter game's name">
+        </div>
+        <div class="form-group">
+            <label for="priceInput">Price</label>
+            <input th:field="*{price}" type="text" class="form-control mb-4 col-4" id="priceInput" placeholder="Enter game's price">
+        </div>
+        <div class="form-group">
+            <label for="quantityInput">Quantity</label>
+            <input th:field="*{quantity}" type="text" class="form-control mb-4 col-4" id="quantityInput" placeholder="Enter game's quantity">
+        </div>
+        <div class="form-group">
+            <label for="descriptionInput">Description</label>
+            <input th:field="*{description}" type="text" class="form-control mb-4 col-4" id="descriptionInput" placeholder="Enter game's description">
+        </div>
+        <div class="form-group">
+            <label for="categorySelect">Category</label>
+            <select th:field="*{category}" id="categorySelect">
+                <option th:each="option : ${categoryOptions}"
+                        th:value="${option.value}"
+                        th:text="${option.label}">
+                </option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+</html>
