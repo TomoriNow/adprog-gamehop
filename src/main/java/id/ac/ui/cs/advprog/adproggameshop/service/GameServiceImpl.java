@@ -48,7 +48,7 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
-    public List<Game> findAllByCategory(String category) {
+    public List<GameDTO> findAllByCategory(String category) {
         return gameRepository.findAllByCategory(category);
     }
 
