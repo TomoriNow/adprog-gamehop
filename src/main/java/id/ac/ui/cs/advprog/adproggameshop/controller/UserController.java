@@ -1,10 +1,14 @@
 package id.ac.ui.cs.advprog.adproggameshop.controller;
 
+
+import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +63,7 @@ public class UserController {
         return "personal_page";
     }
 
+
     @GetMapping("/edit-profile")
     public String editProfilePage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
@@ -90,6 +95,18 @@ public class UserController {
         userService.save(user);
         return "redirect:/personal-page";
     }
+
+    @GetMapping("/topUp")
+    public String topUp(HttpSession session, Model model) {
+        return "topUp";
+    }
+
+    @PostMapping("/topUp")
+    public String submitInteger(@RequestParam("topUpAmount") int topUpAmount, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        userService.topUp(user, topUpAmount);
+        return "redirect:/personal-page";
+    }
 }
 
 @Controller
@@ -114,8 +131,42 @@ class GameController {
 
     @GetMapping("/list")
     public String gameListPage(Model model) {
-        List<Game> games = gameService.findAll();
+        List<GameDTO> games = gameService.findAllBy();
         model.addAttribute("games", games);
         return "gameList";
+    }
+
+
+    @GetMapping("/list/personal")
+    public String personalGameListPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        List<Game> games = gameService.findAllByOwner(user);
+        model.addAttribute("games", games);
+        return "personalGameList";
+    }
+
+    @GetMapping("/create")
+    public String addGamePage(Model model) {
+        Game game = new Game();
+        List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
+                .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
+                .collect(Collectors.toList());
+        model.addAttribute("categoryOptions", optionsList);
+        model.addAttribute("game", game);
+        return "addGame";
+    }
+
+    @PostMapping("/create")
+    public String addGamePost(@ModelAttribute Game game, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        gameService.saveWithOwner(game, user);
+        return "redirect:/personal-page";
+    }
+
+    @PostMapping("/buy")
+    public String buyGame(Model model, HttpSession session, @RequestParam String gameId) {
+        User buyer = (User) session.getAttribute("userLogin");
+        gameService.buyGame(Long.parseLong(gameId), buyer);
+        return "redirect:list";
     }
 }

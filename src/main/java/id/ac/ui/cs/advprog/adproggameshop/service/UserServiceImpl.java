@@ -37,6 +37,12 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public int topUp(User user, int topUpAmount) {
+        int newBalance = user.getBalance() + topUpAmount;
+        user.setBalance(newBalance);
+        User user1 = userRepository.save(user);
+        return user1.getBalance();
+  
     public User editUserProfile(Long userId, String username, String email, String password, byte[] profilePicture) {
         User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {
