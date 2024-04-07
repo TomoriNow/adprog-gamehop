@@ -89,4 +89,11 @@ class GameController {
         model.addAttribute("games", games);
         return "gameList";
     }
+
+    @GetMapping("/category/{category}")
+    public String gamesByCategory(@PathVariable String category, Model model) {
+        List<Game> games = gameService.findAllByCategory(category);
+        model.addAttribute("games", games);
+        return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
+    }
 }
