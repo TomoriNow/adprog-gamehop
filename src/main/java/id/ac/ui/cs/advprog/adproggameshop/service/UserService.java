@@ -6,4 +6,6 @@ public interface UserService {
     User registerUser(String username, String password, String email);
     User authenticate(String username, String password);
     User save(User user);
+
+    User editUserProfile(Long userId, String username, String email, String password, byte[] profilePicture);
 }

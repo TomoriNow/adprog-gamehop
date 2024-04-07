@@ -11,8 +11,8 @@
 <form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
     <button type="submit" class="btn btn-primary btn-sm mb-3">Change Role To Seller</button>
 </form>
-<form th:if="${authenticated.is_seller}" th:action="@{/change-role-buyer}" method="post">
-    <button type="submit" class="btn btn-primary btn-sm mb-3">Change Role To Buyer</button>
+<form th:action="@{/edit-profile}" method="get">
+    <button type="submit" class="btn btn-primary btn-sm mb-3">Edit Profile</button>
 </form>
 </body>
 </html>

@@ -59,6 +59,21 @@ public class UserController {
         return "personal_page";
     }
 
+    @GetMapping("/edit-profile")
+    public String editProfilePage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("user", user);
+        return "edit_profile";
+    }
+
+    @PostMapping("/edit-profile")
+    public String editProfile(@ModelAttribute User editedUser, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        userService.editUserProfile(user.getUserId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getProfilePicture());
+        userService.save(user);
+        return "redirect:/personal-page";
+    }
+
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -72,14 +87,6 @@ public class UserController {
     public String changeRoleSeller(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
         user.set_seller(true);
-        userService.save(user);
-        return "redirect:/personal-page";
-    }
-
-    @PostMapping("/change-role-buyer")
-    public String changeRoleBuyer(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
-        user.set_seller(false);
         userService.save(user);
         return "redirect:/personal-page";
     }
