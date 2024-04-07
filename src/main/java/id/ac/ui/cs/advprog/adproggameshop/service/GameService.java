@@ -11,7 +11,7 @@ public interface GameService {
     List<Game> findAll();
     List<GameDTO> findAllBy();
 
-    List<Game> findAllByCategory(String category);
+    List<GameDTO> findAllByCategory(String category);
 
     List<Game> findAllByOwnerId(Long ownerid);
 
