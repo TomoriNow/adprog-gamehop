@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,13 +61,13 @@ public class GameServiceImplTest {
     @Test
     public void testFindAllGamesByCategory() {
         String category = "Test Category";
-        List<Game> mockGames = new ArrayList<>();
-        mockGames.add(new Game());
-        mockGames.add(new Game());
+        List<GameDTO> mockGames = new ArrayList<>();
+        mockGames.add(new GameDTO());
+        mockGames.add(new GameDTO());
 
         when(gameRepository.findAllByCategory(category)).thenReturn(mockGames);
 
-        List<Game> foundGames = gameService.findAllByCategory(category);
+        List<GameDTO> foundGames = gameService.findAllByCategory(category);
 
         assertNotNull(foundGames);
         assertEquals(2, foundGames.size());
@@ -75,13 +76,13 @@ public class GameServiceImplTest {
     @Test
     public void testFindAllGamesByOwner() {
         User owner = new User();
-        List<Game> mockGames = new ArrayList<>();
-        mockGames.add(new Game());
-        mockGames.add(new Game());
+        List<GameDTO> mockGames = new ArrayList<>();
+        mockGames.add(new GameDTO());
+        mockGames.add(new GameDTO());
 
         when(gameRepository.findAllByOwner(owner)).thenReturn(mockGames);
 
-        List<Game> foundGames = gameService.findAllByOwner(owner);
+        List<GameDTO> foundGames = gameService.findAllByOwner(owner);
 
         assertNotNull(foundGames);
         assertEquals(2, foundGames.size());
