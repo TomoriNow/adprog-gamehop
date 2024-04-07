@@ -18,4 +18,6 @@ public interface GameService {
     Game saveWithOwner(Game game, Long owner_id);
 
     Game saveWithOwner(Game game, User owner);
+
+    Game buyGame(Long gameId, User buyer);
 }

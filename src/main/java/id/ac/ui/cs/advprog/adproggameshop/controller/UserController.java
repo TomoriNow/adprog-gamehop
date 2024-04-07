@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
-import id.ac.ui.cs.advprog.adproggameshop.model.CategoryOption;
+import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
@@ -145,5 +145,12 @@ class GameController {
         User user = (User) session.getAttribute("userLogin");
         gameService.saveWithOwner(game, user);
         return "redirect:/personal-page";
+    }
+
+    @PostMapping("/buy")
+    public String buyGame(Model model, HttpSession session, @RequestParam String gameId) {
+        User buyer = (User) session.getAttribute("userLogin");
+        gameService.buyGame(Long.parseLong(gameId), buyer);
+        return "redirect:list";
     }
 }

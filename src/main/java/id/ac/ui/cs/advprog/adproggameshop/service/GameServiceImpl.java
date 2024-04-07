@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
+import id.ac.ui.cs.advprog.adproggameshop.utility.InsufficientFundsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,5 +54,23 @@ public class GameServiceImpl implements GameService{
     @Override
     public List<Game> findAllByOwner(User owner) {
         return gameRepository.findAllByOwner(owner);
+    }
+
+    @Override
+    public Game buyGame(Long gameId, User buyer){
+        Game game = gameRepository.findByProductId(gameId);
+        User seller = game.getOwner();
+        if (buyer.getBalance() >= game.getPrice()){
+            buyer.setBalance(buyer.getBalance() - game.getPrice());
+            userRepository.save(buyer);
+
+            seller.setBalance(seller.getBalance() + game.getPrice());
+            userRepository.save(seller);
+
+            game.setQuantity(game.getQuantity() - 1);
+        } else {
+            throw new InsufficientFundsException();
+        }
+        return gameRepository.save(game);
     }
 }

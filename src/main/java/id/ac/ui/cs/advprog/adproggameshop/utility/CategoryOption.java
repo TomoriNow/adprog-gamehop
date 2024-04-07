@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.adproggameshop.model;
+package id.ac.ui.cs.advprog.adproggameshop.utility;
 
 import lombok.Getter;
 import lombok.Setter;

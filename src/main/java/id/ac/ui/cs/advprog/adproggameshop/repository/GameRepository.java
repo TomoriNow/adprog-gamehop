@@ -12,4 +12,6 @@ public interface GameRepository extends JpaRepository<Game, String> {
     List<Game> findAllByCategory(String category);
 
     List<Game> findAllByOwner(User owner);
+
+    Game findByProductId(Long gameId);
 }
