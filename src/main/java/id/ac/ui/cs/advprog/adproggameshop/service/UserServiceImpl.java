@@ -42,5 +42,24 @@ public class UserServiceImpl implements UserService{
         user.setBalance(newBalance);
         User user1 = userRepository.save(user);
         return user1.getBalance();
+  
+    public User editUserProfile(Long userId, String username, String email, String password, byte[] profilePicture) {
+        User user = userRepository.findByUserId(userId).orElse(null);
+        if (user != null) {
+            if (username != null) {
+                user.setUsername(username);
+            }
+            if (email != null) {
+                user.setEmail(email);
+            }
+            if (password != null) {
+                user.setPassword(password);
+            }
+            if (profilePicture != null) {
+                user.setProfilePicture(profilePicture);
+            }
+            return userRepository.save(user);
+        }
+        return null;
     }
 }

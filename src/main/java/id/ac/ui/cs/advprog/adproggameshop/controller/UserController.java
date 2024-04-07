@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.adproggameshop.controller;
 
+
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
@@ -16,9 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -64,6 +63,22 @@ public class UserController {
         return "personal_page";
     }
 
+
+    @GetMapping("/edit-profile")
+    public String editProfilePage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("user", user);
+        return "edit_profile";
+    }
+
+    @PostMapping("/edit-profile")
+    public String editProfile(@ModelAttribute User editedUser, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        userService.editUserProfile(user.getUserId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getProfilePicture());
+        userService.save(user);
+        return "redirect:/personal-page";
+    }
+
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -73,8 +88,8 @@ public class UserController {
         return "redirect:/login";
     }
 
-    @PostMapping("/change-role")
-    public String changeRole(HttpSession session, Model model) {
+    @PostMapping("/change-role-seller")
+    public String changeRoleSeller(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
         user.set_seller(true);
         userService.save(user);
