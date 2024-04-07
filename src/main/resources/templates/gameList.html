@@ -9,14 +9,10 @@
 
 <div class="container my-2">
     <h2>Product' List</h2>
-    <th:block th:with="allCategories=${new java.util.HashSet()}">
-        <th:block th:each="game : ${games}">
-            <th:block th:if="${allCategories.add(game.category)}">
-                <a th:href="'/game/category/' + ${game.category}"
-                   class="btn btn-primary btn-sm mb-3 mr-2"
-                   th:text="${game.category}">Category</a>
-            </th:block>
-        </th:block>
+    <th:block th:each="category : ${categories}">
+            <a th:href="'/game/category/' + ${category}"
+               class="btn btn-primary btn-sm mb-3 mr-2"
+               th:text="${category}">Category</a>
     </th:block>
 
 
