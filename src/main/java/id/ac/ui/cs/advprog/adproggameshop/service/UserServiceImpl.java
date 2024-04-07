@@ -41,15 +41,9 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {
             if (username != null) {
-                if (userRepository.findByUsername(username).isPresent()) {
-                    return null; // Username already taken
-                }
                 user.setUsername(username);
             }
             if (email != null) {
-                if (userRepository.findByEmail(email).isPresent()) {
-                    return null; // Email already taken
-                }
                 user.setEmail(email);
             }
             if (password != null) {

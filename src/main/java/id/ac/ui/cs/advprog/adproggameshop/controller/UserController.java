@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
@@ -63,7 +62,16 @@ public class UserController {
     @GetMapping("/edit-profile")
     public String editProfilePage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("user", user);
         return "edit_profile";
+    }
+
+    @PostMapping("/edit-profile")
+    public String editProfile(@ModelAttribute User editedUser, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        userService.editUserProfile(user.getUserId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getProfilePicture());
+        userService.save(user);
+        return "redirect:/personal-page";
     }
 
     @GetMapping("/logout")
