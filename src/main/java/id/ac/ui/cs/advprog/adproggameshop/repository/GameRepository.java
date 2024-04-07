@@ -13,7 +13,7 @@ public interface GameRepository extends JpaRepository<Game, String> {
     List<GameDTO> findAllBy();
     List<GameDTO> findAllByCategory(String category);
 
-    List<Game> findAllByOwner(User owner);
+    List<GameDTO> findAllByOwner(User owner);
 
     Game findByProductId(Long gameId);
 }
