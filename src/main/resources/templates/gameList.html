@@ -25,7 +25,7 @@
             <td th:text="${game.quantity}"></td>
             <td th:text="${game.price}"></td>
             <td th:text="${game.category}"></td>
-            <td th:text="${game.owner.username}"></td>
+            <td th:text="${game.ownerUsername}"></td>
             <td>
                 <form th:action="@{/game/buy}" method="post">
                     <input type="hidden" name="gameId" th:value="${game.productId}" />

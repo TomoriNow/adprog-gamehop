@@ -7,6 +7,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +116,7 @@ class GameController {
 
     @GetMapping("/list")
     public String gameListPage(Model model) {
-        List<Game> games = gameService.findAll();
+        List<GameDTO> games = gameService.findAllBy();
         model.addAttribute("games", games);
         return "gameList";
     }

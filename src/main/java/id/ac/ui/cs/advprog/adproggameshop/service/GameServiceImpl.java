@@ -4,7 +4,9 @@ import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.InsufficientFundsException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,11 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
+    public List<GameDTO> findAllBy() {
+        return gameRepository.findAllBy();
+    }
+
+    @Override
     public List<Game> findAllByCategory(String category) {
         return gameRepository.findAllByCategory(category);
     }
@@ -56,7 +63,7 @@ public class GameServiceImpl implements GameService{
         return gameRepository.findAllByOwner(owner);
     }
 
-    @Override
+    @Override @Transactional
     public Game buyGame(Long gameId, User buyer){
         Game game = gameRepository.findByProductId(gameId);
         User seller = game.getOwner();
