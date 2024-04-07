@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
@@ -57,6 +58,12 @@ public class UserController {
         User user = (User) session.getAttribute("userLogin");
         model.addAttribute("authenticated", user);
         return "personal_page";
+    }
+
+    @GetMapping("/edit-profile")
+    public String editProfilePage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        return "edit_profile";
     }
 
     @GetMapping("/logout")

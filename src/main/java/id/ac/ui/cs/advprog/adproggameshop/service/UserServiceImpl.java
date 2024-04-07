@@ -35,4 +35,31 @@ public class UserServiceImpl implements UserService{
     public User save(User user){
         return userRepository.save(user);
     }
+
+    @Override
+    public User editUserProfile(Long userId, String username, String email, String password, byte[] profilePicture) {
+        User user = userRepository.findByUserId(userId).orElse(null);
+        if (user != null) {
+            if (username != null) {
+                if (userRepository.findByUsername(username).isPresent()) {
+                    return null; // Username already taken
+                }
+                user.setUsername(username);
+            }
+            if (email != null) {
+                if (userRepository.findByEmail(email).isPresent()) {
+                    return null; // Email already taken
+                }
+                user.setEmail(email);
+            }
+            if (password != null) {
+                user.setPassword(password);
+            }
+            if (profilePicture != null) {
+                user.setProfilePicture(profilePicture);
+            }
+            return userRepository.save(user);
+        }
+        return null;
+    }
 }
