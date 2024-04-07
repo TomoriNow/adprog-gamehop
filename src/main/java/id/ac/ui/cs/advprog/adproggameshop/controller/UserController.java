@@ -90,14 +90,6 @@ public class UserController {
         userService.save(user);
         return "redirect:/personal-page";
     }
-
-    @PostMapping("/change-role-buyer")
-    public String changeRoleBuyer(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
-        user.set_seller(false);
-        userService.save(user);
-        return "redirect:/personal-page";
-    }
 }
 
 @Controller
