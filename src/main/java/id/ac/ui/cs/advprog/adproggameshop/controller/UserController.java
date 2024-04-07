@@ -137,7 +137,6 @@ class GameController {
         return "gameList";
     }
 
-
     @GetMapping("/list/personal")
     public String personalGameListPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
@@ -169,5 +168,12 @@ class GameController {
         User buyer = (User) session.getAttribute("userLogin");
         gameService.buyGame(Long.parseLong(gameId), buyer);
         return "redirect:list";
+    }
+  
+    @GetMapping("/category/{category}")
+    public String gamesByCategory(@PathVariable String category, Model model) {
+        List<Game> games = gameService.findAllByCategory(category);
+        model.addAttribute("games", games);
+        return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
     }
 }
