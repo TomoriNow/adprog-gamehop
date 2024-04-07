@@ -27,8 +27,7 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    @Override
-    @Transactional
+    @Override @Transactional
     public User authenticate(String username, String password) {
         return userRepository.findByUsernameAndPassword(username, password).orElse(null);
     }
