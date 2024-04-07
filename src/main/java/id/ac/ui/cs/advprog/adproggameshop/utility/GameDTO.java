@@ -23,8 +23,4 @@ public class GameDTO {
         this.ownerUserId = ownerUserId;
         this.ownerUsername = ownerUsername;
     }
-
-    public GameDTO(){
-
-    }
 }
