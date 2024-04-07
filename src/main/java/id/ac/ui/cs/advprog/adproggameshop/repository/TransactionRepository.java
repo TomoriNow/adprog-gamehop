@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    List<Transaction> findAllByUser(User user);
+    List<Transaction> findAllByBuyerOrSeller(User buyer, User seller);
 }
