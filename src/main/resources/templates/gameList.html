@@ -9,6 +9,7 @@
 
 <div class="container my-2">
     <h2>Game's List</h2>
+    <a th:href="@{/game/list}" class="btn btn-primary btn-sm mb-3 mr-2">Remove Filter</a>
     <th:block th:each="category : ${categories}">
             <a th:href="'/game/category/' + ${category}"
                class="btn btn-primary btn-sm mb-3 mr-2"
