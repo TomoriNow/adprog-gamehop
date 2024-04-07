@@ -17,7 +17,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -72,10 +74,9 @@ public class UserController {
     }
 
     @PostMapping("/edit-profile")
-    public String editProfile(@ModelAttribute User editedUser, HttpSession session) {
-        User user = (User) session.getAttribute("userLogin");
-        userService.editUserProfile(user.getUserId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getProfilePicture());
+    public String editProfile(@ModelAttribute User user, HttpSession session) {
         userService.save(user);
+        session.setAttribute("userLogin", user);
         return "redirect:/personal-page";
     }
 
