@@ -5,7 +5,14 @@
     <title>Personal user page</title>
 </head>
 <body>
-<h1>Welcome to your Personal Page! <span th:text="${userLogin}"></span></h1>
+<h1>Welcome to your Personal Page! <span th:text="${authenticated.username}"></span></h1>
+<p>Balance : </p><p th:text="${authenticated.balance}"></p>
 <a href="/logout">Logout User</a>
+<form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
+    <button type="submit" class="btn btn-primary btn-sm mb-3">Change Role To Seller</button>
+</form>
+<form th:if="${authenticated.is_seller}" th:action="@{/change-role-buyer}" method="post">
+    <button type="submit" class="btn btn-primary btn-sm mb-3">Change Role To Buyer</button>
+</form>
 </body>
 </html>
