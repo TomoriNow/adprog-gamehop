@@ -144,7 +144,7 @@ class GameController {
     @GetMapping("/list/personal")
     public String personalGameListPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
-        List<Game> games = gameService.findAllByOwner(user);
+        List<GameDTO> games = gameService.findAllByOwner(user);
         model.addAttribute("games", games);
         return "personalGameList";
     }

@@ -13,9 +13,9 @@ public interface GameService {
 
     List<GameDTO> findAllByCategory(String category);
 
-    List<Game> findAllByOwnerId(Long ownerid);
+    List<GameDTO> findAllByOwnerId(Long ownerid);
 
-    List<Game> findAllByOwner(User owner);
+    List<GameDTO> findAllByOwner(User owner);
 
     Game saveWithOwner(Game game, Long owner_id);
 

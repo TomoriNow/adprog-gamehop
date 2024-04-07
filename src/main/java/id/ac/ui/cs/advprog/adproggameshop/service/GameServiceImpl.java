@@ -53,13 +53,13 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
-    public List<Game> findAllByOwnerId(Long ownerid) {
+    public List<GameDTO> findAllByOwnerId(Long ownerid) {
         User owner = userRepository.findUserByUserId(ownerid).orElse(null);
         return gameRepository.findAllByOwner(owner);
     }
 
     @Override
-    public List<Game> findAllByOwner(User owner) {
+    public List<GameDTO> findAllByOwner(User owner) {
         return gameRepository.findAllByOwner(owner);
     }
 
