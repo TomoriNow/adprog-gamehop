@@ -108,6 +108,12 @@ public class UserController {
         userService.topUp(user, topUpAmount);
         return "redirect:/personal-page";
     }
+
+    @GetMapping("/listUsers")
+    public String listUsers(Model model, HttpSession httpSession) {
+        model.addAttribute("usersList", userService.listUsers());
+        return "usersList";
+    }
 }
 
 @Controller
