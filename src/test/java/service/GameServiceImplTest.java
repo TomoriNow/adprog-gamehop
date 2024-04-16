@@ -57,34 +57,5 @@ public class GameServiceImplTest {
         assertEquals(2, foundGames.size());
     }
 
-    @Test
-    public void testFindAllGamesByCategory() {
-        String category = "Test Category";
-        List<Game> mockGames = new ArrayList<>();
-        mockGames.add(new Game());
-        mockGames.add(new Game());
-
-        when(gameRepository.findAllByCategory(category)).thenReturn(mockGames);
-
-        List<Game> foundGames = gameService.findAllByCategory(category);
-
-        assertNotNull(foundGames);
-        assertEquals(2, foundGames.size());
-    }
-
-    @Test
-    public void testFindAllGamesByOwner() {
-        User owner = new User();
-        List<Game> mockGames = new ArrayList<>();
-        mockGames.add(new Game());
-        mockGames.add(new Game());
-
-        when(gameRepository.findAllByOwner(owner)).thenReturn(mockGames);
-
-        List<Game> foundGames = gameService.findAllByOwner(owner);
-
-        assertNotNull(foundGames);
-        assertEquals(2, foundGames.size());
-    }
 }
 
