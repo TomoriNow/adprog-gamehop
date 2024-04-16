@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -173,15 +174,25 @@ class GameController {
         gameService.buyGame(Long.parseLong(gameId), buyer);
         return "redirect:list";
     }
-  
+
     @GetMapping("/category/{category}")
     public String gamesByCategory(@PathVariable String category, Model model) {
-        List<GameDTO> games = gameService.findAllByCategory(category);
+        CategoryEnums categoryEnum = CategoryFactory.getCategory(category);
+        if (categoryEnum == null) {
+            List<String> categories = Arrays.stream(CategoryEnums.values())
+                    .map(CategoryEnums::getLabel)
+                    .collect(Collectors.toList());
+            model.addAttribute("categories", categories);
+            model.addAttribute("error", "Invalid category: " + category);
+            return "error";
+        }
+
+        List<GameDTO> games = gameService.findAllByCategory(categoryEnum.getLabel());
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
                 .collect(Collectors.toList());
         model.addAttribute("categories", categories);
         model.addAttribute("games", games);
-        return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
+        return "gameList";
     }
 }
