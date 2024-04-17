@@ -2,9 +2,13 @@ package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
+import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -26,7 +30,7 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    @Override
+    @Override @Transactional
     public User authenticate(String username, String password) {
         return userRepository.findByUsernameAndPassword(username, password).orElse(null);
     }
@@ -37,13 +41,14 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public int topUp(User user, int topUpAmount) {
-        int newBalance = user.getBalance() + topUpAmount;
+    public double topUp(User user, double topUpAmount) {
+        double newBalance = user.getBalance() + topUpAmount;
         user.setBalance(newBalance);
         User user1 = userRepository.save(user);
         return user1.getBalance();
     }
-  
+
+    @Override
     public User editUserProfile(Long userId, String username, String email, String password, byte[] profilePicture) {
         User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {
@@ -62,5 +67,10 @@ public class UserServiceImpl implements UserService{
             return userRepository.save(user);
         }
         return null;
+    }
+
+    @Override
+    public List<UserDTO> listUsers() {
+        return userRepository.findAllBy();
     }
 }

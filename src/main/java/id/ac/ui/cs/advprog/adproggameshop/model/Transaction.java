@@ -11,7 +11,6 @@ import java.util.Date;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id")
     private Long transactionId;
 
     @ManyToOne
@@ -30,12 +29,20 @@ public class Transaction {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    @Column(name = "amount", nullable = false)
+    private int amount;
+
+    @Column(name = "total", nullable = false, scale = 2)
+    private double total;
+
     public Transaction() {}
 
-    public Transaction(User buyer, User seller, Game product, Date date) {
+    public Transaction(User buyer, User seller, Game product, Date date, int amount, double total) {
         this.buyer = buyer;
         this.seller = seller;
         this.product = product;
         this.date = date;
+        this.amount = amount;
+        this.total = total;
     }
 }

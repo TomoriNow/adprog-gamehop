@@ -108,6 +108,12 @@ public class UserController {
         userService.topUp(user, topUpAmount);
         return "redirect:/personal-page";
     }
+
+    @GetMapping("/listUsers")
+    public String listUsers(Model model, HttpSession httpSession) {
+        model.addAttribute("usersList", userService.listUsers());
+        return "usersList";
+    }
 }
 
 @Controller
@@ -133,6 +139,10 @@ class GameController {
     @GetMapping("/list")
     public String gameListPage(Model model) {
         List<GameDTO> games = gameService.findAllBy();
+        List<String> categories = Arrays.stream(CategoryEnums.values())
+                .map(CategoryEnums::getLabel)
+                .collect(Collectors.toList());
+        model.addAttribute("categories", categories);
         model.addAttribute("games", games);
         return "gameList";
     }
@@ -140,7 +150,7 @@ class GameController {
     @GetMapping("/list/personal")
     public String personalGameListPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
-        List<Game> games = gameService.findAllByOwner(user);
+        List<GameDTO> games = gameService.findAllByOwner(user);
         model.addAttribute("games", games);
         return "personalGameList";
     }
@@ -172,7 +182,11 @@ class GameController {
   
     @GetMapping("/category/{category}")
     public String gamesByCategory(@PathVariable String category, Model model) {
-        List<Game> games = gameService.findAllByCategory(category);
+        List<GameDTO> games = gameService.findAllByCategory(category);
+        List<String> categories = Arrays.stream(CategoryEnums.values())
+                .map(CategoryEnums::getLabel)
+                .collect(Collectors.toList());
+        model.addAttribute("categories", categories);
         model.addAttribute("games", games);
         return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
     }

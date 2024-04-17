@@ -1,8 +1,10 @@
 package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
+import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.InsufficientFundsException;
@@ -10,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,6 +22,9 @@ public class GameServiceImpl implements GameService{
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @Override
     public Game save(Game game){
@@ -48,18 +54,18 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
-    public List<Game> findAllByCategory(String category) {
+    public List<GameDTO> findAllByCategory(String category) {
         return gameRepository.findAllByCategory(category);
     }
 
     @Override
-    public List<Game> findAllByOwnerId(Long ownerid) {
+    public List<GameDTO> findAllByOwnerId(Long ownerid) {
         User owner = userRepository.findUserByUserId(ownerid).orElse(null);
         return gameRepository.findAllByOwner(owner);
     }
 
     @Override
-    public List<Game> findAllByOwner(User owner) {
+    public List<GameDTO> findAllByOwner(User owner) {
         return gameRepository.findAllByOwner(owner);
     }
 
@@ -78,6 +84,8 @@ public class GameServiceImpl implements GameService{
         } else {
             throw new InsufficientFundsException();
         }
+        Transaction transaction = new Transaction(buyer, seller, game, new Date(), 1, game.getPrice());
+        transactionRepository.save(transaction);
         return gameRepository.save(game);
     }
 }
