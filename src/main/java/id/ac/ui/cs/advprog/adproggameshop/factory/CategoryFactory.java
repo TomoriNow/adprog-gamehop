@@ -1,20 +1,28 @@
 package id.ac.ui.cs.advprog.adproggameshop.factory;
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class CategoryFactory {
-    private static final Map<String, CategoryEnums> categoryMap = new HashMap<>();
-
-    static {
-        for (CategoryEnums categoryEnum : CategoryEnums.values()) {
-            categoryMap.put(categoryEnum.getLabel().toLowerCase(), categoryEnum);
+    public static CategoryHandler createCategoryHandler(CategoryEnums category, GameRepository gameRepository) {
+        switch (category) {
+            case TOY:
+                return new ToyCategoryHandler(gameRepository);
+            case BOARDGAME:
+                return new BoardGameHandler(gameRepository);
+            case SWITCH:
+                return new SwitchGameHandler(gameRepository);
+            case XBOXSERIESX:
+                return new XboxSeriesXGameHandler(gameRepository);
+            case XBOXONE:
+                return new XboxOneGameHandler(gameRepository);
+            case PS5:
+                return new Ps5GameHandler(gameRepository);
+            case PS4:
+                return new Ps4GameHandler(gameRepository);
+            default:
+                throw new IllegalArgumentException("Unsupported category: " + category);
         }
-    }
-
-    public static CategoryEnums getCategory(String category) {
-        return categoryMap.get(category.toLowerCase());
     }
 }

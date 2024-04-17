@@ -80,4 +80,9 @@ public class GameServiceImpl implements GameService{
         }
         return gameRepository.save(game);
     }
+
+    @Override
+    public GameRepository getGameRepository() {
+        return gameRepository;
+    }
 }

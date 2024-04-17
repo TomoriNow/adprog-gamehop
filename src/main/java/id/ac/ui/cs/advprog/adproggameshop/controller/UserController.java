@@ -3,6 +3,8 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
 import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
+import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -12,11 +14,13 @@ import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -175,9 +179,12 @@ class GameController {
         return "redirect:list";
     }
 
+    @Autowired
+    private GameRepository gameRepository;
+
     @GetMapping("/category/{category}")
     public String gamesByCategory(@PathVariable String category, Model model) {
-        CategoryEnums categoryEnum = CategoryFactory.getCategory(category);
+        CategoryEnums categoryEnum = CategoryEnums.fromString(category);
         if (categoryEnum == null) {
             List<String> categories = Arrays.stream(CategoryEnums.values())
                     .map(CategoryEnums::getLabel)
@@ -187,7 +194,9 @@ class GameController {
             return "error";
         }
 
-        List<GameDTO> games = gameService.findAllByCategory(categoryEnum.getLabel());
+        CategoryHandler categoryHandler = CategoryFactory.createCategoryHandler(categoryEnum, gameService.getGameRepository());
+        List<GameDTO> games = categoryHandler.getGames();
+
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
                 .collect(Collectors.toList());

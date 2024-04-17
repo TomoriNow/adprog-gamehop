@@ -13,7 +13,6 @@ public class GameDTO {
     private Long ownerUserId;
     private String ownerUsername;
 
-    // Constructor
     public GameDTO(Long productId, String name, int price,  int quantity, String category, Long ownerUserId, String ownerUsername) {
         this.productId = productId;
         this.name = name;
