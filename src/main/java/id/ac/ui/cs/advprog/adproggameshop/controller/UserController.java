@@ -2,13 +2,12 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.service.*;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
-import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
-import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
-import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,11 @@ public class UserController {
     @PostMapping("/register")
     public String register(@ModelAttribute User user) {
         System.out.println("Register request: " + user);
-        User registeredUser = userService.registerUser(user.getUsername(), user.getPassword(), user.getEmail());
+        User registeredUser = new UserBuilder(user.getUsername(), user.getEmail(), user.getPassword())
+                .balance(0)
+                .isSeller(false)
+                .build();
+        registeredUser = userService.registerUser(registeredUser);
         return registeredUser == null ? "error_page" : "redirect:/login";
     }
 
