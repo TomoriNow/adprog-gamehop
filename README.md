@@ -10,4 +10,4 @@ We will use the Gitflow workflow. So our branches will consist of main, staging 
 ### C4 Model System
 ![C4 Model Adpro drawio](https://github.com/TomoriNow/adprog-gameshop/assets/143392835/44051c2d-4dc2-4d06-a7f2-ee73d2fa6329)
 
-Seeding-Data Test Branch Push
+Seeding-Data Test Branch Push Test One Proper Commit Name
