@@ -22,4 +22,5 @@ public interface GameService {
     Game saveWithOwner(Game game, User owner);
 
     Game buyGame(Long gameId, User buyer);
+    Game findByProductId(Long productId);
 }

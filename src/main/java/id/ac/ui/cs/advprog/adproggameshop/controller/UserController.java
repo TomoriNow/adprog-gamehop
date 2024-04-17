@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.Map;
 @Controller
 public class UserController {
     @Autowired
@@ -184,4 +185,19 @@ class GameController {
         model.addAttribute("games", games);
         return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
     }
+
+    @PostMapping("/add-to-cart")
+    public String addToCart(@RequestParam String gameId, HttpSession session) {
+        Game game = gameService.findByProductId(Long.parseLong(gameId));
+        ShoppingCart cart = ShoppingCart.getInstance();
+
+        cart.addItem(game.getName(), 1);
+
+        session.setAttribute("cart", cart);
+
+        return "redirect:/game/list";
+    }
+
+
 }
+

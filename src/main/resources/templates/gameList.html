@@ -38,6 +38,12 @@
                     <button type="submit" class="btn btn-primary btn-sm mb-3">Buy Game</button>
                 </form>
             </td>
+            <td>
+                <form th:action="@{/game/add-to-cart}" method="post">
+                    <input type="hidden" name="gameId" th:value="${game.productId}" />
+                    <button type="submit" class="btn btn-primary btn-sm mb-3">Add to Cart</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>

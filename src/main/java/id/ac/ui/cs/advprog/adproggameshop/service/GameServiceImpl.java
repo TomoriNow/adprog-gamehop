@@ -80,4 +80,8 @@ public class GameServiceImpl implements GameService{
         }
         return gameRepository.save(game);
     }
+    @Override
+    public Game findByProductId(Long productId) {
+        return gameRepository.findByProductId(productId);
+    }
 }
