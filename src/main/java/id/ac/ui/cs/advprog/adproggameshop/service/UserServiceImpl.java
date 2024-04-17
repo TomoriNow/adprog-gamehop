@@ -44,7 +44,8 @@ public class UserServiceImpl implements UserService{
         User user1 = userRepository.save(user);
         return user1.getBalance();
     }
-  
+
+    @Override
     public User editUserProfile(Long userId, String username, String email, String password, byte[] profilePicture) {
         User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {
