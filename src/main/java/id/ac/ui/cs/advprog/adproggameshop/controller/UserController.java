@@ -184,4 +184,11 @@ class GameController {
         model.addAttribute("games", games);
         return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
     }
+
+    @GetMapping("/extract")
+    public String extractGameData(Model model) {
+        List<Game> games = gameService.extractGameData();
+        model.addAttribute("games", games);
+        return "gameList";
+    }
 }
