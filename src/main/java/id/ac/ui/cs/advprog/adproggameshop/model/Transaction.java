@@ -11,6 +11,7 @@ import java.util.Date;
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "transaction_id")
     private Long transactionId;
 
     @ManyToOne
@@ -37,7 +38,9 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(User buyer, User seller, Game product, Date date, int amount, double total) {
+    public Transaction(User buyer, User seller, Game product, Date date, int amount, double total) {}
+
+    public Transaction(User buyer, User seller, Game product, Date date) {
         this.buyer = buyer;
         this.seller = seller;
         this.product = product;
