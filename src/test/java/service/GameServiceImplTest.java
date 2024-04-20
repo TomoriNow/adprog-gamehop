@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,6 +57,5 @@ public class GameServiceImplTest {
         assertNotNull(foundGames);
         assertEquals(2, foundGames.size());
     }
-
 }
 

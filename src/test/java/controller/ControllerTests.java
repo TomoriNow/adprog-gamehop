@@ -30,10 +30,4 @@ public class ControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("login"));
     }
-    @Test
-    public void testGameListPage() throws Exception {
-        mockMvc.perform(get("/game/list"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("gameList"));
-    }
 }
