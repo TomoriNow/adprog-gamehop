@@ -26,6 +26,9 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    private GameServiceImpl gameService;
+
     @GetMapping("/register")
     public String getRegisterPage(Model model) {
         model.addAttribute("registerRequest", new User());
