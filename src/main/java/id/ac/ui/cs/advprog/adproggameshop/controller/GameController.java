@@ -7,6 +7,7 @@ import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -78,7 +79,7 @@ class GameController {
     @PostMapping("/buy")
     public String buyGame(Model model, HttpSession session, @RequestParam String gameId) {
         User buyer = (User) session.getAttribute("userLogin");
-        gameService.buyGame(Long.parseLong(gameId), buyer);
+        gameService.buyGame(Long.parseLong(gameId), buyer, 1, new OneClickBuy());
         return "redirect:list";
     }
 
