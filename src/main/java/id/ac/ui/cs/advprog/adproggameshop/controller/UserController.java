@@ -2,6 +2,9 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
+import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.*;
@@ -14,11 +17,13 @@ import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -135,7 +140,6 @@ public class UserController {
         model.addAttribute("transactions", transactions);
         return "transactionHistory";
     }
-
 
     @GetMapping("/extract")
     public String extractGameData(Model model) {
