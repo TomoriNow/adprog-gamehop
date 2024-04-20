@@ -2,11 +2,14 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
+import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.*;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +29,9 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    private TransactionServiceImpl transactionService;
+  
     @Autowired
     private GameServiceImpl gameService;
 
@@ -121,6 +127,15 @@ public class UserController {
         model.addAttribute("usersList", userService.listUsers());
         return "usersList";
     }
+
+    @GetMapping("/transaction-history")
+    public String transactionHistory(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        List<TransactionDTO> transactions = transactionService.findAllByBuyerOrSeller(user, user);
+        model.addAttribute("transactions", transactions);
+        return "transactionHistory";
+    }
+
 
     @GetMapping("/extract")
     public String extractGameData(Model model) {
