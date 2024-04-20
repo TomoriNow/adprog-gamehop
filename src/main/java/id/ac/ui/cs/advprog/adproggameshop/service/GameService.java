@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface GameService {
 
     Game saveWithOwner(Game game, User owner);
 
-    Game buyGame(Long gameId, User buyer);
     List<Game> extractGameData();
 
+    Game buyGame(Long gameId, User buyer, int amount, GameBuyer gameBuyer);
 }
