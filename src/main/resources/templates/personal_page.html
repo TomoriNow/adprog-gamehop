@@ -16,6 +16,7 @@
         <a th:if="${authenticated.is_seller}" href="/game/list/personal" class="btn"><i class="fas fa-gamepad"></i>Personal Game List</a>
         <a href="/game/list" class="btn"><i class="fas fa-list"></i>Full Game List</a>
         <a href="/listUsers" class="btn"><i class="fas fa-users"></i>List of Users</a>
+        <a href="/transaction-history" class="btn">Transaction History</a>
         <form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
             <button type="submit" class="btn"><i class="fas fa-user-shield"></i>Change Role To Seller</button>
         </form>
