@@ -4,14 +4,14 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
+import id.ac.ui.cs.advprog.adproggameshop.service.*;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
-import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
-import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
-import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
+import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,9 @@ public class UserController {
 
     @Autowired
     private TransactionServiceImpl transactionService;
+  
+    @Autowired
+    private GameServiceImpl gameService;
 
     @GetMapping("/register")
     public String getRegisterPage(Model model) {
@@ -47,7 +50,11 @@ public class UserController {
     @PostMapping("/register")
     public String register(@ModelAttribute User user) {
         System.out.println("Register request: " + user);
-        User registeredUser = userService.registerUser(user.getUsername(), user.getPassword(), user.getEmail());
+        User registeredUser = new UserBuilder(user.getUsername(), user.getEmail(), user.getPassword())
+                .balance(0)
+                .isSeller(false)
+                .build();
+        registeredUser = userService.registerUser(registeredUser);
         return registeredUser == null ? "error_page" : "redirect:/login";
     }
 
@@ -128,80 +135,12 @@ public class UserController {
         model.addAttribute("transactions", transactions);
         return "transactionHistory";
     }
-}
 
-@Controller
-@RequestMapping("/game")
-class GameController {
 
-    @Autowired
-    private GameService gameService;
-
-    @Autowired
-    private UserService userService;
-
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        byte[] byteArray = {1, 2, 3, 4, 5};
-        User owner = new User("username", "email", "password", 100, "bio", byteArray, false);
-        User owner1 = userService.save(owner);
-        Game game = new Game("name", 10, "description", 5, "category", owner1);
-        Game game1 = gameService.save(game);
-        return ResponseEntity.ok(game1.toString());
-    }
-
-    @GetMapping("/list")
-    public String gameListPage(Model model) {
-        List<GameDTO> games = gameService.findAllBy();
-        List<String> categories = Arrays.stream(CategoryEnums.values())
-                .map(CategoryEnums::getLabel)
-                .collect(Collectors.toList());
-        model.addAttribute("categories", categories);
+    @GetMapping("/extract")
+    public String extractGameData(Model model) {
+        List<Game> games = gameService.extractGameData();
         model.addAttribute("games", games);
         return "gameList";
-    }
-
-    @GetMapping("/list/personal")
-    public String personalGameListPage(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
-        List<GameDTO> games = gameService.findAllByOwner(user);
-        model.addAttribute("games", games);
-        return "personalGameList";
-    }
-
-    @GetMapping("/create")
-    public String addGamePage(Model model) {
-        Game game = new Game();
-        List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
-                .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
-                .collect(Collectors.toList());
-        model.addAttribute("categoryOptions", optionsList);
-        model.addAttribute("game", game);
-        return "addGame";
-    }
-
-    @PostMapping("/create")
-    public String addGamePost(@ModelAttribute Game game, HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
-        gameService.saveWithOwner(game, user);
-        return "redirect:/personal-page";
-    }
-
-    @PostMapping("/buy")
-    public String buyGame(Model model, HttpSession session, @RequestParam String gameId) {
-        User buyer = (User) session.getAttribute("userLogin");
-        gameService.buyGame(Long.parseLong(gameId), buyer);
-        return "redirect:list";
-    }
-  
-    @GetMapping("/category/{category}")
-    public String gamesByCategory(@PathVariable String category, Model model) {
-        List<GameDTO> games = gameService.findAllByCategory(category);
-        List<String> categories = Arrays.stream(CategoryEnums.values())
-                .map(CategoryEnums::getLabel)
-                .collect(Collectors.toList());
-        model.addAttribute("categories", categories);
-        model.addAttribute("games", games);
-        return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
     }
 }
