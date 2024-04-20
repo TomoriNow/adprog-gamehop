@@ -17,13 +17,16 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class GameServiceImpl implements GameService{
+public class GameServiceImpl implements GameService {
     @Autowired
     private GameRepository gameRepository;
 
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private DataExtractor<Game> dataExtractor; // Inject DataExtractor
+    
     @Autowired
     private TransactionRepository transactionRepository;
 
@@ -68,6 +71,11 @@ public class GameServiceImpl implements GameService{
     @Override
     public List<GameDTO> findAllByOwner(User owner) {
         return gameRepository.findAllByOwner(owner);
+    }
+
+    @Override
+    public List<Game> extractGameData() {
+        return dataExtractor.extractData();
     }
 
     @Override @Transactional

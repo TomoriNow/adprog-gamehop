@@ -22,5 +22,7 @@ public interface GameService {
 
     Game saveWithOwner(Game game, User owner);
 
+    List<Game> extractGameData();
+
     Game buyGame(Long gameId, User buyer, int amount, GameBuyer gameBuyer);
 }

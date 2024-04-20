@@ -118,4 +118,11 @@ public class UserController {
         model.addAttribute("usersList", userService.listUsers());
         return "usersList";
     }
+
+    @GetMapping("/extract")
+    public String extractGameData(Model model) {
+        List<Game> games = gameService.extractGameData();
+        model.addAttribute("games", games);
+        return "gameList";
+    }
 }
