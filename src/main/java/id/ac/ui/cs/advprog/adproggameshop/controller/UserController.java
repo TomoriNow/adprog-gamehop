@@ -7,6 +7,7 @@ import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -110,5 +111,11 @@ public class UserController {
         User user = (User) session.getAttribute("userLogin");
         userService.topUp(user, topUpAmount);
         return "redirect:/personal-page";
+    }
+
+    @GetMapping("/listUsers")
+    public String listUsers(Model model, HttpSession httpSession) {
+        model.addAttribute("usersList", userService.listUsers());
+        return "usersList";
     }
 }
