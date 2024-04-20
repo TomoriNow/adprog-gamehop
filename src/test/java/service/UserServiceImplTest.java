@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,12 +30,13 @@ public class UserServiceImplTest {
         String username = "testUser";
         String password = "testPassword";
         String email = "test@example.com";
-        User newUser = new User(username, email, password);
+
+        User newUser = new UserBuilder(username, email, password).build();
 
         when(userRepository.findFirstByUsername(username)).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(newUser);
 
-        User registeredUser = userService.registerUser(username, password, email);
+        User registeredUser = userService.registerUser(newUser);
 
         assertNotNull(registeredUser);
         assertEquals(username, registeredUser.getUsername());
@@ -50,7 +52,7 @@ public class UserServiceImplTest {
 
         when(userRepository.findFirstByUsername(username)).thenReturn(Optional.of(new User()));
 
-        User registeredUser = userService.registerUser(username, password, email);
+        User registeredUser = userService.registerUser(new UserBuilder(username, email, password).build());
 
         assertNull(registeredUser);
     }
