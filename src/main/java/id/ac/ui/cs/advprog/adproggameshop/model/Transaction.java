@@ -38,9 +38,7 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(User buyer, User seller, Game product, Date date, int amount, double total) {}
-
-    public Transaction(User buyer, User seller, Game product, Date date) {
+    public Transaction(User buyer, User seller, Game product, Date date, int amount, double total) {
         this.buyer = buyer;
         this.seller = seller;
         this.product = product;
