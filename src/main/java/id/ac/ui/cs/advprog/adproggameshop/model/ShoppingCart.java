@@ -1,5 +1,7 @@
 package id.ac.ui.cs.advprog.adproggameshop.model;
 
+import jakarta.transaction.Transactional;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,8 +27,14 @@ public class ShoppingCart {
     public void setItems(Map<String, Integer> items) {
         this.items = items;
     }
-
-    public void addItem(String itemName, int quantity) {
+    @Transactional
+    public void addItem(String itemName, Integer quantity) {
+        if (itemName == null) {
+            throw new IllegalArgumentException("Item name must exist and cannot be null");
+        }
+        if (quantity == null) {
+            throw new IllegalArgumentException("Quantity must exist and cannot be null");
+        }
         if (items.containsKey(itemName)) {
             int currentQuantity = items.get(itemName);
             items.put(itemName, currentQuantity + quantity);
