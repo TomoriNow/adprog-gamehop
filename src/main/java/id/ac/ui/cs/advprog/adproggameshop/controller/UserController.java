@@ -83,6 +83,12 @@ public class UserController {
         return "personal_page";
     }
 
+    @GetMapping("/profile-page")
+    public  String profilePage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("authenticated", user);
+        return "profile_page";
+    }
 
     @GetMapping("/edit-profile")
     public String editProfilePage(HttpSession session, Model model) {
