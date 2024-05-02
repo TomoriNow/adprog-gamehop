@@ -104,6 +104,17 @@ public class UserController {
         return "redirect:/personal-page";
     }
 
+    @GetMapping("/profile/{userId}")
+    public String getProfilePage(@PathVariable Long userId, Model model) {
+        User user = userService.findUserById(userId);
+        if (user != null) {
+            model.addAttribute("user", user);
+            return "other_user_profile";
+        } else {
+            return "error_page";
+        }
+    }
+
     @GetMapping("/logout")
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
