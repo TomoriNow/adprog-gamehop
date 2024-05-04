@@ -7,8 +7,11 @@
 </head>
 <body>
 
+
+
 <div class="container my-2">
     <h2>Game's List</h2>
+    <input type="text" id="searchInput" onkeyup="filterGames()" placeholder="Search for game titles...">
     <a th:href="@{/game/list}" class="btn btn-primary btn-sm mb-3 mr-2">Remove Filter</a>
     <th:block th:each="category : ${categories}">
             <a th:href="'/game/category/' + ${category}"
@@ -28,7 +31,7 @@
         </thead>
         <tbody>
         <tr th:each="game: ${games}">
-            <td th:text="${game.name}"></td>
+            <td th:text="${game.name}" data-game-id="${game.productId}">></td>
             <td th:text="${game.quantity}"></td>
             <td th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></td>
             <td th:text="${game.category}"></td>
@@ -47,5 +50,26 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script>
+    function filterGames() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementsByTagName("table")[0];
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
 </body>
 </html>
