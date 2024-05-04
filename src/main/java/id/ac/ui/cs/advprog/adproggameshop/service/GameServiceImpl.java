@@ -89,4 +89,9 @@ public class GameServiceImpl implements GameService {
         transactionRepository.save(gameBuyer.createTransactionRecord());
         return result;
     }
+
+    @Override
+    public GameRepository getGameRepository() {
+        return gameRepository;
+    }
 }

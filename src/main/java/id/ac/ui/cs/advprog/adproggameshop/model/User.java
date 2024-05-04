@@ -75,7 +75,7 @@ public class User {
         this.is_seller = false;
     }
 
-    public User(String username, String email, String password, float balance, String bio, byte[] profilePicture, boolean is_seller) {
+    public User(String username, String email, String password, double balance, String bio, byte[] profilePicture, boolean is_seller) {
         this.username = username;
         this.email = email;
         this.password = password;

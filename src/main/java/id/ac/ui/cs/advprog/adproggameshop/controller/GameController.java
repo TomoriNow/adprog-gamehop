@@ -1,8 +1,11 @@
 package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
+import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
@@ -28,6 +31,10 @@ class GameController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private GameRepository gameRepository;
+
 
     @GetMapping("/test")
     public ResponseEntity<String> test() {
@@ -85,12 +92,24 @@ class GameController {
 
     @GetMapping("/category/{category}")
     public String gamesByCategory(@PathVariable String category, Model model) {
-        List<GameDTO> games = gameService.findAllByCategory(category);
+        CategoryEnums categoryEnum = CategoryEnums.fromString(category);
+        if (categoryEnum == null) {
+            List<String> categories = Arrays.stream(CategoryEnums.values())
+                    .map(CategoryEnums::getLabel)
+                    .collect(Collectors.toList());
+            model.addAttribute("categories", categories);
+            model.addAttribute("error", "Invalid category: " + category);
+            return "error";
+        }
+
+        CategoryHandler categoryHandler = CategoryFactory.createCategoryHandler(categoryEnum, gameService.getGameRepository());
+        List<GameDTO> games = categoryHandler.getGames();
+
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
                 .collect(Collectors.toList());
         model.addAttribute("categories", categories);
         model.addAttribute("games", games);
-        return "gameList"; // Assuming you have a view named "gameList" to display the filtered games
+        return "gameList";
     }
 }
