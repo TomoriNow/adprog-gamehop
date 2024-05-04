@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/game")
-class GameController {
+public class GameController {
 
     @Autowired
     private GameService gameService;
