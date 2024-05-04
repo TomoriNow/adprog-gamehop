@@ -72,15 +72,15 @@
         }
 
         thead tr {
-            background-color: rgba(155, 89, 182, 0.5); /* Header row color */
+            background-color: rgba(155, 89, 182, 0.5);
         }
 
         th:first-child {
-            background-color: rgba(52, 152, 219, 0.5); /* Name column color */
+            background-color: rgba(52, 152, 219, 0.5);
         }
 
         th:last-child {
-            background-color: rgba(241, 196, 15, 0.5); /* Email column color */
+            background-color: rgba(241, 196, 15, 0.5);
         }
 
         th {
@@ -91,6 +91,16 @@
         tr:hover td {
             background-color: rgba(255, 255, 255, 0.2);
             transform: scale(1.02);
+        }
+
+        td a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease-in-out;
+        }
+
+        td a:hover {
+            color: #f1c40f;
         }
 
         .back-link {
@@ -145,7 +155,7 @@
         </thead>
         <tbody>
         <tr th:each="user: ${usersList}">
-            <td th:text="${user.username}"></td>
+            <td><a th:href="@{/profile/{userId}(userId=${user.userId})}" th:text="${user.username}"></a></td>
             <td th:text="${user.email}"></td>
         </tr>
         </tbody>
