@@ -107,12 +107,19 @@ public class UserController {
     @GetMapping("/profile/{userId}")
     public String getProfilePage(@PathVariable Long userId, Model model) {
         User user = userService.findUserById(userId);
-        if (user != null) {
-            model.addAttribute("user", user);
-            return "other_user_profile";
-        } else {
+        if (user == null) {
             return "error_page";
         }
+
+        if (user.is_seller()) {
+            List<GameDTO> games = gameService.findAllByOwner(user);
+            model.addAttribute("games", games);
+            model.addAttribute("user", user);
+            return "other_user_profile";
+        }
+
+        model.addAttribute("user", user);
+        return "other_user_profile";
     }
 
     @GetMapping("/logout")
