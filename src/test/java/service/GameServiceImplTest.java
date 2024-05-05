@@ -3,10 +3,7 @@ package service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
@@ -225,5 +222,19 @@ public class GameServiceImplTest {
         verify(userRepository, times(1)).save(buyer1);
         verify(transactionRepository, times(1)).save(transaction);
     }
+
+    @Test
+    public void testFindAllByCategory() {
+        when(gameRepository.findAllByCategory(anyString())).thenReturn(Arrays.asList(
+                new GameDTO(1L, "Game1", 19.99, 10, "Category1", 1L, "User1"),
+                new GameDTO(2L, "Game2", 29.99, 5, "Category1", 2L, "User2")));
+
+        List<GameDTO> games = gameService.findAllByCategory("Category1");
+
+        assertEquals(2, games.size());
+        assertEquals("Game1", games.get(0).getName());
+        assertEquals("Game2", games.get(1).getName());
+    }
+
 }
 
