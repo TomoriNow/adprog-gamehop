@@ -33,8 +33,8 @@ public class TransactionServiceImplTest {
         User seller = new User();
 
         List<TransactionDTO> mockTransactionDTOs = new ArrayList<>();
-        mockTransactionDTOs.add(new TransactionDTO(1L, new Date(), 3, 150.00, 2L, "buyerName", 3L, "sellerName", 4L, "productX"));
-        mockTransactionDTOs.add(new TransactionDTO(2L, new Date(), 5, 250.00, 5L, "buyerName2", 6L, "sellerName2", 7L, "productY"));
+        mockTransactionDTOs.add(new TransactionDTO(1L, new Date(), 3, 150.00, 2L, "buyerName", 3L, "sellerName", "productX"));
+        mockTransactionDTOs.add(new TransactionDTO(2L, new Date(), 5, 250.00, 5L, "buyerName2", 6L, "sellerName2", "productY"));
 
         when(transactionRepository.findAllByBuyerOrSeller(buyer, seller)).thenReturn(mockTransactionDTOs);
 
