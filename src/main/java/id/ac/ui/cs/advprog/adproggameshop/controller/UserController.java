@@ -2,20 +2,28 @@ package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
+import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
+import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
+import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.*;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +33,12 @@ import java.util.stream.Collectors;
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
+
+    @Autowired
+    private TransactionServiceImpl transactionService;
+  
+    @Autowired
+    private GameServiceImpl gameService;
 
     @GetMapping("/register")
     public String getRegisterPage(Model model) {
@@ -117,5 +131,20 @@ public class UserController {
     public String listUsers(Model model, HttpSession httpSession) {
         model.addAttribute("usersList", userService.listUsers());
         return "usersList";
+    }
+
+    @GetMapping("/transaction-history")
+    public String transactionHistory(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        List<TransactionDTO> transactions = transactionService.findAllByBuyerOrSeller(user, user);
+        model.addAttribute("transactions", transactions);
+        return "transactionHistory";
+    }
+
+    @GetMapping("/extract")
+    public String extractGameData(Model model) {
+        List<Game> games = gameService.extractGameData();
+        model.addAttribute("games", games);
+        return "gameList";
     }
 }
