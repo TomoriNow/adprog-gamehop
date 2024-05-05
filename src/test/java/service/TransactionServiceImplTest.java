@@ -49,4 +49,16 @@ public class TransactionServiceImplTest {
         assertEquals("buyerName", foundTransactionDTOs.getFirst().getBuyerUsername());
         assertEquals("productX", foundTransactionDTOs.getFirst().getProductName());
     }
+    @Test
+    public void testFindAllByBuyerOrSellerWhenNoneExist() {
+        User buyer = new User();
+        User seller = new User();
+
+        when(transactionRepository.findAllByBuyerOrSeller(buyer, seller)).thenReturn(new ArrayList<>());
+
+        List<TransactionDTO> foundTransactionDTOs = transactionService.findAllByBuyerOrSeller(buyer, seller);
+
+        assertNotNull(foundTransactionDTOs);
+        assertEquals(0, foundTransactionDTOs.size());
+    }
 }
