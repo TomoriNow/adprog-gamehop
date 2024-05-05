@@ -197,6 +197,23 @@ class GameController {
 
         return "redirect:/game/list";
     }
+    @PostMapping("/shopping-cart/delete")
+    public String deleteFromCart(@RequestParam String itemName, HttpSession session) {
+        ShoppingCart cart = ShoppingCart.getInstance();
+        cart.removeItem(itemName);
+        session.setAttribute("cart", cart);
+        return "redirect:/game/shopping-cart"; // Redirect to the shopping cart page
+    }
+
+    @GetMapping("/shopping-cart")
+    public String viewShoppingCart(HttpSession session, Model model) {
+        ShoppingCart cart = ShoppingCart.getInstance();
+        model.addAttribute("cart", cart.getItems());
+        return "shoppingCart"; // Adjusted to match the name of your HTML file
+    }
+
+
+
 
 
 }

@@ -37,31 +37,21 @@ public class ShoppingCartTest {
 
     @Test
     public void testAddItemToCart_Negative_NullQuantity() {
-        // Mock game found
         Game game = new Game("Game 1", 50, "Description", 5, "Category", null);
         when(gameService.findByProductId(1L)).thenReturn(game);
-
-        // Attempt to add item to cart with null quantity
         assertThrows(IllegalArgumentException.class, () -> {
             cart.addItem("Game 1", null);
         });
-
-        // Verify that item was not added to the cart
         assertFalse(cart.getItems().containsKey("Game 1"));
         assertTrue(cart.getItems().isEmpty());
     }
     @Test
     public void testAddItemToCart_NullItemName() {
-        // Mock game found
         Game game = new Game(null, 50, "Description", 5, "Category", null);
         when(gameService.findByProductId(1L)).thenReturn(game);
-
-        // Attempt to add item to cart with null item name
         assertThrows(IllegalArgumentException.class, () -> {
             cart.addItem(null, 1);
         });
-
-        // Verify that item was not added to the cart
         assertTrue(cart.getItems().isEmpty());
     }
 

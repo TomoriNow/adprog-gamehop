@@ -11,6 +11,7 @@
 <a href="/topUp">Top Up</a>
 <a th:if="${authenticated.is_seller}" href="/game/list/personal">Personal Game List</a>
 <a href="/game/list">Full Game List</a>
+<a href="/game/shopping-cart">Shopping Cart</a>
 <form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
     <button type="submit" class="btn btn-primary btn-sm mb-3">Change Role To Seller</button>
 </form>
