@@ -193,7 +193,7 @@ public class UserController {
         ShoppingCart cart = ShoppingCart.getInstance();
         cart.removeItem(itemName);
         session.setAttribute("cart", cart);
-        return "redirect:/game/shopping-cart"; // Redirect to the shopping cart page
+        return "redirect:/shopping-cart"; // Redirect to the shopping cart page
     }
 
     @GetMapping("/shopping-cart")
