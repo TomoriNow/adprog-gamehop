@@ -22,9 +22,8 @@ public class Transaction {
     @JoinColumn(name = "seller_id", referencedColumnName = "userId")
     private User seller;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Game product;
+    @Column(name = "product_name")
+    private String productName;
 
     @Column(name = "date")
     @Temporal(TemporalType.DATE)
@@ -38,10 +37,10 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(User buyer, User seller, Game product, Date date, int amount, double total) {
+    public Transaction(User buyer, User seller, String productName, Date date, int amount, double total) {
         this.buyer = buyer;
         this.seller = seller;
-        this.product = product;
+        this.productName = productName;
         this.date = date;
         this.amount = amount;
         this.total = total;
