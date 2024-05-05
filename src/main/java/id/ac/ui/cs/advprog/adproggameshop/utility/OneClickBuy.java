@@ -8,10 +8,6 @@ public class OneClickBuy extends GameBuyer{
         return buyGame(game, buyer, 1);
     }
 
-    @Override
-    public boolean checkRestrictions() {
-        return buyer.getBalance() >= game.getPrice();
-    }
 
     @Override
     public double calculateCost(int amount) {

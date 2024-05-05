@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -29,4 +30,7 @@ public interface GameService {
     List<Game> extractGameData();
 
     Game buyGame(Long gameId, User buyer, int amount, GameBuyer gameBuyer);
+
+
+    void deleteGameById(Long gameId);
 }
