@@ -3,38 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Profile</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERd`knLPMO" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h3 {
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+            padding: 15px 20px;
+            padding-top: 25px;
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: transparent;
+        }
+
+        .form-label {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .form-control:focus ~ .form-label,
+        .form-control:not(:placeholder-shown) ~ .form-label {
+            top: -10px;
+            left: 15px;
+            font-size: 12px;
+            color: #fff;
+            background-color: #9b59b6;
+            padding: 2px 5px;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #fff;
+            color: #9b59b6;
+            border: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            border-radius: 20px;
+            padding: 10px 20px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .profile-picture:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .profile-picture i {
+            font-size: 50px;
+            color: #9b59b6;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
 </head>
 <body>
-
 <div class="container">
     <h3>Edit Profile</h3>
-
+    <div class="profile-picture">
+        <i class="fas fa-user"></i>
+    </div>
     <form th:action="@{/edit-profile}" th:object="${user}" method="post">
         <input type="hidden" th:field="*{userId}" th:value="${user.userId}" />
         <div class="form-group">
-            <label for="usernameInput">Username</label>
-            <input th:field="*{username}" th:value="${user.username}" type="text" class="form-control mb-4 col-4" id="usernameInput" placeholder="Enter username">
+            <input th:field="*{username}" th:value="${user.username}" type="text" class="form-control" id="usernameInput" placeholder="Enter username">
+            <label for="usernameInput" class="form-label">Username</label>
         </div>
         <div class="form-group">
-            <label for="emailInput">Email</label>
-            <input th:field="*{email}" th:value="${user.email}" type="email" class="form-control mb-4 col-4" id="emailInput" placeholder="Enter email">
+            <input th:field="*{email}" th:value="${user.email}" type="email" class="form-control" id="emailInput" placeholder="Enter email">
+            <label for="emailInput" class="form-label">Email</label>
         </div>
         <div class="form-group">
-            <input th:field="*{balance}" th:value="${user.balance}" type="hidden" class="form-control mb-4 col-4" id="balanceInput" placeholder="Enter balance">
+            <input th:field="*{password}" th:value="${user.password}" type="password" class="form-control" id="passwordInput" placeholder="Enter password">
+            <label for="passwordInput" class="form-label">Password</label>
         </div>
         <div class="form-group">
-            <label for="passwordInput">Password</label>
-            <input th:field="*{password}" th:value="${user.password}" type="password" class="form-control mb-4 col-4" id="passwordInput" placeholder="Enter password">
+            <input th:field="*{balance}" th:value="${user.balance}" type="number" class="form-control" id="balanceInput" placeholder="Enter balance">
+            <label for="balanceInput" class="form-label">Balance</label>
         </div>
-        <div class="form-group">
-            <label for="profilePictureInput">Profile Picture</label>
-            <input th:field="*{profilePicture}" type="file" class="form-control mb-4 col-4" id="profilePictureInput">
+        <button type="submit" class="btn btn-primary btn-block">Submit</button>
+        <div class="text-center">
+            <a href="/personal-page"><p class="btn">Click here to go back</p></a>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-</body>
-</html>
+<script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+<script>
+    const profilePicture = document.querySelector('.profile-picture');
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+
+    profilePicture.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            profilePicture.innerHTML = `<img src="${reader.result}" alt="Profile Picture" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

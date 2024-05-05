@@ -1,19 +1,16 @@
 package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
-import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
-import id.ac.ui.cs.advprog.adproggameshop.utility.InsufficientFundsException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -88,5 +85,16 @@ public class GameServiceImpl implements GameService {
         userRepository.save(gameBuyer.getBuyer());
         transactionRepository.save(gameBuyer.createTransactionRecord());
         return result;
+    }
+
+
+    @Override
+    public GameRepository getGameRepository() {
+        return gameRepository;
+    }
+  
+    @Override @Transactional
+    public void deleteGameById(Long gameId) {
+        gameRepository.deleteByProductId(gameId);
     }
 }

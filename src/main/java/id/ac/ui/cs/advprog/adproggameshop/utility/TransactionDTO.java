@@ -18,10 +18,10 @@ public class TransactionDTO {
     private String sellerUsername;
     private Long productProductId;
     private String productName;
-
-    TransactionDTO(Long transactionId, Date date, int amount, double total, Long buyerUserId,
-                   String buyerUsername, Long sellerUserId, String sellerUsername, Long productProductId,
-                   String productName) {
+  
+    public TransactionDTO(Long transactionId, Date date, int amount, double total, Long buyerUserId,
+                          String buyerUsername, Long sellerUserId, String sellerUsername,
+                          String productName) {
         this.transactionId = transactionId;
         this.date = date;
         this.amount = amount;
@@ -30,7 +30,6 @@ public class TransactionDTO {
         this.buyerUsername = buyerUsername;
         this.sellerUserId = sellerUserId;
         this.sellerUsername = sellerUsername;
-        this.productProductId = productProductId;
         this.productName = productName;
     }
 }

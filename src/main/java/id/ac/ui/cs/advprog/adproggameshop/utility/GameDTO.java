@@ -1,9 +1,10 @@
 package id.ac.ui.cs.advprog.adproggameshop.utility;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Data
 public class GameDTO {
     private Long productId;
     private String name;
@@ -13,7 +14,6 @@ public class GameDTO {
     private Long ownerUserId;
     private String ownerUsername;
 
-    // Constructor
     public GameDTO(Long productId, String name, double price,  int quantity, String category, Long ownerUserId, String ownerUsername) {
         this.productId = productId;
         this.name = name;

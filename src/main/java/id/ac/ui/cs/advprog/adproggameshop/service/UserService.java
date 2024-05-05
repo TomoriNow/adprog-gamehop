@@ -11,4 +11,5 @@ public interface UserService {
     User save(User user);
     double topUp(User user, double topUpAmount);
     List<UserDTO> listUsers();
+    User findUserById(Long userId);
 }
