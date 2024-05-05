@@ -24,8 +24,14 @@
         <tr th:each="game: ${games}">
             <td th:text="${game.name}"></td>
             <td th:text="${game.quantity}"></td>
-            <td th:text="${game.price}"></td>
+            <td th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></td>
             <td th:text="${game.category}"></td>
+            <td>
+                <form th:action="@{/game/remove}" method="post">
+                    <input type="hidden" name="gameId" th:value="${game.productId}" />
+                    <button type="submit" class="btn btn-primary btn-sm mb-3">Remove Game From Store</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>

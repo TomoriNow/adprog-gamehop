@@ -25,8 +25,8 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "balance", nullable = false)
-    private int balance;
+    @Column(name = "balance", nullable = false, scale = 2)
+    private double balance;
 
     @Column(name = "bio")
     private String bio;
@@ -75,7 +75,7 @@ public class User {
         this.is_seller = false;
     }
 
-    public User(String username, String email, String password, int balance, String bio, byte[] profilePicture, boolean is_seller) {
+    public User(String username, String email, String password, double balance, String bio, byte[] profilePicture, boolean is_seller) {
         this.username = username;
         this.email = email;
         this.password = password;
