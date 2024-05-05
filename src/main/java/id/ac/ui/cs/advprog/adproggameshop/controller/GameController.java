@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 public class GameController {
 
     @Autowired
-    private GameService gameService;
+    public GameService gameService;
 
     @Autowired
-    private UserService userService;
+    public UserService userService;
 
     @Autowired
-    private GameRepository gameRepository;
+    public GameRepository gameRepository;
 
 
     @GetMapping("/test")
@@ -69,7 +69,7 @@ public class GameController {
     }
 
     @GetMapping("/create")
-    public String addGamePage(GameForm gameForm,Model model) {
+    public String addGamePage(GameForm gameForm, Model model) {
         List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                 .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
                 .collect(Collectors.toList());

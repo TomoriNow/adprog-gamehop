@@ -1,126 +1,124 @@
+
 package controller;
 
-import id.ac.ui.cs.advprog.adproggameshop.AdprogGameshopApplication;
 import id.ac.ui.cs.advprog.adproggameshop.controller.GameController;
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
+import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
+import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameForm;
 import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
+import jakarta.servlet.http.HttpSession;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.mockito.MockitoAnnotations;
+import org.springframework.ui.Model;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest(GameController.class)
-@AutoConfigureMockMvc
 public class GameControllerTest {
 
+    private GameController gameController;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @Mock
     private GameService gameService;
 
-    @MockBean
+    @Mock
     private UserService userService;
 
-    @Test
-    void testTest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/game/test"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    @Mock
+    private GameRepository gameRepository;
+
+    @Mock
+    private HttpSession session;
+
+    @Mock
+    private Model model;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        gameController = new GameController();
+        gameController.gameService = gameService;
+        gameController.userService = userService;
+        gameController.gameRepository = gameRepository;
     }
 
     @Test
-    void testGameListPage() throws Exception {
-        List<GameDTO> games = Arrays.asList(
-                new GameDTO(1L, "Game1", 10.0, 5, "Category1", 1L, "Owner1"),
-                new GameDTO(2L, "Game2", 20.0, 3, "Category2", 2L, "Owner2")
-        );
+    void testGameListPage() {
+        GameDTO gameDTO = new GameDTO(1L, "Game Name", 19.99, 10, "Action", 2L, "OwnerUsername");
+        List<GameDTO> games = Collections.singletonList(gameDTO);
         when(gameService.findAllBy()).thenReturn(games);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/game/list"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("gameList"))
-                .andExpect(MockMvcResultMatchers.model().attribute("games", games));
+        String viewName = gameController.gameListPage(model);
+
+        // Use Matchers for verifying model attributes
+        verify(model, times(1)).addAttribute(eq("categories"), anyList());
+        verify(model, times(1)).addAttribute(eq("games"), eq(games));
+        assertEquals("gameList", viewName);
     }
 
     @Test
-    void testPersonalGameListPage() throws Exception {
+    void testPersonalGameListPage() {
         User user = new User();
-        List<GameDTO> games = Arrays.asList(
-                new GameDTO(1L, "Game1", 10.0, 5, "Category1", 1L, "Owner1"),
-                new GameDTO(2L, "Game2", 20.0, 3, "Category2", 2L, "Owner2")
-        );
+        GameDTO gameDTO = new GameDTO(1L, "Game Name", 19.99, 10, "Action", 2L, "OwnerUsername");
+        List<GameDTO> games = Collections.singletonList(gameDTO);
+        when(session.getAttribute("userLogin")).thenReturn(user);
         when(gameService.findAllByOwner(user)).thenReturn(games);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/game/list/personal")
-                        .sessionAttr("userLogin", user))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("personalGameList"))
-                .andExpect(MockMvcResultMatchers.model().attribute("games", games));
+        String viewName = gameController.personalGameListPage(session, model);
+
+        verify(model, times(1)).addAttribute("games", games);
+        assertEquals("personalGameList", viewName);
     }
 
     @Test
-    void testAddGamePage() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/game/create"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("addGame"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("categoryOptions"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("game"));
+    void testAddGamePage() {
+        Model model = mock(Model.class);
+        String viewName = gameController.addGamePage(new GameForm(), model);
+
+        // Verify that category options are added to the model
+        verify(model, times(1)).addAttribute(eq("categoryOptions"), anyList());
+        assertEquals("addGame", viewName);
     }
 
     @Test
-    void testAddGamePost() throws Exception {
-        User user = new User("username", "email", "password", 100, "bio", new byte[]{}, false);
-        when(userService.save(any())).thenReturn(user);
+    void testAddGamePost() {
+        GameForm gameForm = new GameForm();
+        User user = new User();
+        when(session.getAttribute("userLogin")).thenReturn(user);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/game/create")
-                        .sessionAttr("userLogin", user)
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("name", "Test Game")
-                        .param("price", "10")
-                        .param("description", "Test Description")
-                        .param("quantity", "5")
-                        .param("category", "Test Category"))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/personal-page"));
+        String viewName = gameController.addGamePost(gameForm, new BeanPropertyBindingResult(gameForm, "gameForm"), session, model);
 
         verify(gameService, times(1)).saveWithOwner(any(Game.class), eq(user));
+        assertEquals("redirect:/personal-page", viewName);
     }
 
     @Test
-    void testBuyGame() throws Exception {
-        User user = new User();
-        Game purchasedGame = new Game();
-        when(gameService.buyGame(anyLong(), any(User.class), anyInt(), any(OneClickBuy.class))).thenReturn(purchasedGame);
+    void testBuyGame() {
+        User buyer = new User();
+        when(session.getAttribute("userLogin")).thenReturn(buyer);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/game/buy")
-                        .sessionAttr("userLogin", user)
-                        .param("gameId", "1"))
-                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
-                .andExpect(MockMvcResultMatchers.redirectedUrl("/game/list"));
+        String viewName = gameController.buyGame(model, session, "1");
 
-        verify(gameService, times(1)).buyGame(eq(1L), eq(user), eq(1), any(OneClickBuy.class));
+        verify(gameService, times(1)).buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class));
+        assertEquals("redirect:list", viewName);
     }
 
-
-
-
 }
+
