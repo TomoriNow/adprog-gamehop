@@ -24,13 +24,11 @@ public interface GameService {
 
     Game saveWithOwner(Game game, User owner);
 
-
     GameRepository getGameRepository();
   
     List<Game> extractGameData();
 
     Game buyGame(Long gameId, User buyer, int amount, GameBuyer gameBuyer);
-
 
     void deleteGameById(Long gameId);
 }

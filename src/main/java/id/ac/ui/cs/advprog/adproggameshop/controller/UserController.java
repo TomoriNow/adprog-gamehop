@@ -8,6 +8,7 @@ import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.*;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.Map;
 @Controller
 public class UserController {
     @Autowired
@@ -175,4 +176,36 @@ public class UserController {
         model.addAttribute("games", games);
         return "gameList";
     }
+
+    @PostMapping("/add-to-cart")
+    public String addToCart(@RequestParam String gameId, HttpSession session) {
+        Game game = gameService.findByProductId(Long.parseLong(gameId));
+        ShoppingCart cart = ShoppingCart.getInstance();
+
+        cart.addItem(game.getName(), 1);
+
+        session.setAttribute("cart", cart);
+
+        return "redirect:/game/list";
+    }
+    @PostMapping("/shopping-cart/delete")
+    public String deleteFromCart(@RequestParam String itemName, HttpSession session) {
+        ShoppingCart cart = ShoppingCart.getInstance();
+        cart.removeItem(itemName);
+        session.setAttribute("cart", cart);
+        return "redirect:/game/shopping-cart"; // Redirect to the shopping cart page
+    }
+
+    @GetMapping("/shopping-cart")
+    public String viewShoppingCart(HttpSession session, Model model) {
+        ShoppingCart cart = ShoppingCart.getInstance();
+        model.addAttribute("cart", cart.getItems());
+        return "shoppingCart"; // Adjusted to match the name of your HTML file
+    }
+
+
+
+
+
 }
+

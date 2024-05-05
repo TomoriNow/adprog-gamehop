@@ -97,4 +97,8 @@ public class GameServiceImpl implements GameService {
     public void deleteGameById(Long gameId) {
         gameRepository.deleteByProductId(gameId);
     }
+    @Override
+    public Game findByProductId(Long productId) {
+        return gameRepository.findByProductId(productId);
+    }
 }
