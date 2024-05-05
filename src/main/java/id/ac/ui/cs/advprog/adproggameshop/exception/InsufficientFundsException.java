@@ -1,4 +1,4 @@
-package id.ac.ui.cs.advprog.adproggameshop.utility;
+package id.ac.ui.cs.advprog.adproggameshop.exception;
 
 public class InsufficientFundsException extends RuntimeException {
 

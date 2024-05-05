@@ -85,6 +85,12 @@ public class UserController {
         return "personal_page";
     }
 
+    @GetMapping("/profile-page")
+    public  String profilePage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("authenticated", user);
+        return "profile_page";
+    }
 
     @GetMapping("/edit-profile")
     public String editProfilePage(HttpSession session, Model model) {
@@ -98,6 +104,24 @@ public class UserController {
         userService.save(user);
         session.setAttribute("userLogin", user);
         return "redirect:/personal-page";
+    }
+
+    @GetMapping("/profile/{userId}")
+    public String getProfilePage(@PathVariable Long userId, Model model) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            return "error_page";
+        }
+
+        if (user.is_seller()) {
+            List<GameDTO> games = gameService.findAllByOwner(user);
+            model.addAttribute("games", games);
+            model.addAttribute("user", user);
+            return "other_user_profile";
+        }
+
+        model.addAttribute("user", user);
+        return "other_user_profile";
     }
 
     @GetMapping("/logout")

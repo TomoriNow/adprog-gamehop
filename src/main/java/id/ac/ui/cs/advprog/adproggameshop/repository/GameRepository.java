@@ -16,4 +16,6 @@ public interface GameRepository extends JpaRepository<Game, String> {
     List<GameDTO> findAllByOwner(User owner);
 
     Game findByProductId(Long gameId);
+
+    void deleteByProductId(Long gameId);
 }
