@@ -175,10 +175,12 @@
             <p>Price: <span th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></span></p>
             <p>Category: <span th:text="${game.category}"></span></p>
             <p>Seller: <span th:text="${game.ownerUsername}"></span></p>
+            <th:block th:if="${game.quantity > 0}">
             <form th:action="@{/game/buy}" method="post">
                 <input type="hidden" name="gameId" th:value="${game.productId}" />
                 <button type="submit" class="btn"><i class="fas fa-shopping-cart"></i> Buy Game</button>
             </form>
+            </th:block>
         </div>
     </div>
     <a href="/personal-page" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>

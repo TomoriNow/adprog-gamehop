@@ -10,12 +10,15 @@ import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameForm;
 import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -66,19 +69,26 @@ public class GameController {
     }
 
     @GetMapping("/create")
-    public String addGamePage(Model model) {
-        Game game = new Game();
+    public String addGamePage(GameForm gameForm,Model model) {
         List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                 .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
                 .collect(Collectors.toList());
         model.addAttribute("categoryOptions", optionsList);
-        model.addAttribute("game", game);
         return "addGame";
     }
 
     @PostMapping("/create")
-    public String addGamePost(@ModelAttribute Game game, HttpSession session, Model model) {
+    public String addGamePost(@Valid GameForm gameForm, BindingResult bindingResult, HttpSession session, Model model) {
+        if (bindingResult.hasErrors()) {
+            List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
+                    .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
+                    .collect(Collectors.toList());
+            model.addAttribute("categoryOptions", optionsList);
+            return "addGame";
+        }
         User user = (User) session.getAttribute("userLogin");
+        gameForm.setOwner(user);
+        Game game = gameForm.createGame();
         gameService.saveWithOwner(game, user);
         return "redirect:/personal-page";
     }
@@ -86,8 +96,19 @@ public class GameController {
     @PostMapping("/buy")
     public String buyGame(Model model, HttpSession session, @RequestParam String gameId) {
         User buyer = (User) session.getAttribute("userLogin");
-        gameService.buyGame(Long.parseLong(gameId), buyer, 1, new OneClickBuy());
+        try {
+            gameService.buyGame(Long.parseLong(gameId), buyer, 1, new OneClickBuy());
+        } catch (RuntimeException error) {
+            model.addAttribute("error_message", error.getMessage());
+            return "error_page1";
+        }
         return "redirect:list";
+    }
+
+    @PostMapping("/remove")
+    public String removeGame(Model model, HttpSession session, @RequestParam String gameId) {
+        gameService.deleteGameById(Long.parseLong(gameId));
+        return "redirect:list/personal";
     }
 
     @GetMapping("/category/{category}")

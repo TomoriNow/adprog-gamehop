@@ -10,7 +10,7 @@ import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
-import id.ac.ui.cs.advprog.adproggameshop.utility.InsufficientFundsException;
+import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
 import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
