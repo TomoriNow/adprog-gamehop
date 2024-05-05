@@ -18,7 +18,7 @@ public class TransactionDTO {
     private String sellerUsername;
     private Long productProductId;
     private String productName;
-
+  
     TransactionDTO(Long transactionId, Date date, int amount, double total, Long buyerUserId,
                    String buyerUsername, Long sellerUserId, String sellerUsername,
                    String productName) {
