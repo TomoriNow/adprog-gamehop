@@ -69,7 +69,7 @@ public class GameController {
     }
 
     @GetMapping("/create")
-    public String addGamePage(GameForm gameForm,Model model) {
+    public String addGamePage(GameForm gameForm, Model model) {
         List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                 .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
                 .collect(Collectors.toList());

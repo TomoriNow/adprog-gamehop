@@ -1,3 +1,4 @@
+
 package controller;
 
 import id.ac.ui.cs.advprog.adproggameshop.controller.GameController;
@@ -118,5 +119,4 @@ public class GameControllerTest {
         verify(gameService, times(1)).buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class));
         assertEquals("redirect:list", viewName);
     }
-
 }
