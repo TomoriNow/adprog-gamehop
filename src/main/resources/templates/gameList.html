@@ -33,10 +33,12 @@
             <td th:text="${game.category}"></td>
             <td th:text="${game.ownerUsername}"></td>
             <td>
+                <th:block th:if="${game.quantity > 0}">
                 <form th:action="@{/game/buy}" method="post">
                     <input type="hidden" name="gameId" th:value="${game.productId}" />
                     <button type="submit" class="btn btn-primary btn-sm mb-3">Buy Game</button>
                 </form>
+                </th:block>
             </td>
         </tr>
         </tbody>
