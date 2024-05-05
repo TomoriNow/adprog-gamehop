@@ -30,13 +30,13 @@ import java.util.stream.Collectors;
 public class GameController {
 
     @Autowired
-    private GameService gameService;
+    public GameService gameService;
 
     @Autowired
-    private UserService userService;
+    public UserService userService;
 
     @Autowired
-    private GameRepository gameRepository;
+    public GameRepository gameRepository;
 
 
     @GetMapping("/test")
