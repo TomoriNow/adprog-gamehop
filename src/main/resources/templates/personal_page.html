@@ -6,23 +6,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="personal-page">
 <div class="container">
     <h1>Welcome to your Personal Page, <span th:text="${authenticated.username}"></span>!</h1>
     <p>Balance: <span th:text="${#numbers.formatDecimal(authenticated.balance, 0, 'COMMA', 2, 'POINT')}"></span></p>
     <div class="button-container">
         <a href="/logout" class="btn logout-btn"><i class="fas fa-sign-out-alt"></i>Logout</a>
+        <a href="/profile-page" class="btn"><i class="fas fa-user"></i>Profile</a>
         <a href="/topUp" class="btn"><i class="fas fa-plus"></i>Top Up</a>
         <a th:if="${authenticated.is_seller}" href="/game/list/personal" class="btn"><i class="fas fa-gamepad"></i>Personal Game List</a>
         <a href="/game/list" class="btn"><i class="fas fa-list"></i>Full Game List</a>
         <a href="/listUsers" class="btn"><i class="fas fa-users"></i>List of Users</a>
         <a href="/transaction-history" class="btn">Transaction History</a>
-        <form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
-            <button type="submit" class="btn"><i class="fas fa-user-shield"></i>Change Role To Seller</button>
-        </form>
-        <form th:action="@{/edit-profile}" method="get">
-            <button type="submit" class="btn"><i class="fas fa-user-edit"></i>Edit Profile</button>
-        </form>
     </div>
 </div>
 </body>

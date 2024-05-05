@@ -53,4 +53,10 @@ public class UserServiceImpl implements UserService{
     public List<UserDTO> listUsers() {
         return userRepository.findAllBy();
     }
+
+    @Override
+    @Transactional
+    public User findUserById(Long userId) {
+        return userRepository.findUserByUserId(userId).orElse(null);
+    }
 }

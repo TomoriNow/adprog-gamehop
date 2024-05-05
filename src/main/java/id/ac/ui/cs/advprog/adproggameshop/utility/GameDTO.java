@@ -1,9 +1,10 @@
 package id.ac.ui.cs.advprog.adproggameshop.utility;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Data
 public class GameDTO {
     private Long productId;
     private String name;
