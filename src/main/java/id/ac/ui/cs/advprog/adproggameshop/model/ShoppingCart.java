@@ -47,13 +47,6 @@ public class ShoppingCart {
         items.remove(itemName);
     }
 
-    public void updateQuantity(String itemName, int quantity) {
-        items.put(itemName, quantity);
-    }
-
-    public void clear() {
-        items.clear();
-    }
 }
 
 
