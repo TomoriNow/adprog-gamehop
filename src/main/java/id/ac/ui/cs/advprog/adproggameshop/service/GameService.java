@@ -31,4 +31,6 @@ public interface GameService {
     Game buyGame(Long gameId, User buyer, int amount, GameBuyer gameBuyer);
 
     void deleteGameById(Long gameId);
+
+    Game findByProductId(Long productId);
 }
