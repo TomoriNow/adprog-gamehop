@@ -36,8 +36,6 @@ public class Transaction {
     @Column(name = "total", nullable = false, scale = 2)
     private double total;
 
-    public Transaction() {}
-
     public Transaction(User buyer, User seller, Game product, Date date, int amount, double total) {
         this.buyer = buyer;
         this.seller = seller;

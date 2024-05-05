@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,6 +139,8 @@ public class UserController {
     public String transactionHistory(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
         List<TransactionDTO> transactions = transactionService.findAllByBuyerOrSeller(user, user);
+        transactions.sort(Comparator.comparing(TransactionDTO::getTransactionId).reversed());
+        model.addAttribute("user", user);
         model.addAttribute("transactions", transactions);
         return "transactionHistory";
     }
