@@ -202,7 +202,7 @@ public class GameServiceImplTest {
         when(gameBuyer.getGame()).thenReturn(game2);
         when(gameBuyer.getSeller()).thenReturn(seller);
         when(gameBuyer.getBuyer()).thenReturn(buyer1);
-        Transaction transaction = new Transaction(buyer1, seller, game2, new Date(), 1, game2.getPrice());
+        Transaction transaction = new Transaction(buyer1, seller, game2.getName(), new Date(), 1, game2.getPrice());
         when(gameBuyer.createTransactionRecord()).thenReturn(transaction);
         when(gameRepository.save(game2)).thenReturn(game2);
 

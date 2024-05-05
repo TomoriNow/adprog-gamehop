@@ -57,6 +57,6 @@ public abstract class GameBuyer {
     public abstract void updateSellerBalance(double cost);
     public abstract void updateBuyerBalance(double cost);
     public Transaction createTransactionRecord() {
-        return new Transaction(this.buyer, this.seller, this.game, new Date(), this.amount, this.baseCost);
+        return new Transaction(this.buyer, this.seller, this.game.getName(), new Date(), this.amount, this.baseCost);
     }
 }
