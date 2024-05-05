@@ -22,7 +22,7 @@
         <td th:text="${entry.key}"></td>
         <td th:text="${entry.value}"></td>
         <td>
-            <form th:action="@{/game/shopping-cart/delete}" method="post">
+            <form th:action="@{/shopping-cart/delete}" method="post">
                 <input type="hidden" name="itemName" th:value="${entry.key}" />
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
             </form>
