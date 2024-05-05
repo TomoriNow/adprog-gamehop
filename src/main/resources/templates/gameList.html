@@ -170,7 +170,7 @@
     </div>
     <div class="card-container">
         <div class="card" th:each="game: ${games}">
-            <h3 th:text="${game.name}" th:attr="data-game-id=${game.productId}"></h3>
+            <h3 th:text="${game.name}" th:attr="data-game-id=${game.productId}">Game Name</h3>
             <p>Quantity: <span th:text="${game.quantity}"></span></p>
             <p>Price: <span th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></span></p>
             <p>Category: <span th:text="${game.category}"></span></p>
