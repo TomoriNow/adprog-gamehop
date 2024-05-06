@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
     setTimeout(()=> {
         splash.classList.add('display-none');
 
-    }, 3500);
+    }, 5000);
 })
 
 
@@ -41,3 +41,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+const konamiVideo = document.getElementById('konamiVideo');
+let konamiCodeSequence = [];
+const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a', 'Enter'];
+
+function handleKonamiCode(event) {
+    const key = event.key;
+
+    // Check if the key is 'Enter'
+    if (key === 'Enter') {
+        konamiCodeSequence.push(key);
+    } else {
+        konamiCodeSequence.push(key);
+    }
+
+    if (konamiCodeSequence.length > konamiCode.length) {
+        konamiCodeSequence.shift();
+    }
+
+    if (konamiCodeSequence.join('').toLowerCase() === konamiCode.join('').toLowerCase()) {
+        konamiCodeSequence = [];
+        konamiVideo.style.display = 'block';
+        konamiVideo.play();
+
+        // Fade out the video after it finishes playing
+        konamiVideo.addEventListener('ended', () => {
+            fadeOutVideo(konamiVideo);
+        });
+    }
+}
+
+// Function to fade out the video
+function fadeOutVideo(videoElement) {
+    videoElement.style.transition = 'opacity 1s';
+    videoElement.style.opacity = '0';
+    setTimeout(() => {
+        videoElement.style.display = 'none';
+        videoElement.style.opacity = '1';
+    }, 1000);
+}
+
+document.addEventListener('keyup', handleKonamiCode);
