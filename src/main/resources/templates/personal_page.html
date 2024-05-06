@@ -1,17 +1,94 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery</title>
+    <title>Personal Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css2?family=Codystar:wght@300;400&display=swap" rel="stylesheet">
     <style>
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         body {
             height: 100vh;
             width: 100vw;
-            background-color: black;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
             margin: 0rem;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+
+        #welcomeText {
+            text-align: center;
+            margin-top: -70vh;
+            font-family: 'Codystar', sans-serif;
+            text-transform: uppercase;
+            font-size: 3rem;
+            font-weight: bolder;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: glowPulse 2s infinite;
+        }
+
+        #welcomeText span {
+            color: #ffd700; /* Yellow/gold color */
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 215, 0, 0.5);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 215, 0, 1);
+            }
+            100% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        @keyframes animatedGradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes pulseEffect {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         #image-track {
@@ -31,57 +108,36 @@
             object-position: 100% center;
         }
 
-        /* -- YouTube Link Styles -- */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px; /* Increase the width for a more elongated ellipse */
+            height: 30px; /* Adjust the height as desired */
+            border-radius: 30px; /* Adjust this value to make the ellipse more or less rounded */
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateX(-50%) scale(1.2);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateX(-50%) scale(1);
+                opacity: 1;
+            }
+        }
+
 
         body.menu-toggled > .meta-link > span {
             color: rgb(30, 30, 30);
-        }
-
-        #source-link {
-            bottom: 60px;
-        }
-
-        #source-link > i {
-            color: rgb(94, 106, 210);
-        }
-
-        #yt-link > i {
-            color: rgb(239, 83, 80);
-        }
-
-        .meta-link {
-            align-items: center;
-            backdrop-filter: blur(3px);
-            background-color: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            bottom: 10px;
-            box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            display: inline-flex;
-            gap: 5px;
-            left: 10px;
-            padding: 10px 20px;
-            position: fixed;
-            text-decoration: none;
-            transition: background-color 400ms, border-color 400ms;
-            z-index: 10000;
-        }
-
-        .meta-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .meta-link > i, .meta-link > span {
-            height: 20px;
-            line-height: 20px;
-        }
-
-        .meta-link > span {
-            color: white;
-            font-family: "Rubik", sans-serif;
-            font-weight: 500;
         }
 
         #logoutImage,
@@ -97,36 +153,43 @@
     </style>
 </head>
 <body>
+
+<h1 id="welcomeText">Welcome to your Personal Page, <span th:text="${authenticated.username}"></span>!</h1>
+
 <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
-    <img id="logoutImage" class="image" src="https://images.unsplash.com/photo-1524781289445-ddf8f5695861?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80" draggable="false" />
 
-    <img id="profile-pageImage" class="image" src="https://images.unsplash.com/photo-1610194352361-4c81a6a8967e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80" draggable="false" />
+    <img id="profile-pageImage" class="image" src="/assets/profilePageImage.jpg" draggable="false" title="Profile Page"/>
 
-    <img id="topUpImage" class="image" src="https://images.unsplash.com/photo-1618202133208-2907bebba9e1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80" draggable="false" />
+    <img th:if="${authenticated.is_seller}" id="gameListPersonalImage" class="image" src="/assets/personalgameListImage.jpg" draggable="false" title="Game List Personal"/>
 
-    <img id="gameListPersonalImage" class="image" src="https://images.unsplash.com/photo-1495805442109-bf1cf975750b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80" draggable="false" />
+    <img id="gameListImage" class="image" src="/assets/gameListImage.jpg" draggable="false"  title="Game List Personal"/>
 
-    <img id="gameListImage" class="image" src="https://images.unsplash.com/photo-1548021682-1720ed403a5b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80" draggable="false" />
+    <img id="userListImage" class="image" src="/assets/listOfUsersImage.jpg" draggable="false" title="User List" />
 
-    <img id="userListImage" class="image" src="https://images.unsplash.com/photo-1496753480864-3e588e0269b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2134&q=80" draggable="false" />
+    <img id="topUpImage" class="image" src="/assets/topUpImage.jpg" draggable="false" title="Top Up"/>
 
-    <img id="transactionHistoryImage" class="image" src="https://images.unsplash.com/photo-1613346945084-35cccc812dd5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1759&q=80" draggable="false" />
+    <img id="transactionHistoryImage" class="image" src="/assets/transactionHistoryImage.jpg" draggable="false" title="Transaction History" />
 
-    <img id="logoutImage" class="image" src="https://images.unsplash.com/photo-1516681100942-77d8e7f9dd97?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80" draggable="false" />
+    <img id="logoutImage" class="image" src="/assets/logout.jpg" draggable="false" title="Logout"/>
+
 </div>
 
-<a id="source-link" class="meta-link" href="https://camillemormal.com" target="_blank">
-    <i class="fa-solid fa-link"></i>
-    <span>Source</span>
-</a>
-
-<a id="yt-link" class="meta-link" href="https://youtu.be/PkADl0HubMY" target="_blank">
-    <i class="fa-brands fa-youtube"></i>
-    <span>7 min tutorial</span>
-</a>
+<div class="scroll-indicator"></div>
 
 <script>
     const track = document.getElementById("image-track");
+
+    const gameListPersonalImage = document.getElementById("gameListPersonalImage");
+
+    // Add an event listener to the window's load event
+    window.addEventListener("load", function() {
+        // Check if the user is authenticated and is a seller
+        if (authenticated && authenticated.is_seller) {
+            // Show the image
+            gameListPersonalImage.style.display = "block";
+        }
+    });
+
     // Add click event listener to the image track container
     track.addEventListener("click", e => {
         // Check if the clicked element is an image
@@ -145,10 +208,7 @@
                     window.location.href = "/topUp";
                     break;
                 case "gameListPersonalImage":
-                    // Check if user is a seller before redirecting
-                    if (authenticated && authenticated.is_seller) {
-                        window.location.href = "/game/list/personal";
-                    }
+                    window.location.href = "/game/list/personal";
                     break;
                 case "gameListImage":
                     window.location.href = "/game/list";
