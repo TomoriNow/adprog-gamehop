@@ -74,9 +74,9 @@ public class UserController {
             model.addAttribute("userLogin", authenticated.getUsername());
             session.setAttribute("userLogin", authenticated);
 
-            // Initialize the shopping cart for the logged-in user
-            ShoppingCart cart = new ShoppingCart(); // Create a new shopping cart
-            session.setAttribute("cart_" + authenticated.getUserId(), cart); // Store it in the session
+            // Reset the shopping cart for the logged-in user
+            ShoppingCart cart = new ShoppingCart();
+            session.setAttribute("cart_" + authenticated.getUserId(), cart);
 
             return "redirect:/personal-page";
         } else {
@@ -184,10 +184,44 @@ public class UserController {
         return "gameList";
     }
 
+    @GetMapping("/shopping-cart")
+    public String viewShoppingCart(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login"; // Redirect to login page if user is not logged in
+        }
+
+        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+        if (cart == null) {
+            cart = new ShoppingCart();
+            session.setAttribute("cart_" + user.getUserId(), cart);
+        }
+        model.addAttribute("cart", cart.getItems());
+        return "shoppingCart";
+    }
+
+    @PostMapping("/shopping-cart/delete")
+    public String deleteFromCart(@RequestParam String itemName, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login"; // Redirect to login page if user is not logged in
+        }
+
+        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+        if (cart != null) {
+            cart.removeItem(itemName);
+        }
+        return "redirect:/shopping-cart";
+    }
+
     @PostMapping("/add-to-cart")
     public String addToCart(@RequestParam String gameId, HttpSession session) {
-        Game game = gameService.findByProductId(Long.parseLong(gameId));
         User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login"; // Redirect to login page if user is not logged in
+        }
+
+        Game game = gameService.findByProductId(Long.parseLong(gameId));
         ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
 
         if (cart == null) {
@@ -200,28 +234,6 @@ public class UserController {
         return "redirect:/game/list";
     }
 
-    @PostMapping("/shopping-cart/delete")
-    public String deleteFromCart(@RequestParam String itemName, HttpSession session) {
-        User user = (User) session.getAttribute("userLogin");
-        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
-        if (cart != null) {
-            cart.removeItem(itemName);
-        }
-        return "redirect:/shopping-cart/" + user.getUserId(); // Redirect to the shopping cart page with the specific user ID
-    }
-
-
-
-    @GetMapping("/shopping-cart/{userId}")
-    public String viewShoppingCartForUser(@PathVariable Long userId, HttpSession session, Model model) {
-        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + userId);
-        if (cart == null) {
-            cart = new ShoppingCart();
-            session.setAttribute("cart_" + userId, cart);
-        }
-        model.addAttribute("cart", cart.getItems());
-        return "shoppingCart";
-    }
 
 
 
