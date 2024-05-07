@@ -258,6 +258,28 @@
         }
     }
 
+    // Add event listener for mouse wheel
+    window.addEventListener("wheel", e => {
+        e.preventDefault(); // Prevent default scrolling behavior
+
+        const delta = e.deltaY || e.detail || e.wheelDelta; // Get the scroll direction
+        const scrollAmount = Math.max(-1, Math.min(1, delta / Math.abs(delta))); // Determine the scroll amount
+
+        const currentPercentage = parseFloat(track.dataset.percentage) || 0;
+        const nextPercentage = Math.max(Math.min(currentPercentage - scrollAmount, 0), -100); // Adjust the scroll amount as needed
+
+        track.dataset.percentage = nextPercentage;
+
+        track.animate({
+            transform: `translate(${nextPercentage}%, -50%)`
+        }, { duration: 1200, fill: "forwards" });
+
+        for (const image of track.getElementsByClassName("image")) {
+            image.animate({
+                objectPosition: `${100 + nextPercentage}% center`
+            }, { duration: 1200, fill: "forwards" });
+        }
+    });
     /* -- Had to add extra lines for touch events -- */
 
     window.onmousedown = e => handleOnDown(e);
