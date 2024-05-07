@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,18 +16,15 @@ import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 public class ShoppingCartTest {
 
     private ShoppingCart cart;
-    private GameService gameService;
 
     @BeforeEach
     public void setUp() {
-        cart = ShoppingCart.getInstance();
+        cart = new ShoppingCart();
         cart.getItems().clear();
-        gameService = mock(GameService.class);
     }
 
     @Test
     public void testAddItem_Positive() {
-        Game game = new Game("Game 1", 50, "Description", 5, "Category", null);
         cart.addItem("Game 1", 1);
         assertTrue(cart.getItems().containsKey("Game 1"));
         assertEquals(1, (int) cart.getItems().get("Game 1"));
@@ -62,7 +58,9 @@ public class ShoppingCartTest {
         cart.removeItem("Game 1");
         assertTrue(cart.getItems().isEmpty());
     }
+
 }
+
 
 
 
