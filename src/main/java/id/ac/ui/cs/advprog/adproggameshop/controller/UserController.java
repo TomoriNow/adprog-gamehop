@@ -39,7 +39,7 @@ public class UserController {
 
     @Autowired
     private TransactionServiceImpl transactionService;
-  
+
     @Autowired
     private GameServiceImpl gameService;
 
@@ -73,8 +73,6 @@ public class UserController {
         if (authenticated != null) {
             model.addAttribute("userLogin", authenticated.getUsername());
             session.setAttribute("userLogin", authenticated);
-
-            // Reset the shopping cart for the logged-in user
             ShoppingCart cart = new ShoppingCart();
             session.setAttribute("cart_" + authenticated.getUserId(), cart);
 
@@ -188,7 +186,7 @@ public class UserController {
     public String viewShoppingCart(HttpSession session, Model model) {
         User user = (User) session.getAttribute("userLogin");
         if (user == null) {
-            return "redirect:/login"; // Redirect to login page if user is not logged in
+            return "redirect:/login";
         }
 
         ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
@@ -196,32 +194,45 @@ public class UserController {
             cart = new ShoppingCart();
             session.setAttribute("cart_" + user.getUserId(), cart);
         }
+
+        System.out.println("Cart contents:");
+        for (Map.Entry<Game, Integer> entry : cart.getItems().entrySet()) {
+            System.out.println("Item: " + entry.getKey().getName() + ", Quantity: " + entry.getValue());
+        }
+
+        double total = cart.calculateTotal();
         model.addAttribute("cart", cart.getItems());
+        model.addAttribute("total", total);
+        model.addAttribute("gameService", gameService);
+
         return "shoppingCart";
     }
 
     @PostMapping("/shopping-cart/delete")
-    public String deleteFromCart(@RequestParam String itemName, HttpSession session) {
+    public String deleteFromCart(@RequestParam Long gameId, HttpSession session) {
         User user = (User) session.getAttribute("userLogin");
         if (user == null) {
-            return "redirect:/login"; // Redirect to login page if user is not logged in
+            return "redirect:/login";
         }
 
         ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
         if (cart != null) {
-            cart.removeItem(itemName);
+            Game game = gameService.findByProductId(gameId);
+            if (game != null) {
+                cart.removeItem(game);
+            }
         }
         return "redirect:/shopping-cart";
     }
 
     @PostMapping("/add-to-cart")
-    public String addToCart(@RequestParam String gameId, HttpSession session) {
+    public String addToCart(@RequestParam Long gameId, HttpSession session) {
         User user = (User) session.getAttribute("userLogin");
         if (user == null) {
-            return "redirect:/login"; // Redirect to login page if user is not logged in
+            return "redirect:/login";
         }
 
-        Game game = gameService.findByProductId(Long.parseLong(gameId));
+        Game game = gameService.findByProductId(gameId);
         ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
 
         if (cart == null) {
@@ -229,7 +240,7 @@ public class UserController {
             session.setAttribute("cart_" + user.getUserId(), cart);
         }
 
-        cart.addItem(game.getName(), 1);
+        cart.addItem(game, 1);
 
         return "redirect:/game/list";
     }
@@ -241,6 +252,6 @@ public class UserController {
 
 
 
-
 }
+
 
