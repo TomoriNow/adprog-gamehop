@@ -101,4 +101,5 @@ public class GameServiceImpl implements GameService {
     public Game findByProductId(Long productId) {
         return gameRepository.findByProductId(productId);
     }
+
 }
