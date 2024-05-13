@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        h1 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: slide-in-left 1s ease;
+        }
+
+        .profile-head {
+            transform: translateY(5rem)
+        }
+
+        .cover {
+            background-image: url(https://images.unsplash.com/photo-1530305408560-82d13781b33a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80);
+            background-size: cover;
+            background-repeat: no-repeat
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERd`knLPMO" crossorigin="anonymous">
+</head>
+<body>
+    <div class="row">
+        <div class="col-lg-7 mx-auto text-black text-center pt-5">
+            <h1 class="display-4 text-white">Welcome to your Profile Page <span th:text="${authenticated.username}"></span>!</h1>
+            <a href="/personal-page"><p class="btn">Click here to go back</p></a>
+        </div>
+    </div>
+    <div class="row py-5 px-4">
+        <div class="col-md-5 mx-auto">
+            <!-- Profile widget -->
+            <div class="bg-white shadow rounded overflow-hidden">
+                <div class="px-4 pt-0 pb-4 cover">
+                    <div class="media align-items-end profile-head">
+                        <div class="profile mr-1">
+                            <img id="profileImage" th:src="${authenticated.profilePicture}" alt="..." width="130" class="rounded mb-2 img-thumbnail">
+                        </div>
+
+                        <div class="media-body mb-5 text-white">
+                            <h4 class="mt-0 mb-0"><span th:text="${authenticated.username}"></span></h4>
+                            <p class="small mb-4" th:if="${not authenticated.is_seller}">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Buyer
+                            </p>
+                            <p class="small mb-4" th:if="${authenticated.is_seller}">
+                                <i class="fas fa-map-marker-alt mr-2"></i>Seller
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-light p-4 d-flex justify-content-end text-center">
+                    <div class="row">
+                        <div class="col">
+                            <form th:action="@{/edit-profile}" method="get">
+                                <button type="submit" class="btn btn-outline-dark btn-sm btn-block"><i class="fas fa-user-edit"></i>Edit Profile</button>
+                            </form>
+                        </div>
+                        <div class="col">
+                            <form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
+                                <button type="submit" class="btn btn-outline-dark btn-sm btn-block"><i class="fas fa-user-shield"></i>Change Role To Seller</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-4 py-3">
+                    <h5 class="mb-0">About</h5>
+                    <div class="p-4 rounded shadow-sm bg-light">
+                        <p class="font-italic mb-0">Email: <span th:text="${authenticated.email}"></span></p>
+                        <p class="font-italic mb-0">Balance: <span th:text="${#numbers.formatDecimal(authenticated.balance, 0, 'COMMA', 2, 'POINT')}"></span></p>
+                        <p class="font-italic mb-0">Bio: <span th:text="${authenticated.bio}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    // Get the image element
+    var profileImage = document.getElementById('profileImage');
+
+    // Check if the image source is valid
+    profileImage.onerror = function() {
+        // If not, replace it with a default image
+        profileImage.src = '../assets/default_profile.jpg';
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+
+</html>

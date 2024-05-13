@@ -1,86 +1,105 @@
-package service;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Optional;
-
-import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
-import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
+import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UserServiceImpl userServiceImpl;
+
+    @BeforeEach
+    void setUp() {
+    }
 
     @Test
-    public void testRegisterUser_SuccessfulRegistration() {
-        String username = "testUser";
-        String password = "testPassword";
+    void testRegisterUser() {
+        String username = "testuser";
         String email = "test@example.com";
-
-        User newUser = new UserBuilder(username, email, password).build();
+        String password = "password";
+        User user = new User(username, email, password);
+        User savedUser = new User();
+        savedUser.setUserId(1L);
+        savedUser.setUsername(username);
+        savedUser.setEmail(email);
+        savedUser.setPassword(password);
+        savedUser.setBalance(0);
+        savedUser.set_seller(false);
 
         when(userRepository.findFirstByUsername(username)).thenReturn(Optional.empty());
-        when(userRepository.save(any(User.class))).thenReturn(newUser);
+        when(userRepository.save(user)).thenReturn(savedUser);
 
-        User registeredUser = userService.registerUser(newUser);
+        User result = userServiceImpl.registerUser(user);
 
-        assertNotNull(registeredUser);
-        assertEquals(username, registeredUser.getUsername());
-        assertEquals(email, registeredUser.getEmail());
-        assertEquals(password, registeredUser.getPassword());
+        assertEquals(savedUser, result);
     }
 
     @Test
-    public void testRegisterUser_DuplicateUsername() {
-        String username = "existingUser";
-        String password = "testPassword";
-        String email = "test@example.com";
+    void testAuthenticate() {
+        String username = "testuser";
+        String password = "password";
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
 
-        when(userRepository.findFirstByUsername(username)).thenReturn(Optional.of(new User()));
+        when(userRepository.findByUsernameAndPassword(username, password)).thenReturn(Optional.of(user));
 
-        User registeredUser = userService.registerUser(new UserBuilder(username, email, password).build());
+        User result = userServiceImpl.authenticate(username, password);
 
-        assertNull(registeredUser);
+        assertEquals(user, result);
     }
 
     @Test
-    public void testAuthenticate_SuccessfulAuthentication() {
-        String username = "existingUser";
-        String password = "testPassword";
-        User existingUser = new User(username, "test@example.com", password);
+    void testSave() {
+        User user = new User();
+        user.setUserId(1L);
 
-        when(userRepository.findByUsernameAndPassword(username, password)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(user)).thenReturn(user);
 
-        User authenticatedUser = userService.authenticate(username, password);
+        User result = userServiceImpl.save(user);
 
-        assertNotNull(authenticatedUser);
-        assertEquals(username, authenticatedUser.getUsername());
-        assertEquals(password, authenticatedUser.getPassword());
+        assertEquals(user, result);
     }
 
     @Test
-    public void testAuthenticate_AuthenticationFailed() {
-        String username = "existingUser";
-        String password = "wrongPassword";
+    void testTopUp() {
+        User user = new User();
+        user.setBalance(100.0);
+        double topUpAmount = 50.0;
 
-        when(userRepository.findByUsernameAndPassword(username, password)).thenReturn(Optional.empty());
+        when(userRepository.save(user)).thenReturn(user);
 
-        User authenticatedUser = userService.authenticate(username, password);
+        double result = userServiceImpl.topUp(user, topUpAmount);
 
-        assertNull(authenticatedUser);
+        assertEquals(150.0, result);
+    }
+
+    @Test
+    void testFindUserById() {
+        long userId = 1L;
+        User user = new User();
+        user.setUserId(userId);
+
+        when(userRepository.findUserByUserId(userId)).thenReturn(Optional.of(user));
+
+        User result = userServiceImpl.findUserById(userId);
+
+        assertEquals(user, result);
     }
 }

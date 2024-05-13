@@ -176,9 +176,9 @@
             <p>Category: <span th:text="${game.category}"></span></p>
             <p>Seller: <span th:text="${game.ownerUsername}"></span></p>
             <th:block th:if="${game.quantity > 0}">
-            <form th:action="@{/game/buy}" method="post">
+            <form th:action="@{/add-to-cart}" method="post">
                 <input type="hidden" name="gameId" th:value="${game.productId}" />
-                <button type="submit" class="btn"><i class="fas fa-shopping-cart"></i> Buy Game</button>
+                <button type="submit" class="btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
             </form>
             </th:block>
         </div>
