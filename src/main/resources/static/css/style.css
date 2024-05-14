@@ -1,4 +1,213 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+.firstline {
+    width: 200px;
+    height: 6px;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: -200px;
+    transform: translate(-50%, -50%);
+    animation: FirstLineAnimation 1.75s forwards, pulsate 2s infinite;
+    border-radius: 3px;
+}
+
+@keyframes FirstLineAnimation {
+    0% {
+        left: -200px;
+    }
+    100% {
+        left: calc(50% - 2px);
+    }
+}
+
+@keyframes pulsate {
+    0% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        opacity: 0.5;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Second line */
+.secondline {
+    width: 200px;
+    height: 6px;
+    background-color: white;
+    position: absolute;
+    left: 50%;
+    top: -200px;
+    transform: translate(-50%, -50%) rotate(90deg);
+    animation: SecondLineAnimation 1.75s forwards, pulsate 2s infinite;
+    border-radius: 3px;
+}
+
+@keyframes SecondLineAnimation {
+    0% {
+        top: -200px;
+    }
+    100% {
+        top: calc(50% - 2px);
+    }
+}
+
+/* Third line */
+.thirdline {
+    width: 100px;
+    height: 4px;
+    background-color: white;
+    position: absolute;
+    left: 45.5%;
+    top: -200px;
+    transform: translate(-50%, -50%) rotate(90deg);
+    animation: ThirdLineAnimation 1.75s forwards, pulsate 2s infinite;
+    border-radius: 2px;
+}
+
+@keyframes ThirdLineAnimation {
+    0% {
+        top: -200px;
+    }
+    100% {
+        top: calc(50% - 2px);
+    }
+}
+
+/* Fourth line */
+.fourthline {
+    width: 100px;
+    height: 4px;
+    background-color: white;
+    position: absolute;
+    left: 53%;
+    bottom: -200px;
+    transform: translate(-50%, -50%) rotate(90deg);
+    animation: FourthLineAnimation 1.75s forwards, pulsate 2s infinite;
+    border-radius: 2px;
+}
+
+@keyframes FourthLineAnimation {
+    0% {
+        bottom: -200px;
+    }
+    100% {
+        bottom: calc(50% - 2px);
+    }
+}
+
+/* Fifth line */
+.fifthline {
+    width: 35px;
+    height: 6px;
+    background-color: white;
+    position: absolute;
+    left: 55%;
+    bottom: -200px;
+    transform: translate(-50%, -50%) rotate(90deg);
+    animation: FifthLineAnimation 1.75s forwards, pulsate 2s infinite;
+    border-radius: 3px;
+}
+
+@keyframes FifthLineAnimation {
+    0% {
+        bottom: -200px;
+    }
+    100% {
+        bottom: calc(52.5% - 2px);
+    }
+}
+
+/* Sixth line */
+.sixthline {
+    width: 50px;
+    height: 4px;
+    background-color: white;
+    position: absolute;
+    left: 47%;
+    bottom: -200px;
+    transform: translate(-50%, -50%) rotate(90deg);
+    animation: SixthLineAnimation 1.75s forwards, pulsate 2s infinite;
+    border-radius: 2px;
+}
+
+@keyframes SixthLineAnimation {
+    0% {
+        bottom: -200px;
+    }
+    100% {
+        bottom: calc(45.8% - 2px);
+    }
+}
+
+/* Seventh line */
+.seventhline {
+    width: 60px;
+    height: 6px;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: -200px;
+    transform: rotate(0deg);
+    transform: translate(-50%, -50%);
+    animation: SeventhLineAnimation 1.75s forwards, pulsate 2s infinite;
+    border-radius: 3px;
+}
+
+@keyframes SeventhLineAnimation {
+    0% {
+        left: -200px;
+        top: calc(50% + 20px)
+    }
+    100% {
+        left: calc(54% - 2px);
+        top: calc(50% + 50px);
+    }
+}
+
+.splash{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: black;
+    z-index: 200;
+    color: white;
+    text-align: center;
+    line-height: 90vh;
+}
+
+.splash.display-none{
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: black;
+    z-index: -10;
+    color: white;
+    text-align: center;
+    line-height: 90vh;
+    transition: all 0.5s;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity:1;
+    }
+}
+
+.fade-in{
+    opacity:0;
+    animation: fadeIn 2s ease-in forwards;
+}
 
 body {
     font-family: 'Poppins', sans-serif;
