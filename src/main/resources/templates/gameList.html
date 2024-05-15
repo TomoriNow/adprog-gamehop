@@ -175,12 +175,15 @@
             <p>Price: <span th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></span></p>
             <p>Category: <span th:text="${game.category}"></span></p>
             <p>Seller: <span th:text="${game.ownerUsername}"></span></p>
-            <th:block th:if="${game.quantity > 0}">
-            <form th:action="@{/add-to-cart}" method="post">
-                <input type="hidden" name="gameId" th:value="${game.productId}" />
-                <button type="submit" class="btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-            </form>
-            </th:block>
+            <div class="button-container">
+                <th:block th:if="${game.quantity > 0}">
+                    <form th:action="@{/add-to-cart}" method="post" class="d-inline">
+                        <input type="hidden" name="gameId" th:value="${game.productId}" />
+                        <button type="submit" class="btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                    </form>
+                </th:block>
+                <a th:href="@{/game/{gameId}(gameId=${game.productId})}" class="btn"><i class="fas fa-info-circle"></i> View Details</a>
+            </div>
         </div>
     </div>
     <a href="/personal-page" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
