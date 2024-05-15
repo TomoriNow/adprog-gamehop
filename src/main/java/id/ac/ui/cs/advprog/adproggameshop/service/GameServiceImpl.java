@@ -1,8 +1,10 @@
 package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.Review;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
+import id.ac.ui.cs.advprog.adproggameshop.repository.ReviewRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
@@ -26,6 +28,9 @@ public class GameServiceImpl implements GameService {
     
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Override
     public Game save(Game game){
@@ -102,4 +107,13 @@ public class GameServiceImpl implements GameService {
         return gameRepository.findByProductId(productId);
     }
 
+    @Override
+    public List<Review> getReviewsByGame(Game game) {
+        return reviewRepository.findByGame(game);
+    }
+
+    @Override
+    public void saveReview(Review review) {
+        reviewRepository.save(review);
+    }
 }
