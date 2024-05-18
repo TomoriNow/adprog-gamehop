@@ -8,6 +8,7 @@ import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.*;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import java.util.Map;
 @Controller
 public class UserController {
     @Autowired
@@ -38,7 +39,7 @@ public class UserController {
 
     @Autowired
     private TransactionServiceImpl transactionService;
-  
+
     @Autowired
     private GameServiceImpl gameService;
 
@@ -72,11 +73,16 @@ public class UserController {
         if (authenticated != null) {
             model.addAttribute("userLogin", authenticated.getUsername());
             session.setAttribute("userLogin", authenticated);
+            ShoppingCart cart = new ShoppingCart();
+            session.setAttribute("cart_" + authenticated.getUserId(), cart);
+
             return "redirect:/personal-page";
         } else {
             return "error_page";
         }
     }
+
+
 
     @GetMapping("/personal-page")
     public  String personalPage(HttpSession session, Model model) {
@@ -175,4 +181,98 @@ public class UserController {
         model.addAttribute("games", games);
         return "gameList";
     }
+
+    @GetMapping("/shopping-cart")
+    public String viewShoppingCart(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+        if (cart == null) {
+            cart = new ShoppingCart();
+            session.setAttribute("cart_" + user.getUserId(), cart);
+        }
+
+        System.out.println("Cart contents:");
+        for (Map.Entry<Game, Integer> entry : cart.getItems().entrySet()) {
+            System.out.println("Item: " + entry.getKey().getName() + ", Quantity: " + entry.getValue());
+        }
+
+        double total = cart.calculateTotal();
+        model.addAttribute("cart", cart.getItems());
+        model.addAttribute("total", total);
+        model.addAttribute("gameService", gameService);
+
+        return "shoppingCart";
+    }
+
+    @PostMapping("/shopping-cart/delete")
+    public String deleteFromCart(@RequestParam Long gameId, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+        if (cart != null) {
+            Game game = gameService.findByProductId(gameId);
+            if (game != null) {
+                cart.removeItem(game);
+            }
+        }
+        return "redirect:/shopping-cart";
+    }
+
+    @PostMapping("/add-to-cart")
+    public String addToCart(@RequestParam Long gameId, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Game game = gameService.findByProductId(gameId);
+        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+
+        if (cart == null) {
+            cart = new ShoppingCart();
+            session.setAttribute("cart_" + user.getUserId(), cart);
+        }
+
+        cart.addItem(game, 1);
+
+        return "redirect:/game/list";
+    }
+    @PostMapping("/shopping-cart/buy")
+    public String buyFromCart(HttpSession session, Model model) {
+        User buyer = (User) session.getAttribute("userLogin");
+        if (buyer == null) {
+            return "redirect:/login";
+        }
+
+        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + buyer.getUserId());
+        if (cart == null) {
+            cart = new ShoppingCart();
+            session.setAttribute("cart_" + buyer.getUserId(), cart);
+        } else {
+            try {
+                gameService.cartBuyGames(cart, buyer);
+            } catch (RuntimeException error) {
+                model.addAttribute("error_message", error.getMessage());
+                return "error_page1";
+            }
+        };
+        return "redirect:/shopping-cart";
+    }
+
+
+
+
+
+
+
+
 }
+
+

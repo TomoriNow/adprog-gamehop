@@ -8,10 +8,15 @@
 <body>
 
 <div class="container">
-    <h3>Create New Product</h3>
 
     <form th:action="@{/game/create}" th:object="${gameForm}" method="post">
         <table class="table">
+            <tr>
+                <th>
+                    <h3>Create New Product</h3>
+                </th>
+                <th></th>
+            </tr>
             <tr class="form-group">
                 <td><label for="nameInput">Name</label></td>
                 <td><input th:field="*{name}" type="text" class="form-control" id="nameInput" placeholder="Enter game's name"></td>

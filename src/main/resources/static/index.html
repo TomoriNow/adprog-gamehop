@@ -6,13 +6,34 @@
     <title>Home page</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
+<div class="splash">
+    <span class="fade-in">
+        <div class="firstline"></div>
+        <div class="secondline"></div>
+        <div class="thirdline"></div>
+        <div class="fourthline"></div>
+        <div class="fifthline"></div>
+        <div class="sixthline"></div>
+        <div class="seventhline"></div>
+    </span>
+
+</div>
+
 <body class="home-page">
+
 <div class="container">
-<h1>Welcome to Tech Tavern!</h1>
+    <h1>Welcome to Tech Tavern!</h1>
     <div class="button-container">
         <a href="/register" class="btn">Register your account here</a>
         <a href="/login" class="btn">Login to your account here</a>
     </div>
 </div>
+
+<video id="konamiVideo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;">
+    <source src="assets/konamichime.mp4" type="video/mp4">
+</video>
+
+<script src="app.js"></script>
 </body>
 </html>

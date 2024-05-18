@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.adproggameshop.utility;
 
 import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
 import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
+import id.ac.ui.cs.advprog.adproggameshop.exception.NoGameLeftException;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -44,7 +45,7 @@ public abstract class GameBuyer {
         if (buyer.getBalance() < game.getPrice() * amount) {
             return   new InsufficientFundsException();
         } else if (game.getQuantity() < 1) {
-            return new GameDoesNotExistException();
+            return new NoGameLeftException(game);
         }
         return  null;
     }

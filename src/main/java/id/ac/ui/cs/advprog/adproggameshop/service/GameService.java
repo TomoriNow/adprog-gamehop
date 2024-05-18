@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
@@ -24,13 +25,15 @@ public interface GameService {
 
     Game saveWithOwner(Game game, User owner);
 
-
     GameRepository getGameRepository();
   
     List<Game> extractGameData();
 
     Game buyGame(Long gameId, User buyer, int amount, GameBuyer gameBuyer);
 
-
     void deleteGameById(Long gameId);
+
+    Game findByProductId(Long productId);
+
+    ShoppingCart cartBuyGames(ShoppingCart shoppingCart, User buyer);
 }
