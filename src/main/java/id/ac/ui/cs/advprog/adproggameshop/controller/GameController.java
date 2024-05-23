@@ -4,6 +4,7 @@ import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
 import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
 import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.Review;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
@@ -132,5 +133,39 @@ public class GameController {
         model.addAttribute("categories", categories);
         model.addAttribute("games", games);
         return "gameList";
+    }
+    @GetMapping("/{gameId}")
+    public String gameDetailPage(@PathVariable Long gameId, Model model, HttpSession session) {
+        Game game = gameService.findByProductId(gameId);
+        if (game == null) {
+            return "error_page";
+        }
+
+        List<Review> reviews = gameService.getReviewsByGame(game);
+
+        model.addAttribute("game", game);
+        model.addAttribute("reviews", reviews);
+
+        User user = (User) session.getAttribute("userLogin");
+        model.addAttribute("user", user);
+
+        return "gameDetail";
+    }
+
+    @PostMapping("/{gameId}/review")
+    public String addReview(@PathVariable Long gameId, @RequestParam String reviewText,
+                            @RequestParam int rating, HttpSession session) {
+        User user = (User) session.getAttribute("userLogin");
+        Game game = gameService.findByProductId(gameId);
+
+        Review review = new Review();
+        review.setUser(user);
+        review.setGame(game);
+        review.setReviewText(reviewText);
+        review.setRating(rating);
+
+        gameService.saveReview(review);
+
+        return "redirect:/game/" + gameId;
     }
 }
