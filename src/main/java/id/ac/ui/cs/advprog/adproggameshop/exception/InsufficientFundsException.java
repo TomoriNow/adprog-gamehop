@@ -6,6 +6,10 @@ public class InsufficientFundsException extends RuntimeException {
         super("Insufficient funds to buy the product");
     }
 
+    public InsufficientFundsException(double price, double balance) {
+        super("Insufficient funds to buy the product. Total price = "+ price +", Your Balance = "+ balance);
+    }
+
     public InsufficientFundsException(String message) {
         super(message);
     }
