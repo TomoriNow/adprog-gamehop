@@ -259,6 +259,7 @@ public class UserController {
             try {
                 gameService.cartBuyGames(cart, buyer);
             } catch (RuntimeException error) {
+                cart.getItems().clear();
                 model.addAttribute("error_message", error.getMessage());
                 return "error_page1";
             }
