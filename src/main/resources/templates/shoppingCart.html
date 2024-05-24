@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERd`knLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="shopping-cart-page">
@@ -38,11 +39,15 @@
         <p>Total: <span th:text="${total}"></span></p>
     </div>
 
-    <div class="mt-3">
-        <a th:href="@{/game/list}" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
-        <form th:action="@{/shopping-cart/buy}" method="post">
-            <button type="submit" class="btn btn-primary"><i class="fas fa-arrow-left"></i>Buy Games</button>
-        </form>
+    <div class="mt-3 row">
+        <div class="col">
+            <a th:href="@{/game/list}" class="btn btn-primary btn-block"><i class="fas fa-arrow-left"></i> Continue Shopping</a>
+        </div>
+        <div class="col">
+            <form th:action="@{/shopping-cart/buy}" method="post">
+                <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-arrow-left"></i> Buy Games</button>
+            </form>
+        </div>
     </div>
 </div>
 
