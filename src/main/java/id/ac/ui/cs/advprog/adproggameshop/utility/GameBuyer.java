@@ -2,7 +2,7 @@ package id.ac.ui.cs.advprog.adproggameshop.utility;
 
 import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
 import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
-import id.ac.ui.cs.advprog.adproggameshop.exception.NoGameLeftException;
+import id.ac.ui.cs.advprog.adproggameshop.exception.NotEnoughLeftException;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -22,9 +22,9 @@ public abstract class GameBuyer {
         this.game = game;
         this.buyer = buyer;
         this.amount = amount;
-        this.seller = getSeller();
-        RuntimeException error = checkRestrictions(amount);
+        RuntimeException error = checkRestrictions();
         if (error == null){
+            this.seller = getSeller();
             this.baseCost = calculateCost(amount);
             updateGameAttributes(amount);
             updateSellerBalance(baseCost);
@@ -38,14 +38,14 @@ public abstract class GameBuyer {
     public User getSeller() {
         return this.game.getOwner();
     }
-    public RuntimeException checkRestrictions(int amount) {
+    public RuntimeException checkRestrictions() {
         if (game == null) {
             return  new GameDoesNotExistException();
         }
         if (buyer.getBalance() < game.getPrice() * amount) {
             return   new InsufficientFundsException();
-        } else if (game.getQuantity() < 1) {
-            return new NoGameLeftException(game);
+        } else if (game.getQuantity() < amount) {
+            return new NotEnoughLeftException(game);
         }
         return  null;
     }
