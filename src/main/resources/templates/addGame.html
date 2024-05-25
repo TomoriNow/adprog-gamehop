@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERd`knLPMO" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .add-game-page {
@@ -76,7 +77,7 @@
         }
 
         .add-game-page .error {
-            color: #ff6b6b;
+            color: #cc4646;
             font-size: 12px;
             margin-top: 5px;
             animation: slide-in-left 1.6s ease;
@@ -142,33 +143,33 @@
 <div class="container">
     <h1>Create New Product</h1>
     <form th:action="@{/game/create}" th:object="${gameForm}" method="post">
-        <div class="form-group">
-            <input th:field="*{name}" type="text" class="form-control" id="nameInput" placeholder=" " required>
+        <div class="form-group row">
+            <input th:field="*{name}" type="text" class="form-control col" id="nameInput" placeholder=" " required>
             <label for="nameInput">Enter game's name</label>
-            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span>
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error col"></span>
         </div>
-        <div class="form-group">
-            <input th:field="*{price}" type="text" class="form-control" id="priceInput" placeholder=" " required>
+        <div class="form-group row">
+            <input th:field="*{price}" type="text" class="form-control col" id="priceInput" placeholder=" " required>
             <label for="priceInput">Enter game's price</label>
-            <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error"></span>
+            <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error col"></span>
         </div>
-        <div class="form-group">
-            <input th:field="*{quantity}" type="text" class="form-control" id="quantityInput" placeholder=" " required>
+        <div class="form-group row">
+            <input th:field="*{quantity}" type="text" class="form-control col" id="quantityInput" placeholder=" " required>
             <label for="quantityInput">Enter game's quantity</label>
-            <span th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="error"></span>
+            <span th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="error col"></span>
         </div>
-        <div class="form-group">
-            <textarea th:field="*{description}" class="form-control" id="descriptionInput" placeholder=" " required></textarea>
+        <div class="form-group row">
+            <textarea th:field="*{description}" class="form-control col" id="descriptionInput" placeholder=" " required></textarea>
             <label for="descriptionInput">Enter game's description</label>
-            <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error"></span>
+            <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error col"></span>
         </div>
-        <div class="form-group">
-            <select th:field="*{category}" id="categorySelect" class="form-select" required>
+        <div class="form-group row">
+            <select th:field="*{category}" id="categorySelect" class="form-select col" required>
                 <option value="" disabled selected>Select Category</option>
-                <option th:each="option : ${categoryOptions}" th:value="${option.value}" th:text="${option.label}"></option>
+                <option th:each="option : ${categoryOptions}" th:value="${option.value}" th:text="${option.label}" style="color: #333333"></option>
             </select>
             <label for="categorySelect">Category</label>
-            <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error"></span>
+            <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error col"></span>
         </div>
         <div class="button-container">
             <button type="submit" class="btn btn-primary">Submit</button>
