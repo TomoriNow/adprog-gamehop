@@ -136,6 +136,9 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void saveReview(Review review) {
+        if (review == null) {
+            throw new IllegalArgumentException("Review cannot be null");
+        }
         reviewRepository.save(review);
     }
 }

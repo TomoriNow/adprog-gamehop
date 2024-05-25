@@ -6,6 +6,7 @@ import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
 import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
 import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.Review;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
@@ -31,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+
+
 public class GameControllerTest {
 
     private GameController gameController;
@@ -49,6 +52,7 @@ public class GameControllerTest {
 
     @Mock
     private Model model;
+
 
     @BeforeEach
     void setUp() {
@@ -119,4 +123,90 @@ public class GameControllerTest {
         verify(gameService, times(1)).buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class));
         assertEquals("redirect:list", viewName);
     }
+
+    @Test
+    void testGameDetailPage_Happy() {
+        Long gameId = 1L;
+        Game game = new Game();
+        game.setProductId(gameId);
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(new Review());
+        reviews.add(new Review());
+        User user = new User();
+
+        when(gameService.findByProductId(gameId)).thenReturn(game);
+        when(gameService.getReviewsByGame(game)).thenReturn(reviews);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+
+        String viewName = gameController.gameDetailPage(gameId, model, session);
+
+        verify(gameService, times(1)).findByProductId(gameId);
+        verify(gameService, times(1)).getReviewsByGame(game);
+        verify(session, times(1)).getAttribute("userLogin");
+        assertEquals("gameDetail", viewName);
+    }
+
+    @Test
+    void testGameDetailPage_Unhappy() {
+        Long gameId = 1L;
+
+        when(gameService.findByProductId(gameId)).thenReturn(null);
+
+        String viewName = gameController.gameDetailPage(gameId, model, session);
+
+        verify(gameService, times(1)).findByProductId(gameId);
+        verify(gameService, never()).getReviewsByGame(any(Game.class));
+        verify(session, never()).getAttribute("userLogin");
+        assertEquals("error_page", viewName);
+    }
+    @Test
+    void testAddReview_Happy() {
+        Long gameId = 1L;
+        String reviewText = "Great game!";
+        int rating = 5;
+        User user = new User();
+        Game game = new Game();
+        game.setProductId(gameId);
+
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(gameService.findByProductId(gameId)).thenReturn(game);
+
+        String viewName = gameController.addReview(gameId, reviewText, rating, session);
+
+        verify(session, times(1)).getAttribute("userLogin");
+        verify(gameService, times(1)).findByProductId(gameId);
+        verify(gameService, times(1)).saveReview(any(Review.class));
+        assertEquals("redirect:/game/" + gameId, viewName);
+    }
+
+    @Test
+    void testAddReview_Unhappy() {
+        Long gameId = 1L;
+        String reviewText = "Great game!";
+        int rating = 5;
+
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = gameController.addReview(gameId, reviewText, rating, session);
+
+        verify(session, times(1)).getAttribute("userLogin");
+        assertEquals("redirect:/login", viewName);
+    }
+    @Test
+    void testAddReview_GameNotFound() {
+        Long gameId = 1L;
+        String reviewText = "Great game!";
+        int rating = 5;
+        User user = new User();
+
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(gameService.findByProductId(gameId)).thenReturn(null);
+
+        String viewName = gameController.addReview(gameId, reviewText, rating, session);
+
+        verify(session, times(1)).getAttribute("userLogin");
+        verify(gameService, times(1)).findByProductId(gameId);
+        assertEquals("redirect:/game/list", viewName);
+    }
+
 }

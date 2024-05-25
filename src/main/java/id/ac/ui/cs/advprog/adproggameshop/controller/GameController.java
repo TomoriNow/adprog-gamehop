@@ -148,8 +148,16 @@ public class GameController {
     @PostMapping("/{gameId}/review")
     public String addReview(@PathVariable Long gameId, @RequestParam String reviewText,
                             @RequestParam int rating, HttpSession session) {
-        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
+        User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         Game game = gameService.findByProductId(gameId);
+
+        if (game == null) {
+            return "redirect:/game/list";
+        }
 
         Review review = new Review();
         review.setUser(user);

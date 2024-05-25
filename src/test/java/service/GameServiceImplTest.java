@@ -8,6 +8,8 @@ import java.util.*;
 import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
 import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
+import id.ac.ui.cs.advprog.adproggameshop.model.*;
+import id.ac.ui.cs.advprog.adproggameshop.repository.ReviewRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
@@ -19,8 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import id.ac.ui.cs.advprog.adproggameshop.model.Game;
-import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 
@@ -38,6 +38,9 @@ public class GameServiceImplTest {
 
     @Mock
     private TransactionRepository transactionRepository;
+
+    @Mock
+    private ReviewRepository reviewRepository;
 
     @InjectMocks
     private GameServiceImpl gameService;
@@ -286,6 +289,54 @@ public class GameServiceImplTest {
         assertEquals(2, games1.size());
         assertEquals("Game1", games1.get(0).getName());
         assertEquals("Game2", games1.get(1).getName());
+    }
+    @Test
+    public void testGetReviewsByGame_Happy() {
+        Game game = new Game();
+        game.setProductId(1L);
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(new Review());
+        reviews.add(new Review());
+
+        when(reviewRepository.findByGame(game)).thenReturn(reviews);
+
+        List<Review> result = gameService.getReviewsByGame(game);
+
+        assertEquals(2, result.size());
+        verify(reviewRepository, times(1)).findByGame(game);
+    }
+
+    @Test
+    public void testGetReviewsByGame_Unhappy() {
+        Game game = new Game();
+        game.setProductId(1L);
+
+        when(reviewRepository.findByGame(game)).thenReturn(new ArrayList<>());
+
+        List<Review> result = gameService.getReviewsByGame(game);
+
+        assertTrue(result.isEmpty());
+        verify(reviewRepository, times(1)).findByGame(game);
+    }
+
+    @Test
+    public void testSaveReview_Happy() {
+        Review review = new Review();
+
+        gameService.saveReview(review);
+
+        verify(reviewRepository, times(1)).save(review);
+    }
+
+    @Test
+    public void testSaveReview_Unhappy() {
+        Review review = null;
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            gameService.saveReview(review);
+        });
+
+        verify(reviewRepository, never()).save(any(Review.class));
     }
 }
 
