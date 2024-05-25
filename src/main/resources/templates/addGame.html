@@ -1,62 +1,181 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Create New Product</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERd`knLPMO" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .add-game-page {
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            background: linear-gradient(135deg, #9b59b6, #3498db);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        .add-game-page .container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            animation: slide-in-left 1s ease;
+        }
+
+        .add-game-page h1 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: slide-in-left 1.2s ease;
+        }
+
+        .add-game-page .form-group {
+            position: relative;
+            margin-bottom: 30px;
+            animation: slide-in-left 1.4s ease;
+        }
+
+        .add-game-page .form-control,
+        .add-game-page .form-select {
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 0;
+            padding: 10px 5px;
+            color: #fff;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        .add-game-page .form-control:focus,
+        .add-game-page .form-select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .add-game-page .form-group label {
+            position: absolute;
+            top: 10px;
+            left: 5px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .add-game-page .form-control:focus + label,
+        .add-game-page .form-control:not(:placeholder-shown) + label,
+        .add-game-page .form-select:focus + label,
+        .add-game-page .form-select:not([value=""]) + label {
+            top: -20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .add-game-page .error {
+            color: #cc4646;
+            font-size: 12px;
+            margin-top: 5px;
+            animation: slide-in-left 1.6s ease;
+        }
+
+        .add-game-page .button-container {
+            display: flex;
+            justify-content: space-between;
+            animation: slide-in-left 1.6s ease;
+        }
+
+        .add-game-page .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-game-page .btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .add-game-page .btn-primary {
+            background-color: #007bff;
+        }
+
+        .add-game-page .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        @keyframes slide-in-left {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
 </head>
-<body>
-
+<body class="add-game-page">
 <div class="container">
-
+    <h1>Create New Product</h1>
     <form th:action="@{/game/create}" th:object="${gameForm}" method="post">
-        <table class="table">
-            <tr>
-                <th>
-                    <h3>Create New Product</h3>
-                </th>
-                <th></th>
-            </tr>
-            <tr class="form-group">
-                <td><label for="nameInput">Name</label></td>
-                <td><input th:field="*{name}" type="text" class="form-control" id="nameInput" placeholder="Enter game's name"></td>
-                <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Title Error</td>
-            </tr>
-            <tr class="form-group">
-                <td><label for="priceInput">Price</label></td>
-                <td><input th:field="*{price}" type="text" class="form-control" id="priceInput" placeholder="Enter game's price"></td>
-                <td th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Price Error</td>
-            </tr>
-            <tr class="form-group">
-                <td><label for="quantityInput">Quantity</label></td>
-                <td><input th:field="*{quantity}" type="text" class="form-control" id="quantityInput" placeholder="Enter game's quantity"></td>
-                <td th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}">Quantity Error</td>
-            </tr>
-            <tr class="form-group">
-                <td><label for="descriptionInput">Description</label></td>
-                <td><input th:field="*{description}" type="text" class="form-control" id="descriptionInput" placeholder="Enter game's description"></td>
-                <td th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description Error</td>
-            </tr>
-            <tr class="form-group">
-                <td><label for="categorySelect">Category</label></td>
-                <td><select th:field="*{category}" id="categorySelect" class="form-select">
-                    <option th:each="option : ${categoryOptions}"
-                            th:value="${option.value}"
-                            th:text="${option.label}">
-                    </option>
-                </select></td>
-                <td th:if="${#fields.hasErrors('category')}" th:errors="*{category}">Name Error</td>
-            </tr>
-        </table>
-
-        <button type="submit" class="btn btn-primary" style="margin-right: 3%">Submit</button>
-        <a href="/game/list/personal" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+        <div class="form-group row">
+            <input th:field="*{name}" type="text" class="form-control col" id="nameInput" placeholder=" " required>
+            <label for="nameInput">Enter game's name</label>
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error col"></span>
+        </div>
+        <div class="form-group row">
+            <input th:field="*{price}" type="text" class="form-control col" id="priceInput" placeholder=" " required>
+            <label for="priceInput">Enter game's price</label>
+            <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error col"></span>
+        </div>
+        <div class="form-group row">
+            <input th:field="*{quantity}" type="text" class="form-control col" id="quantityInput" placeholder=" " required>
+            <label for="quantityInput">Enter game's quantity</label>
+            <span th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="error col"></span>
+        </div>
+        <div class="form-group row">
+            <textarea th:field="*{description}" class="form-control col" id="descriptionInput" placeholder=" " required></textarea>
+            <label for="descriptionInput">Enter game's description</label>
+            <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error col"></span>
+        </div>
+        <div class="form-group row">
+            <select th:field="*{category}" id="categorySelect" class="form-select col" required>
+                <option value="" disabled selected>Select Category</option>
+                <option th:each="option : ${categoryOptions}" th:value="${option.value}" th:text="${option.label}" style="color: #333333"></option>
+            </select>
+            <label for="categorySelect">Category</label>
+            <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error col"></span>
+        </div>
+        <div class="button-container">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="/game/list/personal" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
     </form>
 </div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 </html>

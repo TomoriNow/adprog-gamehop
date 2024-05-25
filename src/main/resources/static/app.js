@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 const homepage = document.querySelector('.home-page');
 
 window.onscroll=function() {
-    var top = window.scrollY;
+    let top = window.scrollY;
     console.log(top);
     if (top >= 50) {
         homepage.classList.add('active')
