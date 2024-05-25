@@ -113,7 +113,6 @@ public class UserController {
                 byte[] profilePictureBytes = user.getProfilePictureFile().getBytes();
                 user.setProfilePicture(profilePictureBytes);
             } catch (IOException e) {
-                e.printStackTrace();
                 return ERROR_PAGE;
             }
         }
