@@ -119,8 +119,8 @@ public class UserController {
         } else {
             user.setProfilePicture(currentUser.getProfilePicture());
         }
-        if (user.getPassword() == null || !user.getPassword().trim().isEmpty()){
-            user.setPassword(user.getPassword());
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()){
+            user.setPassword(currentUser.getPassword());
         }
         user.setSeller(currentUser.isSeller());
         userService.save(user);
