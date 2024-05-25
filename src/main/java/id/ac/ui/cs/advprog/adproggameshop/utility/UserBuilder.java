@@ -8,7 +8,7 @@ public class UserBuilder {
     private int balance;
     private String bio;
     private byte[] profilePicture;
-    private boolean is_seller;
+    private boolean isSeller;
 
     public UserBuilder(String username, String email, String password) {
         this.username = username;
@@ -31,12 +31,12 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder isSeller(boolean is_seller) {
-        this.is_seller = is_seller;
+    public UserBuilder isSeller(boolean isSeller) {
+        this.isSeller = isSeller;
         return this;
     }
 
     public User build() {
-        return new User(username, email, password, balance, bio, profilePicture, is_seller);
+        return new User(username, email, password, balance, bio, profilePicture, isSeller);
     }
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
+@Getter @Setter
 public class GameDTO {
     private Long productId;
     private String name;

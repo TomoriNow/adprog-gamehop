@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Game Detail</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        h1 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: slide-in-left 1s ease;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 10px;
+            animation: slide-in-left 1.2s ease;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            animation: slide-in-left 1.4s ease;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        th {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        form {
+            margin-top: 20px;
+            animation: slide-in-left 1.6s ease;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            color: #fff;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .back-link:hover {
+            color: #f1c40f;
+        }
+
+    </style>
+</head>
+<body class="game-detail">
+<div class="container">
+    <h1 th:text="${game.name}">Game Name</h1>
+    <p><strong>Description:</strong> <span th:text="${game.description}"></span></p>
+    <p><strong>Price:</strong> <span th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></span></p>
+    <p><strong>Quantity:</strong> <span th:text="${game.quantity}"></span></p>
+    <p><strong>Category:</strong> <span th:text="${game.category}"></span></p>
+
+    <h2>Reviews</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Review</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="review : ${reviews}">
+            <td th:text="${review.user.username}"></td>
+            <td th:text="${review.user.isSeller ? 'Seller' : 'Buyer'}"></td>
+            <td th:text="${review.reviewText}"></td>
+            <td th:text="${review.rating}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>Add Review</h2>
+    <form th:action="@{/game/{gameId}/review(gameId=${game.productId})}" method="post">
+        <textarea name="reviewText" placeholder="Write your review..." required></textarea>
+        <select name="rating" required>
+            <option value="">Select rating</option>
+            <option value="1">1 Star</option>
+            <option value="2">2 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="5">5 Stars</option>
+        </select>
+        <button type="submit">Submit Review</button>
+    </form>
+
+    <a th:href="@{/game/list}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Game List</a>
+</div>
+</body>
+</html>

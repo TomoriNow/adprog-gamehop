@@ -1,6 +1,8 @@
 package model;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import id.ac.ui.cs.advprog.adproggameshop.model.Review;
 import org.junit.jupiter.api.Test;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
@@ -28,4 +30,66 @@ public class TransactionTest {
         assertEquals(amount, transaction.getAmount());
         assertEquals(total, transaction.getTotal());
     }
+
+
+    @Test
+    public void testTransactionID() {
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(1L);
+        assertEquals(1L, transaction.getTransactionId());
+    }
+
+    @Test
+    public void testBuyerID() {
+        Transaction transaction = new Transaction();
+        User buyer = new User();
+        transaction.setBuyer(buyer);
+        assertEquals(buyer, transaction.getBuyer());
+    }
+
+    @Test
+    public void testSellerID() {
+        Transaction transaction = new Transaction();
+        User seller = new User();
+        transaction.setSeller(seller);
+        assertEquals(seller, transaction.getSeller());
+    }
+
+    @Test
+    public void testProductName() {
+        Transaction transaction = new Transaction();
+        String productName = "Rainbow Six Siege";
+        transaction.setProductName(productName);
+        assertEquals(productName, transaction.getProductName());
+    }
+
+    @Test
+    public void testDate() {
+        Transaction transaction = new Transaction();
+        Date date =  new Date();
+        transaction.setDate(date);
+        assertEquals(date, transaction.getDate());
+    }
+
+    @Test
+    public void testAmount() {
+        Transaction transaction = new Transaction();
+        Integer amount =  69420;
+        transaction.setAmount(amount);
+        assertEquals(amount, transaction.getAmount());
+    }
+
+    @Test
+    public void testTotal() {
+        Transaction transaction = new Transaction();
+        Double total =  69.420;
+        transaction.setTotal(total);
+        assertEquals(total, transaction.getTotal());
+    }
+
+
+
+
+
+
 }
