@@ -108,6 +108,7 @@ public class UserController {
 
     @PostMapping("/edit-profile")
     public String editProfile(@ModelAttribute User user, HttpSession session) {
+        User currentUser = (User) session.getAttribute(USER_LOGIN_SESSION);
         if (user.getProfilePictureFile() != null && !user.getProfilePictureFile().isEmpty()) {
             try {
                 byte[] profilePictureBytes = user.getProfilePictureFile().getBytes();
@@ -115,10 +116,14 @@ public class UserController {
             } catch (IOException e) {
                 return ERROR_PAGE;
             }
+        } else {
+            user.setProfilePicture(currentUser.getProfilePicture());
         }
-        userService.save(user);
-        User currentUser = (User) session.getAttribute(USER_LOGIN_SESSION);
+        if (user.getPassword() == null || !user.getPassword().trim().isEmpty()){
+            user.setPassword(user.getPassword());
+        }
         user.setSeller(currentUser.isSeller());
+        userService.save(user);
         session.setAttribute(USER_LOGIN_SESSION, user);
         return REDIRECT_PERSONAL_PAGE;
     }
