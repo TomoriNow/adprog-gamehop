@@ -180,6 +180,12 @@
         .card .button-container .view-details-btn {
             background-color: #17a2b8;
         }
+
+        .shopping-cart-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -211,6 +217,9 @@
                 <a th:href="@{/game/{gameId}(gameId=${game.productId})}" class="btn view-details-btn"><i class="fas fa-info-circle"></i> View Details</a>
             </div>
         </div>
+    </div>
+    <div class="shopping-cart-container">
+        <a href="/shopping-cart" class="btn">View Shopping Cart</a>
     </div>
     <a href="/personal-page" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>
 </div>
