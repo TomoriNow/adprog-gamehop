@@ -272,6 +272,5 @@ public class GameServiceImplTest {
         assertEquals("Game1", games.get(0).getName());
         assertEquals("Game2", games.get(1).getName());
     }
-
 }
 
