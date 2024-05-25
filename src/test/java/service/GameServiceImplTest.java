@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
 import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
@@ -199,7 +200,6 @@ public class GameServiceImplTest {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.addItem(game1, 1);
 
-        System.out.println(game1);
         when(gameRepository.save(game1)).thenReturn(game1);
 
         ShoppingCart resultShoppingCart = gameService.cartBuyGames(shoppingCart, buyer);
@@ -230,7 +230,6 @@ public class GameServiceImplTest {
         shoppingCart.addItem(game1, 3);
         shoppingCart.addItem(game2, 5);
 
-        System.out.println(game1);
         when(gameRepository.save(game1)).thenReturn(game1);
         when(gameRepository.save(game2)).thenReturn(game2);
         ShoppingCart resultShoppingCart = gameService.cartBuyGames(shoppingCart, buyer);
@@ -253,6 +252,27 @@ public class GameServiceImplTest {
                 tempBuyer -> tempBuyer.getBalance() == 610 && tempBuyer.getUserId().equals(buyer.getUserId())
         ));
         verify(transactionRepository, times(2)).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testBuyTooExpensive() {
+        Game game1 = games.get(1);
+        Game game2 = games.getFirst();
+        User seller2 = new User();
+        buyer.setBalance(200);
+        seller2.setBalance(60);
+        seller2.setUserId(3L);
+        game2.setOwner(seller2);
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.addItem(game1, 3);
+        shoppingCart.addItem(game2, 5);
+
+        assertThrows(InsufficientFundsException.class,
+                () -> gameService.cartBuyGames(shoppingCart,buyer));
+
+        verify(transactionRepository, times(0)).save(any(Transaction.class));
+        verify(userRepository, times(0)).save(any(User.class));
+        verify(gameRepository, times(0)).save(any(Game.class));
     }
 
     @Test

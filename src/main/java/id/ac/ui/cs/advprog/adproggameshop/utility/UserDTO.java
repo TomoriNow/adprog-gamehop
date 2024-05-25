@@ -9,7 +9,7 @@ public class UserDTO {
     private String email;
     private String username;
 
-    UserDTO(Long userId, String email, String username) {
+    public UserDTO(Long userId, String email, String username) {
         this.userId = userId;
         this.email = email;
         this.username = username;
