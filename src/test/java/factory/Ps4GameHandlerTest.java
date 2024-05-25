@@ -17,7 +17,6 @@ class Ps4GameHandlerTest {
 
     @Test
     void getGames_ReturnsListOfPs4Games() {
-        // Arrange
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
         List<GameDTO> expectedGames = Arrays.asList(
                 new GameDTO(1L, "The Last of Us Part II", 59.99, 20, CategoryEnums.PS4.getLabel(), 1L, "user1"),

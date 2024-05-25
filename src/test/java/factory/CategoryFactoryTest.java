@@ -13,10 +13,8 @@ class CategoryFactoryTest {
 
     @Test
     void createCategoryHandler_ReturnsCorrectHandler() {
-        // Arrange
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
 
-        // Act & Assert
         assertEquals(ToyCategoryHandler.class, CategoryFactory.createCategoryHandler(CategoryEnums.TOY, gameRepository).getClass());
         assertEquals(BoardGameHandler.class, CategoryFactory.createCategoryHandler(CategoryEnums.BOARDGAME, gameRepository).getClass());
         assertEquals(SwitchGameHandler.class, CategoryFactory.createCategoryHandler(CategoryEnums.SWITCH, gameRepository).getClass());
