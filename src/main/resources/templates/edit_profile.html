@@ -198,12 +198,16 @@
             <label for="emailInput" class="form-label">Email</label>
         </div>
         <div class="form-group">
-            <input th:field="*{password}" type="password" class="form-control" id="passwordInput" placeholder="Enter password">
+            <input th:field="*{password}" type="password" class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" id="passwordInput" placeholder="Enter password">
             <label for="passwordInput" class="form-label">Password</label>
         </div>
         <div class="form-group">
             <input th:field="*{balance}" type="number" class="form-control" id="balanceInput" placeholder="Enter balance">
             <label for="balanceInput" class="form-label">Balance</label>
+        </div>
+        <div class="form-group">
+            <input th:field="*{bio}" type="text" class="form-control" id="bioInput" placeholder="Enter bio">
+            <label for="bioInput" class="form-label">Bio</label>
         </div>
         <div class="form-group">
             <input type="file" th:field="*{profilePictureFile}" class="form-control-file" id="profilePictureInput">
