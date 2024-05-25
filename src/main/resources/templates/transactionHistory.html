@@ -72,6 +72,7 @@
             <th scope="col">Transaction ID</th>
             <th scope="col">Date</th>
             <th scope="col">Product</th>
+            <th scope="col">Amount</th>
             <th scope="col">Type</th>
             <th scope="col">Change</th>
         </tr>
@@ -81,6 +82,7 @@
             <td th:text="${transactions.transactionId}"></td>
             <td th:text="${transactions.date}"></td>
             <td th:text="${transactions.productName}"></td>
+            <td th:text="${transactions.amount}"></td>
             <td th:text="${transactions.buyerUsername == user.username} ? ${'🔴 Bought from ' + transactions.sellerUsername} : (${transactions.sellerUsername == user.username} ? ${'🟢 Sold to ' + transactions.buyerUsername} : '')"></td>
             <td th:text="${transactions.buyerUsername == user.username} ? ${'-' + transactions.total} : (${transactions.sellerUsername == user.username} ? ${'+' + transactions.total} : '')"></td>
         </tr>
