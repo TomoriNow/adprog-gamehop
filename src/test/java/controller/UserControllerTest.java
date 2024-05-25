@@ -12,6 +12,7 @@ import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -440,6 +441,7 @@ class UserControllerTest {
         verify(gameService).findAllByOwner(user);
         verify(model).addAttribute("user", user);
     }
+
     @Test
     void testExtractGameData() {
         List<Game> games = Collections.singletonList(new Game());
@@ -476,5 +478,57 @@ class UserControllerTest {
         verifyNoInteractions(session);
     }
 
+    @Test
+    void testProfilePage_UserWithProfilePicture() {
+        User user = new User("testuser", "test@example.com", "password");
+        byte[] profilePicture = "sampleImage".getBytes();
+        user.setProfilePicture(profilePicture);
+        when(session.getAttribute("userLogin")).thenReturn(user);
 
+        String viewName = userController.profilePage(session, model);
+
+        assertEquals("profile_page", viewName);
+        verify(model).addAttribute("authenticated", user);
+        verify(model).addAttribute("profilePictureBase64", Base64.encodeBase64String(profilePicture));
+    }
+
+    @Test
+    void testProfilePage_UserWithoutProfilePicture() {
+        User user = new User("testuser", "test@example.com", "password");
+        when(session.getAttribute("userLogin")).thenReturn(user);
+
+        String viewName = userController.profilePage(session, model);
+
+        assertEquals("profile_page", viewName);
+        verify(model).addAttribute("authenticated", user);
+        verify(model, never()).addAttribute(eq("profilePictureBase64"), any());
+    }
+
+    @Test
+    void testGetProfilePage_UserExistsWithProfilePicture() {
+        Long userId = 1L;
+        User user = new User("testuser", "test@example.com", "password");
+        byte[] profilePicture = "sampleImage".getBytes();
+        user.setProfilePicture(profilePicture);
+        when(userService.findUserById(userId)).thenReturn(user);
+
+        String viewName = userController.getProfilePage(userId, model);
+
+        assertEquals("other_user_profile", viewName);
+        verify(model).addAttribute("user", user);
+        verify(model).addAttribute("profilePictureBase64", Base64.encodeBase64String(profilePicture));
+    }
+
+    @Test
+    void testGetProfilePage_UserExistsWithoutProfilePicture() {
+        Long userId = 1L;
+        User user = new User("testuser", "test@example.com", "password");
+        when(userService.findUserById(userId)).thenReturn(user);
+
+        String viewName = userController.getProfilePage(userId, model);
+
+        assertEquals("other_user_profile", viewName);
+        verify(model).addAttribute("user", user);
+        verify(model, never()).addAttribute(eq("profilePictureBase64"), any());
+    }
 }

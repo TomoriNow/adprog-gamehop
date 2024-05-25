@@ -3,6 +3,7 @@ package id.ac.ui.cs.advprog.adproggameshop.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -34,6 +35,9 @@ public class User {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] profilePicture;
+
+    @Transient
+    private MultipartFile profilePictureFile;
 
     @Column(name = "is_seller")
     private boolean isSeller;
