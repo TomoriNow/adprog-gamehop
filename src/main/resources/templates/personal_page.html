@@ -14,7 +14,7 @@
         <a href="/logout" class="btn logout-btn"><i class="fas fa-sign-out-alt"></i>Logout</a>
         <a href="/profile-page" class="btn"><i class="fas fa-user"></i>Profile</a>
         <a href="/topUp" class="btn"><i class="fas fa-plus"></i>Top Up</a>
-        <a th:if="${authenticated.is_seller}" href="/game/list/personal" class="btn"><i class="fas fa-gamepad"></i>Personal Game List</a>
+        <a th:if="${authenticated.isSeller}" href="/game/list/personal" class="btn"><i class="fas fa-gamepad"></i>Personal Game List</a>
         <a href="/game/list" class="btn"><i class="fas fa-list"></i>Full Game List</a>
         <a href="/listUsers" class="btn"><i class="fas fa-users"></i>List of Users</a>
         <a href="/transaction-history" class="btn">Transaction History</a>

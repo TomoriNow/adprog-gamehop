@@ -114,7 +114,7 @@ public class UserController {
             return ERROR_PAGE;
         }
 
-        if (user.is_seller()) {
+        if (user.isSeller()) {
             List<GameDTO> games = gameService.findAllByOwner(user);
             model.addAttribute(GAMES_SESSION, games);
             model.addAttribute("user", user);
@@ -137,7 +137,7 @@ public class UserController {
     @PostMapping("/change-role-seller")
     public String changeRoleSeller(HttpSession session, Model model) {
         User user = (User) session.getAttribute(USER_LOGIN_SESSION);
-        user.set_seller(true);
+        user.setSeller(true);
         userService.save(user);
         return REDIRECT_PERSONAL_PAGE;
     }

@@ -153,7 +153,7 @@
         <tbody>
         <tr th:each="review : ${reviews}">
             <td th:text="${review.user.username}"></td>
-            <td th:text="${review.user.is_seller ? 'Seller' : 'Buyer'}"></td>
+            <td th:text="${review.user.isSeller ? 'Seller' : 'Buyer'}"></td>
             <td th:text="${review.reviewText}"></td>
             <td th:text="${review.rating}"></td>
         </tr>

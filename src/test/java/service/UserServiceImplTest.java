@@ -2,14 +2,12 @@ package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
-import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +38,7 @@ class UserServiceImplTest {
         savedUser.setEmail(email);
         savedUser.setPassword(password);
         savedUser.setBalance(0);
-        savedUser.set_seller(false);
+        savedUser.setSeller(false);
 
         when(userRepository.findFirstByUsername(username)).thenReturn(Optional.empty());
         when(userRepository.save(user)).thenReturn(savedUser);

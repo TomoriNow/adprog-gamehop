@@ -156,10 +156,10 @@
             <img id="profileImage" th:src="${user.profilePicture}" alt="Profile Picture">
             <div>
                 <h2 class="text-white"><span th:text="${user.username}">Other User</span></h2>
-                <p class="small mb-0" th:if="${not user.is_seller}">
+                <p class="small mb-0" th:if="${not user.isSeller}">
                     <i class="fas fa-user mr-2"></i>Buyer
                 </p>
-                <p class="small mb-0" th:if="${user.is_seller}">
+                <p class="small mb-0" th:if="${user.isSeller}">
                     <i class="fas fa-user-tie mr-2"></i>Seller
                 </p>
             </div>
@@ -170,7 +170,7 @@
         </div>
     </div>
 
-    <div class="user-games" th:if="${user.is_seller}">
+    <div class="user-games" th:if="${user.isSeller}">
         <h3>Seller's Games</h3>
         <table>
             <thead>

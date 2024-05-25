@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/game")
@@ -59,7 +58,7 @@ public class GameController {
         List<GameDTO> games = gameService.findAllBy();
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
-                .collect(Collectors.toList());
+                .toList();
         model.addAttribute(CATEGORY_SESSION, categories);
         model.addAttribute(GAMES_SESSION, games);
         return "gameList";
@@ -77,7 +76,7 @@ public class GameController {
     public String addGamePage(GameForm gameForm, Model model) {
         List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                 .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
-                .collect(Collectors.toList());
+                .toList();
         model.addAttribute("categoryOptions", optionsList);
         return "addGame";
     }
@@ -87,7 +86,7 @@ public class GameController {
         if (bindingResult.hasErrors()) {
             List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                     .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
-                    .collect(Collectors.toList());
+                    .toList();
             model.addAttribute("categoryOptions", optionsList);
             return "addGame";
         }
@@ -122,7 +121,7 @@ public class GameController {
         if (categoryEnum == null) {
             List<String> categories = Arrays.stream(CategoryEnums.values())
                     .map(CategoryEnums::getLabel)
-                    .collect(Collectors.toList());
+                    .toList();
             model.addAttribute(CATEGORY_SESSION, categories);
             model.addAttribute("error", "Invalid category: " + category);
             return "error";
@@ -133,7 +132,7 @@ public class GameController {
 
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
-                .collect(Collectors.toList());
+                .toList();
         model.addAttribute(CATEGORY_SESSION, categories);
         model.addAttribute(GAMES_SESSION, games);
         return "gameList";

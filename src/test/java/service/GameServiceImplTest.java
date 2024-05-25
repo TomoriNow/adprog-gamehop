@@ -5,17 +5,12 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
-import id.ac.ui.cs.advprog.adproggameshop.exception.NotEnoughLeftException;
 import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
-import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
-import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,13 +56,13 @@ public class GameServiceImplTest {
 
         seller = new User();
         seller.setBalance(500);
-        seller.set_seller(true);
+        seller.setSeller(true);
         seller.setUserId(1L);
         seller.setUsername("Seller");
 
         buyer = new User();
         buyer.setBalance(1000);
-        buyer.set_seller(false);
+        buyer.setSeller(false);
         buyer.setUserId(2L);
         buyer.setUsername("Buyer");
 
@@ -169,7 +164,7 @@ public class GameServiceImplTest {
     public void testBuyOneGameWithGameBuyer() {
         Game game1 = games.get(1);
         Game game1After = new Game(game1.getName(), game1.getPrice(), game1.getDescription(), game1.getQuantity()-1, game1.getCategory(), game1.getOwner());
-        User buyer1 = new User(buyer.getUsername(), buyer.getEmail(), buyer.getPassword(),buyer.getBalance()-30, buyer.getBio(), buyer.getProfilePicture(), buyer.is_seller());
+        User buyer1 = new User(buyer.getUsername(), buyer.getEmail(), buyer.getPassword(),buyer.getBalance()-30, buyer.getBio(), buyer.getProfilePicture(), buyer.isSeller());
         seller.setBalance(seller.getBalance()+30);
 
         when(gameRepository.findByProductId(game1.getProductId())).thenReturn(game1);

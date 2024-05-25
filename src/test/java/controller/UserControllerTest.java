@@ -5,7 +5,6 @@ import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
@@ -152,7 +151,7 @@ class UserControllerTest {
         String viewName = userController.changeRoleSeller(session, model);
 
         assertEquals("redirect:/personal-page", viewName);
-        assertTrue(user.is_seller());
+        assertTrue(user.isSeller());
         verify(userService).save(user);
     }
 
