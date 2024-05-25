@@ -10,6 +10,7 @@ import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
+import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -19,8 +20,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.Model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,15 +114,81 @@ class UserControllerTest {
 
     @Test
     void testEditProfile() {
+        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
+        currentUser.setSeller(true);
+
+
+        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
         User user = new User("testuser", "test@example.com", "password");
+        user.setBalance(455.5);
+        user.setBio("sample bio");
+        user.setProfilePictureFile(new MockMultipartFile("file", "test.jpg", "image/jpeg", profilePicture));
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("userLogin")).thenReturn(currentUser);
+
 
         String viewName = userController.editProfile(user, session);
 
         assertEquals("redirect:/personal-page", viewName);
+        verify(session, times(1)).getAttribute("userLogin");
         verify(userService).save(user);
         verify(session).setAttribute("userLogin", user);
+        assertEquals(profilePicture, user.getProfilePicture());
+        assertTrue(user.isSeller());
+    }
+
+    @Test
+    void testEditProfileBlankPassword() {
+        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
+        currentUser.setSeller(true);
+
+
+        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
+        User user = new User("testuser", "test@example.com", "");
+        user.setBalance(455.5);
+        user.setBio("sample bio");
+        user.setProfilePictureFile(new MockMultipartFile("file", "test.jpg", "image/jpeg", profilePicture));
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("userLogin")).thenReturn(currentUser);
+
+
+        String viewName = userController.editProfile(user, session);
+
+        assertEquals("redirect:/personal-page", viewName);
+        verify(session, times(1)).getAttribute("userLogin");
+        verify(userService).save(user);
+        verify(session).setAttribute("userLogin", user);
+        assertEquals("currentPassword", user.getPassword());
+        assertEquals(profilePicture, user.getProfilePicture());
+        assertTrue(user.isSeller());
+    }
+
+    @Test
+    void testEditProfileNullProfilePicture() {
+        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
+        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
+        currentUser.setSeller(true);
+        currentUser.setProfilePicture(profilePicture);
+
+
+        User user = new User("testuser", "test@example.com", "password");
+        user.setBalance(455.5);
+        user.setBio("sample bio");
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("userLogin")).thenReturn(currentUser);
+
+
+        String viewName = userController.editProfile(user, session);
+
+        assertEquals("redirect:/personal-page", viewName);
+        verify(session, times(1)).getAttribute("userLogin");
+        verify(userService).save(user);
+        verify(session).setAttribute("userLogin", user);
+        assertTrue(user.isSeller());
+        assertEquals(profilePicture, user.getProfilePicture());
     }
 
     @Test
@@ -467,6 +536,33 @@ class UserControllerTest {
     }
 
     @Test
+    void testNullRegister() {
+        User user = new User("testuser", "test@example.com", "password");
+
+        when(userService.registerUser(any(User.class))).thenReturn(null);
+
+        String result = userController.register(user);
+
+        assertEquals("error_page", result);
+        verify(userService).registerUser(any(User.class));
+    }
+
+    @Test
+    void testValidLogin() {
+        User user = new User("testuser", "test@example.com", "password");
+        user.setUserId(1L);
+        when(userService.authenticate("testuser", "password")).thenReturn(user);
+
+        String result = userController.login(user, session, model);
+
+        assertEquals("redirect:/personal-page", result);
+        verify(userService,times(1)).authenticate("testuser", "password");
+        verify(model, times(1)).addAttribute("userLogin", "testuser");
+        verify(session, times(1)).setAttribute("userLogin", user);
+        verify(session, times(1)).setAttribute(eq("cart_1"), any(ShoppingCart.class));
+    }
+
+    @Test
     void testLogin_InvalidCredentials() {
         when(userService.authenticate("testuser", "password")).thenReturn(null);
 
@@ -476,6 +572,20 @@ class UserControllerTest {
         verify(userService).authenticate("testuser", "password");
         verifyNoInteractions(model);
         verifyNoInteractions(session);
+    }
+
+    @Test
+    void testListUsers() {
+        List<UserDTO> users= new ArrayList<>();
+        users.add(new UserDTO(1L, "email", "username"));
+        users.add(new UserDTO(2L, "email2", "username2"));
+
+        when(userService.listUsers()).thenReturn(users);
+
+        String result = userController.listUsers(model, session);
+
+        assertEquals("usersList", result);
+        verify(userService, times(1)).listUsers();
     }
 
     @Test

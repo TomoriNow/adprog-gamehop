@@ -137,12 +137,10 @@ public class GameBuyerTest {
 
     @Test
     public void testBuyGameDoesNotExist() {
-        Game game = null;
-
         GameBuyer oneClickBuy = new OneClickBuy();
 
         assertThrows(GameDoesNotExistException.class,
-                () -> oneClickBuy.buyGame(game, buyer, 1));
+                () -> oneClickBuy.buyGame(null, buyer, 1));
     }
 
     @Test
