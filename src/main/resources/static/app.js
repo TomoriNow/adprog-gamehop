@@ -89,6 +89,9 @@ let electricWindGodFistSequence = [];
 const electricWindGodFistCode = ['d', 's', 'd', 'i']; // Change this to ['s', 's', 's+d+i'] for the actual sequence
 let excaliburSequence = [];
 const excaliburCode = ['w', 'u', 'i'];
+let flashSequence = [];
+const flashCode = ['y', 'o', 's','h','i'];
+
 function handleElectricWindGodFist(event) {
     const key = event.key;
     electricWindGodFistSequence.push(key);
@@ -170,3 +173,46 @@ function handleExcalibur(event) {
 }
 
 document.addEventListener('keyup', handleExcalibur);
+
+
+function handleFlash(event) {
+    const key = event.key;
+    flashSequence.push(key);
+
+    if (flashSequence.length > flashCode.length) {
+        flashSequence.shift();
+    }
+
+    if (flashSequence.join('') === flashCode.join('')) {
+        flashSequence = [];
+
+        // Play the yoshi.mp3 and damn.mp3 soundbytes simultaneously
+        const yoshiAudio = new Audio('assets/yoshiflash.mp3');
+        const damnAudio = new Audio('assets/damn.mp3');
+        yoshiAudio.play();
+        damnAudio.play();
+
+        // Display the yoshi.jpg image for 1 second
+        const yoshiImage = new Image();
+        yoshiImage.src = 'assets/yoshi.jpg';
+        yoshiImage.style.position = 'fixed';
+        yoshiImage.style.top = '0';
+        yoshiImage.style.left = '0';
+        yoshiImage.style.width = '100%';
+        yoshiImage.style.height = '100%';
+        yoshiImage.style.zIndex = '9999';
+        document.body.appendChild(yoshiImage);
+
+        setTimeout(() => {
+            // Fade out the yoshi.jpg image
+            yoshiImage.style.transition = 'opacity 0.5s';
+            yoshiImage.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(yoshiImage);
+            }, 500);
+        }, 1000);
+    }
+}
+
+document.addEventListener('keyup', handleFlash);
+

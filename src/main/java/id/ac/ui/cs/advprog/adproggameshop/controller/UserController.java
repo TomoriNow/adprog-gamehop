@@ -244,6 +244,28 @@ public class UserController {
 
         return "redirect:/game/list";
     }
+    @PostMapping("/shopping-cart/buy")
+    public String buyFromCart(HttpSession session, Model model) {
+        User buyer = (User) session.getAttribute("userLogin");
+        if (buyer == null) {
+            return "redirect:/login";
+        }
+
+        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + buyer.getUserId());
+        if (cart == null) {
+            cart = new ShoppingCart();
+            session.setAttribute("cart_" + buyer.getUserId(), cart);
+        } else {
+            try {
+                gameService.cartBuyGames(cart, buyer);
+            } catch (RuntimeException error) {
+                cart.getItems().clear();
+                model.addAttribute("error_message", error.getMessage());
+                return "error_page1";
+            }
+        };
+        return "redirect:/shopping-cart";
+    }
 
 
 
