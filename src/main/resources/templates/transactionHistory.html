@@ -84,7 +84,7 @@
             <td th:text="${transactions.productName}"></td>
             <td th:text="${transactions.amount}"></td>
             <td th:text="${transactions.buyerUsername == user.username} ? ${'🔴 Bought from ' + transactions.sellerUsername} : (${transactions.sellerUsername == user.username} ? ${'🟢 Sold to ' + transactions.buyerUsername} : '')"></td>
-            <td th:text="${transactions.buyerUsername == user.username} ? ${'-' + transactions.total} : (${transactions.sellerUsername == user.username} ? ${'+' + transactions.total} : '')"></td>
+            <td th:text="${transactions.buyerUsername == user.username} ? ${'-' + #numbers.formatDecimal(transactions.total, 0, 'COMMA', 2, 'POINT')} : (${transactions.sellerUsername == user.username} ? ${'+' + #numbers.formatDecimal(transactions.total, 0, 'COMMA', 2, 'POINT')} : '')"></td>
         </tr>
         </tbody>
     </table>

@@ -170,6 +170,8 @@ public class UserController {
 
     @GetMapping("/topUp")
     public String topUp(HttpSession session, Model model) {
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
+        model.addAttribute(USER_LOGIN_SESSION, user);
         return "topUp";
     }
 
@@ -224,6 +226,7 @@ public class UserController {
         double total = cart.calculateTotal();
         model.addAttribute("cart", cart.getItems());
         model.addAttribute("total", total);
+        model.addAttribute(USER_LOGIN_SESSION, user);
         model.addAttribute("gameService", gameService);
 
         return "shoppingCart";
