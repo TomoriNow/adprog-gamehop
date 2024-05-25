@@ -1,4 +1,4 @@
-package service;
+package utility;
 
 import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
 import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
@@ -80,6 +80,48 @@ public class GameBuyerTest {
         assertEquals(970, oneClickBuy.getBuyer().getBalance());
         assertEquals(seller, oneClickBuy.getSeller());
         assertEquals(530, oneClickBuy.getSeller().getBalance());
+        assertEquals(1, oneClickBuy.getAmount());
+        assertEquals(30, oneClickBuy.getBaseCost());
+    }
+
+    @Test
+    public void testOneClickBuyGameDefault() {
+        Game game1 = games.get(1);
+        assertEquals(seller, game1.getOwner());
+
+        OneClickBuy oneClickBuy = new OneClickBuy();
+
+        Game resultGame = oneClickBuy.buyGame(game1, buyer);;
+
+        assertEquals(game1, resultGame);
+        assertEquals(game1, oneClickBuy.getGame());
+        assertEquals(399, oneClickBuy.getGame().getQuantity());
+        assertEquals(buyer, oneClickBuy.getBuyer());
+        assertEquals(970, oneClickBuy.getBuyer().getBalance());
+        assertEquals(seller, oneClickBuy.getSeller());
+        assertEquals(530, oneClickBuy.getSeller().getBalance());
+        assertEquals(1, oneClickBuy.getAmount());
+        assertEquals(30, oneClickBuy.getBaseCost());
+    }
+
+    @Test
+    public void testBuyGameMultipleValid() {
+        Game game1 = games.get(1);
+        assertEquals(seller, game1.getOwner());
+
+        CartBuy cartBuyer = new CartBuy();
+
+        Game resultGame = cartBuyer.buyGame(game1, buyer, 5);;
+
+        assertEquals(game1, resultGame);
+        assertEquals(game1, cartBuyer.getGame());
+        assertEquals(395, cartBuyer.getGame().getQuantity());
+        assertEquals(buyer, cartBuyer.getBuyer());
+        assertEquals(850, cartBuyer.getBuyer().getBalance());
+        assertEquals(seller, cartBuyer.getSeller());
+        assertEquals(650, cartBuyer.getSeller().getBalance());
+        assertEquals(5, cartBuyer.getAmount());
+        assertEquals(150, cartBuyer.getBaseCost());
     }
 
     @Test

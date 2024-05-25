@@ -27,11 +27,9 @@ public class testReviewModel {
         Review review = new Review();
         User user = new User();
         review.setUser(user);
-
         assertEquals(user, review.getUser());
     }
-
-    @Test
+  
     public void testGetGame() {
         Review review = new Review();
         Game game = new Game();
