@@ -12,11 +12,13 @@ import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +91,10 @@ public class UserController {
     @GetMapping("/profile-page")
     public  String profilePage(HttpSession session, Model model) {
         User user = (User) session.getAttribute(USER_LOGIN_SESSION);
+        if (user != null && user.getProfilePicture() != null) {
+            String base64Image = Base64.encodeBase64String(user.getProfilePicture());
+            model.addAttribute("profilePictureBase64", base64Image);
+        }
         model.addAttribute("authenticated", user);
         return "profile_page";
     }
@@ -102,6 +108,15 @@ public class UserController {
 
     @PostMapping("/edit-profile")
     public String editProfile(@ModelAttribute User user, HttpSession session) {
+        if (user.getProfilePictureFile() != null && !user.getProfilePictureFile().isEmpty()) {
+            try {
+                byte[] profilePictureBytes = user.getProfilePictureFile().getBytes();
+                user.setProfilePicture(profilePictureBytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ERROR_PAGE;
+            }
+        }
         userService.save(user);
         session.setAttribute(USER_LOGIN_SESSION, user);
         return REDIRECT_PERSONAL_PAGE;
@@ -119,6 +134,11 @@ public class UserController {
             model.addAttribute(GAMES_STRING, games);
             model.addAttribute("user", user);
             return "other_user_profile";
+        }
+
+        if (user.getProfilePicture() != null) {
+            String base64Image = Base64.encodeBase64String(user.getProfilePicture());
+            model.addAttribute("profilePictureBase64", base64Image);
         }
 
         model.addAttribute("user", user);

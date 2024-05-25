@@ -187,23 +187,26 @@
     <div class="profile-picture">
         <i class="fas fa-user"></i>
     </div>
-    <form th:action="@{/edit-profile}" th:object="${user}" method="post">
+    <form th:action="@{/edit-profile}" th:object="${user}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{userId}" th:value="${user.userId}" />
         <div class="form-group">
-            <input th:field="*{username}" th:value="${user.username}" type="text" class="form-control" id="usernameInput" placeholder="Enter username">
+            <input th:field="*{username}" type="text" class="form-control" id="usernameInput" placeholder="Enter username">
             <label for="usernameInput" class="form-label">Username</label>
         </div>
         <div class="form-group">
-            <input th:field="*{email}" th:value="${user.email}" type="email" class="form-control" id="emailInput" placeholder="Enter email">
+            <input th:field="*{email}" type="email" class="form-control" id="emailInput" placeholder="Enter email">
             <label for="emailInput" class="form-label">Email</label>
         </div>
         <div class="form-group">
-            <input th:field="*{password}" th:value="${user.password}" type="password" class="form-control" id="passwordInput" placeholder="Enter password">
+            <input th:field="*{password}" type="password" class="form-control" id="passwordInput" placeholder="Enter password">
             <label for="passwordInput" class="form-label">Password</label>
         </div>
         <div class="form-group">
-            <input th:field="*{balance}" th:value="${user.balance}" type="number" class="form-control" id="balanceInput" placeholder="Enter balance">
+            <input th:field="*{balance}" type="number" class="form-control" id="balanceInput" placeholder="Enter balance">
             <label for="balanceInput" class="form-label">Balance</label>
+        </div>
+        <div class="form-group">
+            <input type="file" th:field="*{profilePictureFile}" class="form-control-file" id="profilePictureInput">
         </div>
         <button type="submit" class="btn btn-primary btn-block">Submit</button>
         <div class="text-center">
@@ -211,17 +214,12 @@
         </div>
     </form>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
 <script>
+    // JavaScript for profile picture preview
     const profilePicture = document.querySelector('.profile-picture');
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-
-    profilePicture.addEventListener('click', () => {
-        fileInput.click();
-    });
+    const fileInput = document.querySelector('#profilePictureInput');
 
     fileInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
@@ -236,3 +234,5 @@
         }
     });
 </script>
+</body>
+</html>
