@@ -7,6 +7,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
+import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,6 +49,14 @@ class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
+
+    Long productId = 1L;
+    String name = "Test Game";
+    double price = 49.99;
+    int quantity = 10;
+    String category = "Adventure";
+    Long ownerUserId = 123L;
+    String ownerUsername = "seller123";
 
     @BeforeEach
     void setUp() {
@@ -413,4 +422,59 @@ class UserControllerTest {
         verify(session, never()).setAttribute(eq("cart_" + user.getUserId()), any(ShoppingCart.class));
         verify(cart).addItem(eq(game), eq(1));
     }
+
+    @Test
+    void testGetProfilePage_UserIsSeller() {
+        Long userId = 1L;
+        User user = new UserBuilder("testuser", "test@example.com", "password").isSeller(true).build();
+        List<GameDTO> games = Collections.singletonList(new GameDTO(productId, name, price, quantity, category, ownerUserId, ownerUsername));
+
+        when(userService.findUserById(userId)).thenReturn(user);
+
+        when(gameService.findAllByOwner(user)).thenReturn(games);
+
+        String viewName = userController.getProfilePage(userId, model);
+
+        assertEquals("other_user_profile", viewName);
+        verify(userService).findUserById(userId);
+        verify(gameService).findAllByOwner(user);
+        verify(model).addAttribute("user", user);
+    }
+    @Test
+    void testExtractGameData() {
+        List<Game> games = Collections.singletonList(new Game());
+
+        when(gameService.extractGameData()).thenReturn(games);
+
+        String viewName = userController.extractGameData(model);
+
+        assertEquals("gameList", viewName);
+        verify(gameService).extractGameData();
+        verify(model).addAttribute("games", games);
+    }
+    @Test
+    void testRegister() {
+        User user = new User("testuser", "test@example.com", "password");
+
+        when(userService.registerUser(any(User.class))).thenReturn(user);
+
+        String viewName = userController.register(user);
+
+        assertEquals("redirect:/login", viewName);
+        verify(userService).registerUser(any(User.class));
+    }
+
+    @Test
+    void testLogin_InvalidCredentials() {
+        when(userService.authenticate("testuser", "password")).thenReturn(null);
+
+        String viewName = userController.login(new User("testuser", "test@example.com", "password"), session, model);
+
+        assertEquals("error_page", viewName);
+        verify(userService).authenticate("testuser", "password");
+        verifyNoInteractions(model);
+        verifyNoInteractions(session);
+    }
+
+
 }
