@@ -5,30 +5,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #9b59b6, #3498db);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px;
-        }
-
-        h2 {
-            font-weight: 700;
-            margin-bottom: 20px;
-            animation: slide-in-left 1s ease;
-        }
-
         h1 {
             font-weight: 700;
             margin-bottom: 20px;
@@ -117,7 +93,7 @@
 
     </style>
 </head>
-<body>
+<body class="game-detail">
 <div class="container">
     <h1 th:text="${game.name}">Game Name</h1>
     <p><strong>Description:</strong> <span th:text="${game.description}"></span></p>
