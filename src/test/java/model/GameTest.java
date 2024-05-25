@@ -1,6 +1,8 @@
 package model;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import id.ac.ui.cs.advprog.adproggameshop.model.Review;
 import org.junit.jupiter.api.Test;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
@@ -26,6 +28,15 @@ public class GameTest {
         assertEquals(quantity, game.getQuantity());
         assertEquals(category, game.getCategory());
         assertEquals(owner, game.getOwner());
+    }
+
+    @Test
+    public void testGameDescription() {
+        Game game = new Game();
+
+        game.setDescription("Game from Hell");
+
+        assertEquals("Game from Hell", game.getDescription());
     }
 
 
