@@ -154,6 +154,32 @@
                 background-position: 0% 50%;
             }
         }
+        .card .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .card .button-container .btn {
+            flex: 1;
+            margin-right: 10px;
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .card .button-container .btn:last-child {
+            margin-right: 0;
+        }
+
+        .card .button-container .add-to-cart-btn {
+            background-color: #28a745;
+        }
+
+        .card .button-container .view-details-btn {
+            background-color: #17a2b8;
+        }
     </style>
 </head>
 <body>
@@ -170,17 +196,20 @@
     </div>
     <div class="card-container">
         <div class="card" th:each="game: ${games}">
-            <h3 th:text="${game.name}" th:attr="data-game-id=${game.productId}"></h3>
+            <h3 th:text="${game.name}" th:attr="data-game-id=${game.productId}">Game Name</h3>
             <p>Quantity: <span th:text="${game.quantity}"></span></p>
             <p>Price: <span th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></span></p>
             <p>Category: <span th:text="${game.category}"></span></p>
             <p>Seller: <span th:text="${game.ownerUsername}"></span></p>
-            <th:block th:if="${game.quantity > 0}">
-            <form th:action="@{/add-to-cart}" method="post">
-                <input type="hidden" name="gameId" th:value="${game.productId}" />
-                <button type="submit" class="btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
-            </form>
-            </th:block>
+            <div class="button-container">
+                <th:block th:if="${game.quantity > 0}">
+                    <form th:action="@{/add-to-cart}" method="post" class="d-inline">
+                        <input type="hidden" name="gameId" th:value="${game.productId}" />
+                        <button type="submit" class="btn add-to-cart-btn"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                    </form>
+                </th:block>
+                <a th:href="@{/game/{gameId}(gameId=${game.productId})}" class="btn view-details-btn"><i class="fas fa-info-circle"></i> View Details</a>
+            </div>
         </div>
     </div>
     <a href="/personal-page" class="back-link"><i class="fas fa-arrow-left"></i> Back</a>

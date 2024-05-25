@@ -1,10 +1,15 @@
 package id.ac.ui.cs.advprog.adproggameshop.service;
 
+import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.Review;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
+import id.ac.ui.cs.advprog.adproggameshop.repository.ReviewRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
+import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import jakarta.transaction.Transactional;
@@ -12,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GameServiceImpl implements GameService {
@@ -26,6 +32,9 @@ public class GameServiceImpl implements GameService {
     
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Override
     public Game save(Game game){
@@ -87,6 +96,24 @@ public class GameServiceImpl implements GameService {
         return result;
     }
 
+    @Override @Transactional
+    public ShoppingCart cartBuyGames(ShoppingCart shoppingCart, User buyer) {
+        CartBuy cartBuyer = new CartBuy();
+        Map<Game, Integer> items = shoppingCart.getItems();
+        if (shoppingCart.calculateTotal() > buyer.getBalance()) {
+            throw new InsufficientFundsException(shoppingCart.calculateTotal(), buyer.getBalance());
+        }
+        for (Map.Entry<Game, Integer> entry: items.entrySet()) {
+            cartBuyer.buyGame(entry.getKey(), buyer, entry.getValue());
+            gameRepository.save(cartBuyer.getGame());
+            userRepository.save(cartBuyer.getSeller());
+            userRepository.save(cartBuyer.getBuyer());
+            transactionRepository.save(cartBuyer.createTransactionRecord());
+        }
+        shoppingCart.getItems().clear();
+        return shoppingCart;
+    }
+
 
     @Override
     public GameRepository getGameRepository() {
@@ -100,5 +127,15 @@ public class GameServiceImpl implements GameService {
     @Override @Transactional
     public Game findByProductId(Long productId) {
         return gameRepository.findByProductId(productId);
+    }
+
+    @Override
+    public List<Review> getReviewsByGame(Game game) {
+        return reviewRepository.findByGame(game);
+    }
+
+    @Override
+    public void saveReview(Review review) {
+        reviewRepository.save(review);
     }
 }

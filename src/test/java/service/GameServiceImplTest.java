@@ -5,9 +5,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
+import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
+import id.ac.ui.cs.advprog.adproggameshop.exception.NotEnoughLeftException;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
+import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
@@ -34,7 +38,7 @@ public class GameServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
-    private GameBuyer gameBuyer;
+    private CartBuy gameBuyer;
 
     @Mock
     private TransactionRepository transactionRepository;
@@ -162,65 +166,98 @@ public class GameServiceImplTest {
     }
 
     @Test
-    public void testOneClickBuyGameValid() {
+    public void testBuyOneGameWithGameBuyer() {
         Game game1 = games.get(1);
-        assertEquals(seller, game1.getOwner());
-
-        OneClickBuy oneClickBuy = new OneClickBuy();
-
-        Game resultGame = oneClickBuy.buyGame(game1, buyer, 1);;
-
-        assertEquals(game1, resultGame);
-        assertEquals(game1, oneClickBuy.getGame());
-        assertEquals(399, oneClickBuy.getGame().getQuantity());
-        assertEquals(buyer, oneClickBuy.getBuyer());
-        assertEquals(970, oneClickBuy.getBuyer().getBalance());
-        assertEquals(seller, oneClickBuy.getSeller());
-        assertEquals(530, oneClickBuy.getSeller().getBalance());
-    }
-
-    @Test
-    public void testOneClickBuyGameInvalid() {
-        Game game1 = games.get(1);
-        buyer.setBalance(0);
-
-        OneClickBuy oneClickBuy = new OneClickBuy();
-
-        assertThrows(InsufficientFundsException.class,
-                () -> oneClickBuy.buyGame(game1, buyer,1));
-    }
-
-    @Test
-    public void testBuyGameWithGameBuyer() {
-        Game game1 = games.get(1);
-        Game game2 = new Game(game1.getName(), game1.getPrice(), game1.getDescription(), game1.getQuantity()-1, game1.getCategory(), game1.getOwner());
+        Game game1After = new Game(game1.getName(), game1.getPrice(), game1.getDescription(), game1.getQuantity()-1, game1.getCategory(), game1.getOwner());
         User buyer1 = new User(buyer.getUsername(), buyer.getEmail(), buyer.getPassword(),buyer.getBalance()-30, buyer.getBio(), buyer.getProfilePicture(), buyer.is_seller());
         seller.setBalance(seller.getBalance()+30);
 
         when(gameRepository.findByProductId(game1.getProductId())).thenReturn(game1);
-        when(gameBuyer.buyGame(game1, buyer,1)).thenReturn(game2);
-        when(gameBuyer.getGame()).thenReturn(game2);
+        when(gameBuyer.buyGame(game1, buyer,1)).thenReturn(game1After);
+        when(gameBuyer.getGame()).thenReturn(game1After);
         when(gameBuyer.getSeller()).thenReturn(seller);
         when(gameBuyer.getBuyer()).thenReturn(buyer1);
-        Transaction transaction = new Transaction(buyer1, seller, game2.getName(), new Date(), 1, game2.getPrice());
+        Transaction transaction = new Transaction(buyer1, seller, game1After.getName(), new Date(), 1, game1After.getPrice());
         when(gameBuyer.createTransactionRecord()).thenReturn(transaction);
-        when(gameRepository.save(game2)).thenReturn(game2);
+        when(gameRepository.save(game1After)).thenReturn(game1After);
 
         Game resultGame = gameService.buyGame(game1.getProductId(), buyer, 1, gameBuyer);
 
 
 
-        assertEquals(game2, resultGame);
+        assertEquals(game1After, resultGame);
         verify(gameRepository, times(1)).findByProductId(game1.getProductId());
         verify(gameBuyer, times(1)).buyGame(game1,buyer,1);
         verify(gameBuyer, times(1)).getGame();
         verify(gameBuyer, times(1)).getBuyer();
         verify(gameBuyer, times(1)).getSeller();
         verify(gameBuyer, times(1)).createTransactionRecord();
-        verify(gameRepository, times(1)).save(game2);
+        verify(gameRepository, times(1)).save(game1After);
         verify(userRepository, times(1)).save(seller);
         verify(userRepository, times(1)).save(buyer1);
         verify(transactionRepository, times(1)).save(transaction);
+    }
+
+    @Test
+    public void testBuyOneGameWithCartBuyGames() {
+        Game game1 = games.get(1);
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.addItem(game1, 1);
+
+        System.out.println(game1);
+        when(gameRepository.save(game1)).thenReturn(game1);
+
+        ShoppingCart resultShoppingCart = gameService.cartBuyGames(shoppingCart, buyer);
+
+
+        assertTrue(resultShoppingCart.getItems().isEmpty());
+        verify(gameRepository, times(1)).save(argThat(
+                game -> game.getQuantity() == 399
+        ));
+        verify(userRepository, times(1)).save(argThat(
+                seller -> seller.getBalance() == 530 && seller.getUserId().equals(this.seller.getUserId())
+        ));
+        verify(userRepository, times(1)).save(argThat(
+                buyer -> buyer.getBalance() == 970 && buyer.getUserId().equals(this.buyer.getUserId())
+        ));
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testBuyMultipleGameWithCartBuyGames() {
+        Game game1 = games.get(1);
+        Game game2 = games.getFirst();
+        User seller2 = new User();
+        seller2.setBalance(60);
+        seller2.setUserId(3L);
+        game2.setOwner(seller2);
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.addItem(game1, 3);
+        shoppingCart.addItem(game2, 5);
+
+        System.out.println(game1);
+        when(gameRepository.save(game1)).thenReturn(game1);
+        when(gameRepository.save(game2)).thenReturn(game2);
+        ShoppingCart resultShoppingCart = gameService.cartBuyGames(shoppingCart, buyer);
+
+
+        assertTrue(resultShoppingCart.getItems().isEmpty());
+        verify(gameRepository, times(1)).save(argThat(
+                gameOne -> gameOne.getQuantity() == 397
+        ));
+        verify(gameRepository, times(1)).save(argThat(
+                gameTwo -> gameTwo.getQuantity() == 15
+        ));
+        verify(userRepository, times(1)).save(argThat(
+                seller -> seller.getBalance() == 590 && this.seller.getUserId().equals(seller.getUserId())
+        ));
+        verify(userRepository, times(1)).save(argThat(
+                sellerTwo -> sellerTwo.getBalance() == 360 && sellerTwo.getUserId().equals(seller2.getUserId())
+        ));
+        verify(userRepository, times(2)).save(argThat(
+                buyer -> buyer.getBalance() == 610 && buyer.getUserId().equals(this.buyer.getUserId())
+        ));
+        verify(transactionRepository, times(2)).save(any(Transaction.class));
     }
 
     @Test
