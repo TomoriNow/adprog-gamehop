@@ -8,7 +8,7 @@
 </head>
 <body class="personal-page">
 <div class="container">
-    <h1>Welcome to your Personal Page, <span th:text="${authenticated.username}"></span>!</h1>
+    <h1>Welcome to your Personal Page, <span th:text="${authenticated.username}">User</span>!</h1>
     <p>Balance: <span th:text="${#numbers.formatDecimal(authenticated.balance, 0, 'COMMA', 2, 'POINT')}"></span></p>
     <div class="button-container">
         <a href="/logout" class="btn logout-btn"><i class="fas fa-sign-out-alt"></i>Logout</a>

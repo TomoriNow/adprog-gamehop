@@ -215,10 +215,10 @@ public class GameServiceImplTest {
                 game -> game.getQuantity() == 399
         ));
         verify(userRepository, times(1)).save(argThat(
-                seller -> seller.getBalance() == 530 && seller.getUserId().equals(this.seller.getUserId())
+                tempSeller -> seller.getBalance() == 530 && tempSeller.getUserId().equals(seller.getUserId())
         ));
         verify(userRepository, times(1)).save(argThat(
-                buyer -> buyer.getBalance() == 970 && buyer.getUserId().equals(this.buyer.getUserId())
+                tempBuyer -> tempBuyer.getBalance() == 970 && tempBuyer.getUserId().equals(buyer.getUserId())
         ));
         verify(transactionRepository, times(1)).save(any(Transaction.class));
     }
@@ -249,13 +249,13 @@ public class GameServiceImplTest {
                 gameTwo -> gameTwo.getQuantity() == 15
         ));
         verify(userRepository, times(1)).save(argThat(
-                seller -> seller.getBalance() == 590 && this.seller.getUserId().equals(seller.getUserId())
+                sellerOne -> sellerOne.getBalance() == 590 && seller.getUserId().equals(sellerOne.getUserId())
         ));
         verify(userRepository, times(1)).save(argThat(
                 sellerTwo -> sellerTwo.getBalance() == 360 && sellerTwo.getUserId().equals(seller2.getUserId())
         ));
         verify(userRepository, times(2)).save(argThat(
-                buyer -> buyer.getBalance() == 610 && buyer.getUserId().equals(this.buyer.getUserId())
+                tempBuyer -> tempBuyer.getBalance() == 610 && tempBuyer.getUserId().equals(buyer.getUserId())
         ));
         verify(transactionRepository, times(2)).save(any(Transaction.class));
     }
@@ -266,11 +266,11 @@ public class GameServiceImplTest {
                 new GameDTO(1L, "Game1", 19.99, 10, "Category1", 1L, "User1"),
                 new GameDTO(2L, "Game2", 29.99, 5, "Category1", 2L, "User2")));
 
-        List<GameDTO> games = gameService.findAllByCategory("Category1");
+        List<GameDTO> games1 = gameService.findAllByCategory("Category1");
 
-        assertEquals(2, games.size());
-        assertEquals("Game1", games.get(0).getName());
-        assertEquals("Game2", games.get(1).getName());
+        assertEquals(2, games1.size());
+        assertEquals("Game1", games1.get(0).getName());
+        assertEquals("Game2", games1.get(1).getName());
     }
 }
 

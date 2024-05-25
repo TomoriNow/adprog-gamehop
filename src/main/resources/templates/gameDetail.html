@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Game Detail</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -134,7 +134,7 @@
 </head>
 <body>
 <div class="container">
-    <h1 th:text="${game.name}"></h1>
+    <h1 th:text="${game.name}">Game Name</h1>
     <p><strong>Description:</strong> <span th:text="${game.description}"></span></p>
     <p><strong>Price:</strong> <span th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></span></p>
     <p><strong>Quantity:</strong> <span th:text="${game.quantity}"></span></p>

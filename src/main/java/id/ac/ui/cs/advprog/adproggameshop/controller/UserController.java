@@ -1,36 +1,24 @@
 package id.ac.ui.cs.advprog.adproggameshop.controller;
 
 
-import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
-import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
-import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
-import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.*;
 import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
-import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
-import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Map;
 @Controller
 public class UserController {
@@ -42,6 +30,13 @@ public class UserController {
 
     @Autowired
     private GameServiceImpl gameService;
+
+    private final String GAMES_SESSION = "games";
+    private final String USER_LOGIN_SESSION = "userLogin";
+    private final String ERROR_PAGE = "error_page";
+    private final String REDIRECT_LOGIN = "redirect:/login";
+    private final String CART_SUFFIX = "cart_";
+    private final String REDIRECT_PERSONAL_PAGE = "redirect:/personal-page";
 
     @GetMapping("/register")
     public String getRegisterPage(Model model) {
@@ -63,7 +58,7 @@ public class UserController {
                 .isSeller(false)
                 .build();
         registeredUser = userService.registerUser(registeredUser);
-        return registeredUser == null ? "error_page" : "redirect:/login";
+        return registeredUser == null ? ERROR_PAGE : REDIRECT_LOGIN;
     }
 
     @PostMapping("/login")
@@ -71,14 +66,14 @@ public class UserController {
         System.out.println("Login request: " + user);
         User authenticated = userService.authenticate(user.getUsername(), user.getPassword());
         if (authenticated != null) {
-            model.addAttribute("userLogin", authenticated.getUsername());
-            session.setAttribute("userLogin", authenticated);
+            model.addAttribute(USER_LOGIN_SESSION, authenticated.getUsername());
+            session.setAttribute(USER_LOGIN_SESSION, authenticated);
             ShoppingCart cart = new ShoppingCart();
-            session.setAttribute("cart_" + authenticated.getUserId(), cart);
+            session.setAttribute(CART_SUFFIX + authenticated.getUserId(), cart);
 
-            return "redirect:/personal-page";
+            return REDIRECT_PERSONAL_PAGE;
         } else {
-            return "error_page";
+            return ERROR_PAGE;
         }
     }
 
@@ -86,21 +81,21 @@ public class UserController {
 
     @GetMapping("/personal-page")
     public  String personalPage(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         model.addAttribute("authenticated", user);
         return "personal_page";
     }
 
     @GetMapping("/profile-page")
     public  String profilePage(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         model.addAttribute("authenticated", user);
         return "profile_page";
     }
 
     @GetMapping("/edit-profile")
     public String editProfilePage(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         model.addAttribute("user", user);
         return "edit_profile";
     }
@@ -108,20 +103,20 @@ public class UserController {
     @PostMapping("/edit-profile")
     public String editProfile(@ModelAttribute User user, HttpSession session) {
         userService.save(user);
-        session.setAttribute("userLogin", user);
-        return "redirect:/personal-page";
+        session.setAttribute(USER_LOGIN_SESSION, user);
+        return REDIRECT_PERSONAL_PAGE;
     }
 
     @GetMapping("/profile/{userId}")
     public String getProfilePage(@PathVariable Long userId, Model model) {
         User user = userService.findUserById(userId);
         if (user == null) {
-            return "error_page";
+            return ERROR_PAGE;
         }
 
         if (user.is_seller()) {
             List<GameDTO> games = gameService.findAllByOwner(user);
-            model.addAttribute("games", games);
+            model.addAttribute(GAMES_SESSION, games);
             model.addAttribute("user", user);
             return "other_user_profile";
         }
@@ -136,15 +131,15 @@ public class UserController {
         if (session != null) {
             session.invalidate();
         }
-        return "redirect:/login";
+        return REDIRECT_LOGIN;
     }
 
     @PostMapping("/change-role-seller")
     public String changeRoleSeller(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         user.set_seller(true);
         userService.save(user);
-        return "redirect:/personal-page";
+        return REDIRECT_PERSONAL_PAGE;
     }
 
     @GetMapping("/topUp")
@@ -154,9 +149,9 @@ public class UserController {
 
     @PostMapping("/topUp")
     public String submitInteger(@RequestParam("topUpAmount") int topUpAmount, HttpSession session) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         userService.topUp(user, topUpAmount);
-        return "redirect:/personal-page";
+        return REDIRECT_PERSONAL_PAGE;
     }
 
     @GetMapping("/listUsers")
@@ -167,7 +162,7 @@ public class UserController {
 
     @GetMapping("/transaction-history")
     public String transactionHistory(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         List<TransactionDTO> transactions = transactionService.findAllByBuyerOrSeller(user, user);
         transactions.sort(Comparator.comparing(TransactionDTO::getTransactionId).reversed());
         model.addAttribute("user", user);
@@ -178,21 +173,21 @@ public class UserController {
     @GetMapping("/extract")
     public String extractGameData(Model model) {
         List<Game> games = gameService.extractGameData();
-        model.addAttribute("games", games);
+        model.addAttribute(GAMES_SESSION, games);
         return "gameList";
     }
 
     @GetMapping("/shopping-cart")
     public String viewShoppingCart(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         if (user == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
-        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+        ShoppingCart cart = (ShoppingCart) session.getAttribute(CART_SUFFIX + user.getUserId());
         if (cart == null) {
             cart = new ShoppingCart();
-            session.setAttribute("cart_" + user.getUserId(), cart);
+            session.setAttribute(CART_SUFFIX + user.getUserId(), cart);
         }
 
         System.out.println("Cart contents:");
@@ -210,12 +205,12 @@ public class UserController {
 
     @PostMapping("/shopping-cart/delete")
     public String deleteFromCart(@RequestParam Long gameId, HttpSession session) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         if (user == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
-        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+        ShoppingCart cart = (ShoppingCart) session.getAttribute(CART_SUFFIX + user.getUserId());
         if (cart != null) {
             Game game = gameService.findByProductId(gameId);
             if (game != null) {
@@ -227,17 +222,17 @@ public class UserController {
 
     @PostMapping("/add-to-cart")
     public String addToCart(@RequestParam Long gameId, HttpSession session) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         if (user == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
         Game game = gameService.findByProductId(gameId);
-        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + user.getUserId());
+        ShoppingCart cart = (ShoppingCart) session.getAttribute(CART_SUFFIX + user.getUserId());
 
         if (cart == null) {
             cart = new ShoppingCart();
-            session.setAttribute("cart_" + user.getUserId(), cart);
+            session.setAttribute(CART_SUFFIX + user.getUserId(), cart);
         }
 
         cart.addItem(game, 1);
@@ -246,15 +241,15 @@ public class UserController {
     }
     @PostMapping("/shopping-cart/buy")
     public String buyFromCart(HttpSession session, Model model) {
-        User buyer = (User) session.getAttribute("userLogin");
+        User buyer = (User) session.getAttribute(USER_LOGIN_SESSION);
         if (buyer == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
 
-        ShoppingCart cart = (ShoppingCart) session.getAttribute("cart_" + buyer.getUserId());
+        ShoppingCart cart = (ShoppingCart) session.getAttribute(CART_SUFFIX + buyer.getUserId());
         if (cart == null) {
             cart = new ShoppingCart();
-            session.setAttribute("cart_" + buyer.getUserId(), cart);
+            session.setAttribute(CART_SUFFIX + buyer.getUserId(), cart);
         } else {
             try {
                 gameService.cartBuyGames(cart, buyer);
@@ -263,7 +258,7 @@ public class UserController {
                 model.addAttribute("error_message", error.getMessage());
                 return "error_page1";
             }
-        };
+        }
         return "redirect:/shopping-cart";
     }
 

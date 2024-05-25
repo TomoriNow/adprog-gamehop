@@ -155,7 +155,7 @@
         <div class="profile-header">
             <img id="profileImage" th:src="${user.profilePicture}" alt="Profile Picture">
             <div>
-                <h2 class="text-white"><span th:text="${user.username}"></span></h2>
+                <h2 class="text-white"><span th:text="${user.username}">Other User</span></h2>
                 <p class="small mb-0" th:if="${not user.is_seller}">
                     <i class="fas fa-user mr-2"></i>Buyer
                 </p>
