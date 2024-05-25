@@ -707,11 +707,12 @@ p {
     }
 
     I apologize for the confusion. If you already have styling applied to the shopping cart page, you can merge the new styles with your existing styles to maintain consistency across the pages.
-    Here's an updated version of the style.css file that includes the styles for the personal game list page and adjusts the shopping cart page styles to match:
-cssCopy code/* ... (previous styles) ... */
+    Here
+
+'s an updated version of the style.css file that includes the styles for the personal game list page and adjusts the shopping cart page styles to match: cssCopy code /* ... (previous styles) ... */
 
     /* Styles for the personal game list page */
-.personal-game-list-page {
+. personal-game-list-page {
     font-family: 'Poppins', sans-serif;
     color: #fff;
     background: linear-gradient(135deg, #9b59b6, #3498db);
@@ -784,6 +785,7 @@ cssCopy code/* ... (previous styles) ... */
     }
 
     /* Adjust the existing shopping cart page styles */
+
     .shopping-cart-page {
         font-family: 'Poppins', sans-serif;
         color: #fff;
@@ -862,6 +864,7 @@ cssCopy code/* ... (previous styles) ... */
             background-position: 0% 50%;
         }
     }
+
     .card .button-container {
         display: flex;
         justify-content: space-between;
@@ -877,3 +880,4 @@ cssCopy code/* ... (previous styles) ... */
         text-align: center;
     }
 }
+
