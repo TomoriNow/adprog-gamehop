@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.Review;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
@@ -36,5 +37,8 @@ public interface GameService {
     Game findByProductId(Long productId);
 
     List<Review> getReviewsByGame(Game game);
+  
     void saveReview(Review review);
+
+    ShoppingCart cartBuyGames(ShoppingCart shoppingCart, User buyer);
 }

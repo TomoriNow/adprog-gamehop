@@ -36,7 +36,7 @@ public class User {
     private byte[] profilePicture;
 
     @Column(name = "is_seller")
-    private boolean is_seller;
+    private boolean isSeller;
 
     @Override
     public boolean equals(Object o) {
@@ -72,16 +72,16 @@ public class User {
         this.email = email;
         this.password = password;
         this.balance = 0;
-        this.is_seller = false;
+        this.isSeller = false;
     }
 
-    public User(String username, String email, String password, double balance, String bio, byte[] profilePicture, boolean is_seller) {
+    public User(String username, String email, String password, double balance, String bio, byte[] profilePicture, boolean isSeller) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.balance = balance;
         this.bio = bio;
         this.profilePicture = profilePicture;
-        this.is_seller = is_seller;
+        this.isSeller = isSeller;
     }
 }

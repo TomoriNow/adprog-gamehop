@@ -13,22 +13,22 @@ import lombok.Setter;
 @Getter @Setter
 public class GameForm {
 
-    @NotNull
-    @Size(min=1, max = 50)
+    @NotNull(message = "Name can not be null")
+    @Size(min=1, max = 50, message = "Name must be between 1 and 50 characters long")
     private String name;
 
-    @NotNull
-    @Min(1)
+    @NotNull(message = "Quantity can not be null")
+    @Min(value = 1, message = "You can not add a game that is already out of stock")
     private int quantity;
 
-    @NotNull
-    @DecimalMin("0.01")
+    @NotNull(message = "Price can not be null")
+    @DecimalMin(value = "0.01", message = "You can not add a game that costs less than $0.01")
     private double price;
 
-    @Size(min=0, max = 400)
+    @Size(min=0, max = 400, message = "The description can be no longer than 400 characters")
     private String description;
 
-    @NotNull
+    @NotNull(message = "Category can not be null")
     private String category;
 
     private User owner;

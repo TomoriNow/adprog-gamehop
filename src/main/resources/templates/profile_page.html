@@ -88,10 +88,10 @@
 
                         <div class="media-body mb-5 text-white">
                             <h4 class="mt-0 mb-0"><span th:text="${authenticated.username}"></span></h4>
-                            <p class="small mb-4" th:if="${not authenticated.is_seller}">
+                            <p class="small mb-4" th:if="${not authenticated.isSeller}">
                                 <i class="fas fa-map-marker-alt mr-2"></i>Buyer
                             </p>
-                            <p class="small mb-4" th:if="${authenticated.is_seller}">
+                            <p class="small mb-4" th:if="${authenticated.isSeller}">
                                 <i class="fas fa-map-marker-alt mr-2"></i>Seller
                             </p>
                         </div>
@@ -105,7 +105,7 @@
                             </form>
                         </div>
                         <div class="col">
-                            <form th:if="${not authenticated.is_seller}" th:action="@{/change-role-seller}" method="post">
+                            <form th:if="${not authenticated.isSeller}" th:action="@{/change-role-seller}" method="post">
                                 <button type="submit" class="btn btn-outline-dark btn-sm btn-block"><i class="fas fa-user-shield"></i>Change Role To Seller</button>
                             </form>
                         </div>
