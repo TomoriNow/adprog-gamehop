@@ -117,6 +117,8 @@ public class UserController {
             }
         }
         userService.save(user);
+        User currentUser = (User) session.getAttribute(USER_LOGIN_SESSION);
+        user.setSeller(currentUser.isSeller());
         session.setAttribute(USER_LOGIN_SESSION, user);
         return REDIRECT_PERSONAL_PAGE;
     }
