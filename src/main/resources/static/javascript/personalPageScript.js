@@ -4,7 +4,7 @@ const gameListPersonalImage = document.getElementById("gameListPersonalImage");
 // Add an event listener to the window's load event
 window.addEventListener("load", function() {
     // Check if the user is authenticated and is a seller
-    if (authenticated && authenticated.is_seller) {
+    if (authenticated && authenticated.isSeller) {
         // Show the image
         gameListPersonalImage.style.display = "block";
     }

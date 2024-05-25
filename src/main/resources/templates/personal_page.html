@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Page</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +25,7 @@
     <img id="profile-pageImage" class="image" src="/assets/PROFILEPAGE.webp" draggable="false" title="Profile Page"/>
 
     <img th:if="${authenticated.is_seller}" id="gameListPersonalImage" class="image" src="/assets/PERSONALGAMELIST.webp" draggable="false" title="Game List Personal"/>
+
 
     <img id="gameListImage" class="image" src="/assets/GAMELIST.webp" draggable="false"  title="Game List Personal"/>
 
@@ -50,5 +52,6 @@
 </div>
 
 <script src="/javascript/personalPageScript.js"></script>
+
 </body>
 </html>

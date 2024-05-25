@@ -106,7 +106,7 @@ public class GameControllerTest {
         String viewName = gameController.addGamePost(gameForm, new BeanPropertyBindingResult(gameForm, "gameForm"), session, model);
 
         verify(gameService, times(1)).saveWithOwner(any(Game.class), eq(user));
-        assertEquals("redirect:/personal-page", viewName);
+        assertEquals("redirect:list/personal", viewName);
     }
 
     @Test

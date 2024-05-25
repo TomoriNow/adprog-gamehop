@@ -1,17 +1,19 @@
 package controller;
 
 import id.ac.ui.cs.advprog.adproggameshop.controller.UserController;
+import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -152,7 +154,7 @@ class UserControllerTest {
         String viewName = userController.changeRoleSeller(session, model);
 
         assertEquals("redirect:/personal-page", viewName);
-        assertTrue(user.is_seller());
+        assertTrue(user.isSeller());
         verify(userService).save(user);
     }
 
@@ -188,5 +190,227 @@ class UserControllerTest {
 
         assertEquals("transactionHistory", viewName);
         verify(model).addAttribute("transactions", transactions);
+    }
+
+    @Test
+    void testViewShoppingCart_ValidUser_ReturnsShoppingCartView() {
+        User user = new User();
+        ShoppingCart cart = new ShoppingCart();
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("shoppingCart", viewName);
+        verify(model).addAttribute("cart", cart.getItems());
+        verify(model).addAttribute("total", cart.calculateTotal());
+        verify(model).addAttribute("gameService", gameService);
+    }
+
+    @Test
+    void testViewShoppingCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+    @Test
+    void testDeleteFromCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+
+    @Test
+    void testAddToCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+    @Test
+    void testBuyFromCart_ValidUser_BuysGamesFromCart() {
+        User buyer = new User();
+        ShoppingCart cart = new ShoppingCart();
+        when(session.getAttribute("userLogin")).thenReturn(buyer);
+        when(session.getAttribute("cart_" + buyer.getUserId())).thenReturn(cart);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(gameService).cartBuyGames(cart, buyer);
+    }
+
+    @Test
+    void testBuyFromCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+    @Test
+    void testBuyFromCart_RuntimeExceptionThrown_ReturnsErrorPage() {
+        User buyer = new User();
+        ShoppingCart cart = new ShoppingCart();
+        when(session.getAttribute("userLogin")).thenReturn(buyer);
+        when(session.getAttribute("cart_" + buyer.getUserId())).thenReturn(cart);
+        String errorMessage = "Insufficient funds";
+        doThrow(new RuntimeException(errorMessage)).when(gameService).cartBuyGames(cart, buyer);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("error_page1", viewName);
+        assertTrue(cart.getItems().isEmpty());
+        verify(model).addAttribute("error_message", errorMessage);
+    }
+
+    @Test
+    void testAddToCart_ValidUser_AddsGameToCart() {
+        User user = new User();
+        user.setUserId(1L);
+        Game game = new Game();
+        game.setProductId(1L); // Set the productId property of the game
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/game/list", viewName);
+        ArgumentCaptor<ShoppingCart> cartCaptor = ArgumentCaptor.forClass(ShoppingCart.class);
+        verify(session).setAttribute(eq("cart_" + user.getUserId()), cartCaptor.capture());
+        ShoppingCart capturedCart = cartCaptor.getValue();
+        assertEquals(1, capturedCart.getItems().size());
+        assertTrue(capturedCart.getItems().containsKey(game));
+        verify(gameService).findByProductId(1L);
+    }
+
+    @Test
+    void testDeleteFromCart_ValidUser_DeletesGameFromCart() {
+        User user = new User();
+        user.setUserId(1L);
+        ShoppingCart cart = mock(ShoppingCart.class); // Mock the ShoppingCart object
+        Game game = new Game();
+        game.setProductId(1L); // Set the productId property of the game
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(cart).removeItem(game);
+        verify(gameService).findByProductId(1L);
+    }
+    @Test
+    void testViewShoppingCart_CartNull_CreatesNewCart() {
+        User user = new User();
+        user.setUserId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(null);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("shoppingCart", viewName);
+        verify(session).setAttribute(eq("cart_" + user.getUserId()), any(ShoppingCart.class));
+    }
+
+    @Test
+    void testViewShoppingCart_CartNotEmpty_PrintsCartItems() {
+        User user = new User();
+        user.setUserId(1L);
+        ShoppingCart cart = new ShoppingCart();
+        Game game = new Game();
+        game.setProductId(1L);
+        game.setName("Test Game");
+        cart.addItem(game, 1);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("shoppingCart", viewName);
+    }
+
+    @Test
+    void testDeleteFromCart_CartNull_SkipsDeletion() {
+        User user = new User();
+        user.setUserId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(null);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(gameService, never()).findByProductId(anyLong());
+    }
+
+    @Test
+    void testDeleteFromCart_GameNull_SkipsDeletion() {
+        User user = new User();
+        user.setUserId(1L);
+        ShoppingCart cart = mock(ShoppingCart.class);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+        when(gameService.findByProductId(1L)).thenReturn(null);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(cart, never()).removeItem(any(Game.class));
+    }
+
+    @Test
+    void testAddToCart_CartNull_CreatesNewCart() {
+        User user = new User();
+        user.setUserId(1L);
+        Game game = new Game();
+        game.setProductId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(null);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/game/list", viewName);
+        verify(session).setAttribute(eq("cart_" + user.getUserId()), any(ShoppingCart.class));
+    }
+
+    @Test
+    void testBuyFromCart_CartNull_CreatesNewCart() {
+        User buyer = new User();
+        buyer.setUserId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(buyer);
+        when(session.getAttribute("cart_" + buyer.getUserId())).thenReturn(null);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(session).setAttribute(eq("cart_" + buyer.getUserId()), any(ShoppingCart.class));
+    }
+    @Test
+    void testAddToCart_CartNotNull_AddsGameToExistingCart() {
+        User user = new User();
+        user.setUserId(1L);
+        Game game = new Game();
+        game.setProductId(1L);
+        ShoppingCart cart = mock(ShoppingCart.class);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/game/list", viewName);
+        verify(session, never()).setAttribute(eq("cart_" + user.getUserId()), any(ShoppingCart.class));
+        verify(cart).addItem(eq(game), eq(1));
     }
 }

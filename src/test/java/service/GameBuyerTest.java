@@ -4,11 +4,9 @@ import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
 import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
 import id.ac.ui.cs.advprog.adproggameshop.exception.NotEnoughLeftException;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
-import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,12 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameBuyerTest {
@@ -37,13 +33,13 @@ public class GameBuyerTest {
 
         seller = new User();
         seller.setBalance(500);
-        seller.set_seller(true);
+        seller.setSeller(true);
         seller.setUserId(1L);
         seller.setUsername("Seller");
 
         buyer = new User();
         buyer.setBalance(1000);
-        buyer.set_seller(false);
+        buyer.setSeller(false);
         buyer.setUserId(2L);
         buyer.setUsername("Buyer");
 
