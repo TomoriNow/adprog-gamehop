@@ -31,12 +31,12 @@ public class UserController {
     @Autowired
     private GameServiceImpl gameService;
 
-    private final String GAMES_SESSION = "games";
-    private final String USER_LOGIN_SESSION = "userLogin";
-    private final String ERROR_PAGE = "error_page";
-    private final String REDIRECT_LOGIN = "redirect:/login";
-    private final String CART_SUFFIX = "cart_";
-    private final String REDIRECT_PERSONAL_PAGE = "redirect:/personal-page";
+    private final static String GAMES_STRING = "games";
+    private final static String USER_LOGIN_SESSION = "userLogin";
+    private final static String ERROR_PAGE = "error_page";
+    private final static String REDIRECT_LOGIN = "redirect:/login";
+    private final static String CART_SUFFIX = "cart_";
+    private final static String REDIRECT_PERSONAL_PAGE = "redirect:/personal-page";
 
     @GetMapping("/register")
     public String getRegisterPage(Model model) {
@@ -116,7 +116,7 @@ public class UserController {
 
         if (user.isSeller()) {
             List<GameDTO> games = gameService.findAllByOwner(user);
-            model.addAttribute(GAMES_SESSION, games);
+            model.addAttribute(GAMES_STRING, games);
             model.addAttribute("user", user);
             return "other_user_profile";
         }
@@ -173,7 +173,7 @@ public class UserController {
     @GetMapping("/extract")
     public String extractGameData(Model model) {
         List<Game> games = gameService.extractGameData();
-        model.addAttribute(GAMES_SESSION, games);
+        model.addAttribute(GAMES_STRING, games);
         return "gameList";
     }
 
@@ -261,14 +261,6 @@ public class UserController {
         }
         return "redirect:/shopping-cart";
     }
-
-
-
-
-
-
-
-
 }
 
 

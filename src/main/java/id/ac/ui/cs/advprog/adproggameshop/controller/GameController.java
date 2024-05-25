@@ -16,7 +16,6 @@ import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,9 +37,9 @@ public class GameController {
     @Autowired
     public GameRepository gameRepository;
 
-    private final String CATEGORY_SESSION = "categories";
-    private final String GAMES_SESSION = "games";
-    private final String USER_LOGIN_SESSION = "userLogin";
+    private final static String CATEGORIES_STRING = "categories";
+    private final static String GAMES_STRING = "games";
+    private final static String USER_LOGIN_SESSION = "userLogin";
 
 
     @GetMapping("/list")
@@ -49,8 +48,8 @@ public class GameController {
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
                 .toList();
-        model.addAttribute(CATEGORY_SESSION, categories);
-        model.addAttribute(GAMES_SESSION, games);
+        model.addAttribute(CATEGORIES_STRING, categories);
+        model.addAttribute(GAMES_STRING, games);
         return "gameList";
     }
 
@@ -58,7 +57,7 @@ public class GameController {
     public String personalGameListPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         List<GameDTO> games = gameService.findAllByOwner(user);
-        model.addAttribute(GAMES_SESSION, games);
+        model.addAttribute(GAMES_STRING, games);
         return "personalGameList";
     }
 
@@ -112,7 +111,7 @@ public class GameController {
             List<String> categories = Arrays.stream(CategoryEnums.values())
                     .map(CategoryEnums::getLabel)
                     .toList();
-            model.addAttribute(CATEGORY_SESSION, categories);
+            model.addAttribute(CATEGORIES_STRING, categories);
             model.addAttribute("error", "Invalid category: " + category);
             return "error";
         }
@@ -123,8 +122,8 @@ public class GameController {
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
                 .toList();
-        model.addAttribute(CATEGORY_SESSION, categories);
-        model.addAttribute(GAMES_SESSION, games);
+        model.addAttribute(CATEGORIES_STRING, categories);
+        model.addAttribute(GAMES_STRING, games);
         return "gameList";
     }
     @GetMapping("/{gameId}")

@@ -12,6 +12,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.*;
 import id.ac.ui.cs.advprog.adproggameshop.repository.ReviewRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
+import id.ac.ui.cs.advprog.adproggameshop.service.GameDataExtractor;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,9 @@ public class GameServiceImplTest {
 
     @Mock
     private GameRepository gameRepository;
+
+    @Mock
+    GameDataExtractor dataExtractor;
 
     @Mock
     private UserRepository userRepository;
@@ -337,6 +341,78 @@ public class GameServiceImplTest {
         });
 
         verify(reviewRepository, never()).save(any(Review.class));
+    }
+
+    @Test
+    public void testSaveWithOwnerId() {
+        Game game = games.getFirst();
+        when(userRepository.findUserByUserId(buyer.getUserId())).thenReturn(Optional.of(buyer));
+        when(gameRepository.save(game)).thenReturn(game);
+
+        Game game1 = gameService.saveWithOwner(game, buyer.getUserId());
+        assertEquals(buyer, game1.getOwner());
+        assertEquals(buyer, game.getOwner());
+        verify(userRepository, times(1)).findUserByUserId(buyer.getUserId());
+        verify(gameRepository, times(1)).save(game);
+    }
+
+    @Test
+    public void testSaveWithOwner() {
+        Game game = games.getFirst();
+        when(gameRepository.save(game)).thenReturn(game);
+
+        Game game1 = gameService.saveWithOwner(game, buyer);
+        assertEquals(buyer, game1.getOwner());
+        assertEquals(buyer, game.getOwner());
+        verify(gameRepository, times(1)).save(game);
+    }
+
+    @Test
+    public void testFindAllBy() {
+        when(gameRepository.findAllBy()).thenReturn(gameDTOS);
+
+        List<GameDTO> gameDTOResults = gameService.findAllBy();
+
+        assertEquals(gameDTOS, gameDTOResults);
+        assertEquals(gameDTOS.getFirst(),gameDTOResults.getFirst());
+        assertEquals(gameDTOResults.getLast(), gameDTOResults.getLast());
+        verify(gameRepository, times(1)).findAllBy();
+    }
+
+    @Test
+    public void testExtractGameData() {
+        when(dataExtractor.extractData()).thenReturn(games);
+
+        List<Game> gameResults = gameService.extractGameData();
+
+        assertEquals(games, gameResults);
+        assertEquals(games.getFirst(), gameResults.getFirst());
+        assertEquals(games.getLast(), gameResults.getLast());
+        verify(dataExtractor, times(1)).extractData();
+    }
+
+    @Test
+    public void testGetGameRepository() {
+        assertEquals(gameRepository, gameService.getGameRepository());
+    }
+
+    @Test
+    public void testDeleteGameById() {
+        Game game = games.getFirst();
+        gameService.deleteGameById(game.getProductId());
+
+        verify(gameRepository, times(1)).deleteByProductId(game.getProductId());
+    }
+
+    @Test
+    public void testFindByProductId() {
+        Game game = games.getFirst();
+        when(gameRepository.findByProductId(game.getProductId())).thenReturn(game);
+
+        Game gameResult = gameService.findByProductId(game.getProductId());
+
+        assertEquals(game, gameResult);
+        verify(gameRepository, times(1)).findByProductId(game.getProductId());
     }
 }
 

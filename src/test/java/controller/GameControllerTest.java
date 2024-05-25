@@ -3,8 +3,12 @@ package controller;
 
 import id.ac.ui.cs.advprog.adproggameshop.controller.GameController;
 import id.ac.ui.cs.advprog.adproggameshop.enums.CategoryEnums;
+import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
+import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
+import id.ac.ui.cs.advprog.adproggameshop.exception.NotEnoughLeftException;
 import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryFactory;
 import id.ac.ui.cs.advprog.adproggameshop.factory.CategoryHandler;
+import id.ac.ui.cs.advprog.adproggameshop.factory.Ps4GameHandler;
 import id.ac.ui.cs.advprog.adproggameshop.model.Game;
 import id.ac.ui.cs.advprog.adproggameshop.model.Review;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
@@ -19,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -209,4 +214,122 @@ public class GameControllerTest {
         assertEquals("redirect:/game/list", viewName);
     }
 
+    @Test
+    public void testAddGamePostWithInvalidData() {
+        // Mocks
+        GameForm gameForm = new GameForm();
+        BindingResult bindingResult = mock(BindingResult.class);
+        Model model = mock(Model.class);
+
+        // Simulate a POST request with invalid data
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        // Call the method
+        String result = gameController.addGamePost(gameForm, bindingResult, session, model);
+
+        // Verify interactions
+        verify(model, times(1)).addAttribute(eq("categoryOptions"), anyList());
+        assertEquals("addGame", result);
+    }
+
+    @Test
+    public void testBuyGameWithNotExistError() {
+        HttpSession session = new MockHttpSession();
+        User buyer = new User(); // Mock User
+        session.setAttribute("userLogin", buyer);
+        Model model = mock(Model.class);
+
+
+        String gameId = "123";
+        Game game = new Game();
+        game.setProductId(Long.parseLong(gameId));
+        game.setName("Pokemon");
+        when(gameService.buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class)))
+                .thenThrow(new GameDoesNotExistException(game));
+
+        String result = gameController.buyGame(model, session, gameId);
+
+        verify(gameService, times(1)).buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class));
+        verify(model, times(1)).addAttribute("error_message", "The game Pokemon no longer exists");
+        verifyNoMoreInteractions(model);
+        assertEquals("error_page1", result);
+    }
+
+    @Test
+    public void testBuyGameWithInsufficientFundError() {
+        HttpSession session = new MockHttpSession();
+        User buyer = new User(); // Mock User
+        session.setAttribute("userLogin", buyer);
+        Model model = mock(Model.class);
+
+
+        String gameId = "123";
+        Game game = new Game();
+        game.setProductId(Long.parseLong(gameId));
+        game.setName("Pokemon");
+        when(gameService.buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class)))
+                .thenThrow(new InsufficientFundsException(50000, 100));
+
+        String result = gameController.buyGame(model, session, gameId);
+
+        verify(gameService, times(1)).buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class));
+        verify(model, times(1)).addAttribute("error_message",
+                "Insufficient funds to buy the product. \nThe total bill is 50000.0 \nYour Current Balance is 100.0");
+        verifyNoMoreInteractions(model);
+        assertEquals("error_page1", result);
+    }
+
+    @Test
+    public void testBuyGameWithNotEnoughLeftError() {
+        HttpSession session = new MockHttpSession();
+        User buyer = new User(); // Mock User
+        session.setAttribute("userLogin", buyer);
+        Model model = mock(Model.class);
+
+
+        String gameId = "123";
+        Game game = new Game();
+        game.setProductId(Long.parseLong(gameId));
+        game.setName("Pokemon");
+        when(gameService.buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class)))
+                .thenThrow(new NotEnoughLeftException(game));
+
+        String result = gameController.buyGame(model, session, gameId);
+
+        verify(gameService, times(1)).buyGame(anyLong(), eq(buyer), eq(1), any(OneClickBuy.class));
+        verify(model, times(1)).addAttribute("error_message",
+                "We do not have enough copies of the game: Pokemon");
+        verifyNoMoreInteractions(model);
+        assertEquals("error_page1", result);
+    }
+
+    @Test
+    public void testRemoveGame() {
+        HttpSession session = new MockHttpSession();
+        Model model = mock(Model.class);
+
+
+        String gameId = "123";
+
+        String result = gameController.removeGame(model,session, gameId);
+
+        verify(gameService, times(1)).deleteGameById(123L);
+        assertEquals("redirect:list/personal", result);
+    }
+
+    @Test
+    public void testGamesByCategoryWithInvalidCategory() {
+        Model model = mock(Model.class);
+        when(gameService.getGameRepository()).thenReturn(mock(GameRepository.class));
+
+        String invalidCategory = "PS4 Gam";
+
+        String result = gameController.gamesByCategory(invalidCategory, model);
+
+        // Verify interactions
+        verify(model, times(1)).addAttribute(eq("categories"), anyList());
+        verify(model, times(1)).addAttribute("error", "Invalid category: PS4 Gam");
+        verifyNoMoreInteractions(model);
+        assertEquals("error", result);
+    }
 }
