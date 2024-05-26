@@ -9,10 +9,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
-import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameForm;
-import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
+import id.ac.ui.cs.advprog.adproggameshop.utility.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -150,7 +147,7 @@ public class GameController {
             return "error_page";
         }
 
-        List<Review> reviews = gameService.getReviewsByGame(game);
+        List<ReviewDTO> reviews = gameService.getReviewsByGame(game);
 
         if (game.getImage() != null && game.getImage().length > 0) {
             String base64Image = Base64.encodeBase64String(game.getImage());

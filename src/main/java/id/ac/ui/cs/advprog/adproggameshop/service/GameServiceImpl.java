@@ -12,6 +12,7 @@ import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.ReviewDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -130,7 +131,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override @Transactional
-    public List<Review> getReviewsByGame(Game game) {
+    public List<ReviewDTO> getReviewsByGame(Game game) {
         return reviewRepository.findByGame(game);
     }
 
