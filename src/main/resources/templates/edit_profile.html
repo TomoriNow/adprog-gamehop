@@ -189,6 +189,7 @@
     </div>
     <form th:action="@{/edit-profile}" th:object="${user}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{userId}" th:value="${user.userId}" />
+        <input type="hidden" th:field="*{balance}" th:value="${user.balance}" />
         <div class="form-group">
             <input th:field="*{username}" type="text" class="form-control" id="usernameInput" placeholder="Enter username">
             <label for="usernameInput" class="form-label">Username</label>
@@ -200,10 +201,6 @@
         <div class="form-group">
             <input th:field="*{password}" type="password" class="form-control" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" id="passwordInput" placeholder="Enter password" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters">
             <label for="passwordInput" class="form-label">Password</label>
-        </div>
-        <div class="form-group">
-            <input th:field="*{balance}" type="number" class="form-control" id="balanceInput" placeholder="Enter balance">
-            <label for="balanceInput" class="form-label">Balance</label>
         </div>
         <div class="form-group">
             <input th:field="*{bio}" type="text" class="form-control" id="bioInput" placeholder="Enter bio">
