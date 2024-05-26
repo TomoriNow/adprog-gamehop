@@ -18,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -126,9 +129,15 @@ public class UserController {
     @PostMapping("/edit-profile")
     public String editProfile(@ModelAttribute User user, HttpSession session) {
         User currentUser = (User) session.getAttribute(USER_LOGIN_SESSION);
+
         if (user.getProfilePictureFile() != null && !user.getProfilePictureFile().isEmpty()) {
             try {
-                byte[] profilePictureBytes = user.getProfilePictureFile().getBytes();
+                BufferedImage originalImage = ImageIO.read(user.getProfilePictureFile().getInputStream());
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(compressImage(originalImage), "jpg", baos);
+                byte[] profilePictureBytes = baos.toByteArray();
+
                 user.setProfilePicture(profilePictureBytes);
             } catch (IOException e) {
                 return ERROR_PAGE;
@@ -136,13 +145,25 @@ public class UserController {
         } else {
             user.setProfilePicture(currentUser.getProfilePicture());
         }
-        if (user.getPassword() == null || user.getPassword().trim().isEmpty()){
+
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             user.setPassword(currentUser.getPassword());
         }
         user.setSeller(currentUser.isSeller());
+
         userService.save(user);
         session.setAttribute(USER_LOGIN_SESSION, user);
         return REDIRECT_PERSONAL_PAGE;
+    }
+
+    private BufferedImage compressImage(BufferedImage originalImage) {
+        int targetWidth = 200;
+        int targetHeight = 200;
+
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        resizedImage.createGraphics().drawImage(originalImage.getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+
+        return resizedImage;
     }
 
     @GetMapping("/profile/{userId}")
