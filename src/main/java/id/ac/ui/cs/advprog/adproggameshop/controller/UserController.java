@@ -118,6 +118,7 @@ public class UserController {
             String base64Image = Base64.encodeBase64String(user.getProfilePicture());
             model.addAttribute("profilePictureBase64", base64Image);
         }
+        model.addAttribute(FETCHED, fetched);
         model.addAttribute("authenticated", user);
         return "profile_page";
     }
