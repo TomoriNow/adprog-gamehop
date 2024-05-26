@@ -18,6 +18,7 @@ import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameForm;
 import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
+import id.ac.ui.cs.advprog.adproggameshop.utility.ReviewDTO;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -136,9 +137,9 @@ public class GameControllerTest {
         Long gameId = 1L;
         Game game = new Game();
         game.setProductId(gameId);
-        List<Review> reviews = new ArrayList<>();
-        reviews.add(new Review());
-        reviews.add(new Review());
+        List<ReviewDTO> reviews = new ArrayList<>();
+        reviews.add(new ReviewDTO("good", 4, "seller", true));
+        reviews.add(new ReviewDTO("bad", 2, "buyer", false));
         User user = new User();
 
         when(gameService.findByProductId(gameId)).thenReturn(game);

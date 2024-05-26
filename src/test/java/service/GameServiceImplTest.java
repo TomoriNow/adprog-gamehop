@@ -15,6 +15,7 @@ import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameDataExtractor;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.ReviewDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -298,13 +299,13 @@ public class GameServiceImplTest {
     public void testGetReviewsByGame_Happy() {
         Game game = new Game();
         game.setProductId(1L);
-        List<Review> reviews = new ArrayList<>();
-        reviews.add(new Review());
-        reviews.add(new Review());
+        List<ReviewDTO> reviews = new ArrayList<>();
+        reviews.add(new ReviewDTO("good", 4, "seller", true));
+        reviews.add(new ReviewDTO("bad", 2, "buyer", false));
 
         when(reviewRepository.findByGame(game)).thenReturn(reviews);
 
-        List<Review> result = gameService.getReviewsByGame(game);
+        List<ReviewDTO> result = gameService.getReviewsByGame(game);
 
         assertEquals(2, result.size());
         verify(reviewRepository, times(1)).findByGame(game);
@@ -317,7 +318,7 @@ public class GameServiceImplTest {
 
         when(reviewRepository.findByGame(game)).thenReturn(new ArrayList<>());
 
-        List<Review> result = gameService.getReviewsByGame(game);
+        List<ReviewDTO> result = gameService.getReviewsByGame(game);
 
         assertTrue(result.isEmpty());
         verify(reviewRepository, times(1)).findByGame(game);
