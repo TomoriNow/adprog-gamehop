@@ -1,3 +1,6 @@
+# GCP Deployment
+https://certain-tangent-424504-q6.et.r.appspot.com
+
 ### Link to task breakdown
 https://docs.google.com/spreadsheets/d/1mCkTs0jiPI12Wnalc8JaqrErgsx5tal5kHM22KisRgc/edit#gid=0
 
