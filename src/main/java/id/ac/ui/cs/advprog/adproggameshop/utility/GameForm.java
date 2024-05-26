@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter @Setter
 public class GameForm {
@@ -31,9 +32,11 @@ public class GameForm {
     @NotNull(message = "Category can not be null")
     private String category;
 
+    private MultipartFile imageFile;
+
     private User owner;
 
     public Game createGame() {
-        return new Game(name, price, description, quantity, category, owner);
+        return new Game(name, price, description, quantity, category, owner, imageFile);
     }
 }

@@ -129,12 +129,12 @@ public class GameServiceImpl implements GameService {
         return gameRepository.findByProductId(productId);
     }
 
-    @Override
+    @Override @Transactional
     public List<Review> getReviewsByGame(Game game) {
         return reviewRepository.findByGame(game);
     }
 
-    @Override
+    @Override @Transactional
     public void saveReview(Review review) {
         if (review == null) {
             throw new IllegalArgumentException("Review cannot be null");

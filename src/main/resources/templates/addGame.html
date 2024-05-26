@@ -142,7 +142,7 @@
 <body class="add-game-page">
 <div class="container">
     <h1>Create New Product</h1>
-    <form th:action="@{/game/create}" th:object="${gameForm}" method="post">
+    <form th:action="@{/game/create}" th:object="${gameForm}" method="post" enctype="multipart/form-data">
         <div class="form-group row">
             <input th:field="*{name}" type="text" class="form-control col" id="nameInput" placeholder=" " required>
             <label for="nameInput">Enter game's name</label>
@@ -171,6 +171,12 @@
             <label for="categorySelect">Category</label>
             <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error col"></span>
         </div>
+        <div class="form-group row">
+            <input th:field="*{imageFile}" type="file" class="form-control col" id="imageInput" required>
+            <label for="imageInput">Image:</label>
+            <span th:if="${#fields.hasErrors('imageFile')}" th:errors="*{imageFile}" class="error col"></span>
+        </div>
+
         <div class="button-container">
             <button type="submit" class="btn btn-primary">Submit</button>
             <a href="/game/list/personal" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
