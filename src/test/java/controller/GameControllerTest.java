@@ -21,6 +21,7 @@ import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpSession;
@@ -41,8 +42,6 @@ import static org.mockito.Mockito.*;
 
 public class GameControllerTest {
 
-    private GameController gameController;
-
     @Mock
     private GameService gameService;
 
@@ -57,6 +56,9 @@ public class GameControllerTest {
 
     @Mock
     private Model model;
+
+    @InjectMocks
+    private GameController gameController;
 
 
     @BeforeEach
@@ -331,5 +333,25 @@ public class GameControllerTest {
         verify(model, times(1)).addAttribute("error", "Invalid category: PS4 Gam");
         verifyNoMoreInteractions(model);
         assertEquals("error", result);
+    }
+
+    @Test
+    public void testGamesByCategoryWithValidCategory() {
+        // Arrange
+        String validCategory = "PS4 Game";
+        List<GameDTO> games = List.of(new GameDTO(1L, "game", 500.5, 2, "categpry", 11L, "owner")); // Replace with your actual GameDTO instances
+
+        when(gameService.getGameRepository()).thenReturn(gameRepository);
+        when(gameRepository.findAllByCategory(CategoryEnums.PS4.getLabel())).thenReturn(games);
+
+        Model model = mock(Model.class);
+
+        // Act
+        String viewName = gameController.gamesByCategory(validCategory, model);
+
+        // Assert
+        verify(model).addAttribute(eq("categories"), any(List.class));
+        verify(model).addAttribute("games", games);
+        assertEquals("gameList", viewName);
     }
 }

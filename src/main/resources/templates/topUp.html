@@ -6,6 +6,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERd`knLPMO" crossorigin="anonymous">
     <style>
         .top-up-page {
             font-family: 'Poppins', sans-serif;
@@ -27,6 +29,13 @@
         }
 
         .top-up-page h3 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: slide-in-left 1.2s ease;
+        }
+
+        .top-up-page p {
             font-weight: 700;
             margin-bottom: 20px;
             text-align: center;
@@ -113,13 +122,19 @@
 <body class="top-up-page">
 <div class="container">
     <h3>Top Up</h3>
+    <p>Your Current Balance: <span th:text="${#numbers.formatDecimal(userLogin.balance, 0, 'COMMA', 2, 'POINT')}"></span></p>
     <form th:action="@{/topUp}" method="post">
         <div class="form-group">
             <label for="topUpAmount">Enter top up amount:</label>
             <input type="number" id="topUpAmount" name="topUpAmount" required>
         </div>
-        <div class="button-container">
-            <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="button-container row">
+            <div class="col">
+                <button type="submit" class="btn btn-primary btn-block">Submit</button>
+            </div>
+            <div class="col">
+                <a th:href="@{/personal-page}" class="btn btn-primary btn-block"><i class="fas fa-arrow-left"></i> Back</a>
+            </div>
         </div>
     </form>
 </div>

@@ -108,15 +108,21 @@ public class UserController {
 
     @PostMapping("/edit-profile")
     public String editProfile(@ModelAttribute User user, HttpSession session) {
+        User currentUser = (User) session.getAttribute(USER_LOGIN_SESSION);
         if (user.getProfilePictureFile() != null && !user.getProfilePictureFile().isEmpty()) {
             try {
                 byte[] profilePictureBytes = user.getProfilePictureFile().getBytes();
                 user.setProfilePicture(profilePictureBytes);
             } catch (IOException e) {
-                e.printStackTrace();
                 return ERROR_PAGE;
             }
+        } else {
+            user.setProfilePicture(currentUser.getProfilePicture());
         }
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()){
+            user.setPassword(currentUser.getPassword());
+        }
+        user.setSeller(currentUser.isSeller());
         userService.save(user);
         session.setAttribute(USER_LOGIN_SESSION, user);
         return REDIRECT_PERSONAL_PAGE;
@@ -164,6 +170,8 @@ public class UserController {
 
     @GetMapping("/topUp")
     public String topUp(HttpSession session, Model model) {
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
+        model.addAttribute(USER_LOGIN_SESSION, user);
         return "topUp";
     }
 
@@ -218,6 +226,7 @@ public class UserController {
         double total = cart.calculateTotal();
         model.addAttribute("cart", cart.getItems());
         model.addAttribute("total", total);
+        model.addAttribute(USER_LOGIN_SESSION, user);
         model.addAttribute("gameService", gameService);
 
         return "shoppingCart";

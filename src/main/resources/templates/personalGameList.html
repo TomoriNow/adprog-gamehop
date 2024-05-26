@@ -127,7 +127,7 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title" th:text="${game.name}"></h5>
-                    <p class="card-text">Quantity: <span th:text="${game.quantity}"></span></p>
+                    <p class="card-text">Quantity: <span th:text="${#numbers.formatInteger(game.quantity, 0, 'COMMA')}"></span></p>
                     <p class="card-text">Price: <span th:text="${#numbers.formatDecimal(game.price, 0, 'COMMA', 2, 'POINT')}"></span></p>
                     <p class="card-text">Category: <span th:text="${game.category}"></span></p>
                 </div>

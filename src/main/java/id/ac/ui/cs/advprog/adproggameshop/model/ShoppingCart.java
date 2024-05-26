@@ -33,7 +33,13 @@ public class ShoppingCart {
 
 
     public void removeItem(Game game) {
-        items.remove(game);
+        Game foundGame = null;
+        for (Game cartGame: items.keySet()) {
+            if (cartGame.getProductId().equals(game.getProductId())) {
+                foundGame = cartGame;
+            }
+        }
+        items.remove(foundGame);
     }
 
     public double calculateTotal() {
