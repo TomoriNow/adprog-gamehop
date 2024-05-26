@@ -1,6 +1,8 @@
 package controller;
 
 import id.ac.ui.cs.advprog.adproggameshop.controller.UserController;
+import id.ac.ui.cs.advprog.adproggameshop.model.Game;
+import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.service.TransactionServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserServiceImpl;
@@ -8,15 +10,20 @@ import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.TransactionDTO;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserBuilder;
+import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.Model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +53,14 @@ class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
+
+    Long productId = 1L;
+    String name = "Test Game";
+    double price = 49.99;
+    int quantity = 10;
+    String category = "Adventure";
+    Long ownerUserId = 123L;
+    String ownerUsername = "seller123";
 
     @BeforeEach
     void setUp() {
@@ -99,15 +114,81 @@ class UserControllerTest {
 
     @Test
     void testEditProfile() {
+        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
+        currentUser.setSeller(true);
+
+
+        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
         User user = new User("testuser", "test@example.com", "password");
+        user.setBalance(455.5);
+        user.setBio("sample bio");
+        user.setProfilePictureFile(new MockMultipartFile("file", "test.jpg", "image/jpeg", profilePicture));
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("userLogin")).thenReturn(currentUser);
+
 
         String viewName = userController.editProfile(user, session);
 
         assertEquals("redirect:/personal-page", viewName);
+        verify(session, times(1)).getAttribute("userLogin");
         verify(userService).save(user);
         verify(session).setAttribute("userLogin", user);
+        assertEquals(profilePicture, user.getProfilePicture());
+        assertTrue(user.isSeller());
+    }
+
+    @Test
+    void testEditProfileBlankPassword() {
+        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
+        currentUser.setSeller(true);
+
+
+        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
+        User user = new User("testuser", "test@example.com", "");
+        user.setBalance(455.5);
+        user.setBio("sample bio");
+        user.setProfilePictureFile(new MockMultipartFile("file", "test.jpg", "image/jpeg", profilePicture));
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("userLogin")).thenReturn(currentUser);
+
+
+        String viewName = userController.editProfile(user, session);
+
+        assertEquals("redirect:/personal-page", viewName);
+        verify(session, times(1)).getAttribute("userLogin");
+        verify(userService).save(user);
+        verify(session).setAttribute("userLogin", user);
+        assertEquals("currentPassword", user.getPassword());
+        assertEquals(profilePicture, user.getProfilePicture());
+        assertTrue(user.isSeller());
+    }
+
+    @Test
+    void testEditProfileNullProfilePicture() {
+        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
+        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
+        currentUser.setSeller(true);
+        currentUser.setProfilePicture(profilePicture);
+
+
+        User user = new User("testuser", "test@example.com", "password");
+        user.setBalance(455.5);
+        user.setBio("sample bio");
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        when(session.getAttribute("userLogin")).thenReturn(currentUser);
+
+
+        String viewName = userController.editProfile(user, session);
+
+        assertEquals("redirect:/personal-page", viewName);
+        verify(session, times(1)).getAttribute("userLogin");
+        verify(userService).save(user);
+        verify(session).setAttribute("userLogin", user);
+        assertTrue(user.isSeller());
+        assertEquals(profilePicture, user.getProfilePicture());
     }
 
     @Test
@@ -152,7 +233,7 @@ class UserControllerTest {
         String viewName = userController.changeRoleSeller(session, model);
 
         assertEquals("redirect:/personal-page", viewName);
-        assertTrue(user.is_seller());
+        assertTrue(user.isSeller());
         verify(userService).save(user);
     }
 
@@ -188,5 +269,376 @@ class UserControllerTest {
 
         assertEquals("transactionHistory", viewName);
         verify(model).addAttribute("transactions", transactions);
+    }
+
+    @Test
+    void testViewShoppingCart_ValidUser_ReturnsShoppingCartView() {
+        User user = new User();
+        ShoppingCart cart = new ShoppingCart();
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("shoppingCart", viewName);
+        verify(model).addAttribute("cart", cart.getItems());
+        verify(model).addAttribute("total", cart.calculateTotal());
+        verify(model).addAttribute("gameService", gameService);
+    }
+
+    @Test
+    void testViewShoppingCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+    @Test
+    void testDeleteFromCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+
+    @Test
+    void testAddToCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+    @Test
+    void testBuyFromCart_ValidUser_BuysGamesFromCart() {
+        User buyer = new User();
+        ShoppingCart cart = new ShoppingCart();
+        when(session.getAttribute("userLogin")).thenReturn(buyer);
+        when(session.getAttribute("cart_" + buyer.getUserId())).thenReturn(cart);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(gameService).cartBuyGames(cart, buyer);
+    }
+
+    @Test
+    void testBuyFromCart_NullUser_RedirectsToLogin() {
+        when(session.getAttribute("userLogin")).thenReturn(null);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("redirect:/login", viewName);
+    }
+
+    @Test
+    void testBuyFromCart_RuntimeExceptionThrown_ReturnsErrorPage() {
+        User buyer = new User();
+        ShoppingCart cart = new ShoppingCart();
+        when(session.getAttribute("userLogin")).thenReturn(buyer);
+        when(session.getAttribute("cart_" + buyer.getUserId())).thenReturn(cart);
+        String errorMessage = "Insufficient funds";
+        doThrow(new RuntimeException(errorMessage)).when(gameService).cartBuyGames(cart, buyer);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("error_page1", viewName);
+        assertTrue(cart.getItems().isEmpty());
+        verify(model).addAttribute("error_message", errorMessage);
+    }
+
+    @Test
+    void testAddToCart_ValidUser_AddsGameToCart() {
+        User user = new User();
+        user.setUserId(1L);
+        Game game = new Game();
+        game.setProductId(1L); // Set the productId property of the game
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/game/list", viewName);
+        ArgumentCaptor<ShoppingCart> cartCaptor = ArgumentCaptor.forClass(ShoppingCart.class);
+        verify(session).setAttribute(eq("cart_" + user.getUserId()), cartCaptor.capture());
+        ShoppingCart capturedCart = cartCaptor.getValue();
+        assertEquals(1, capturedCart.getItems().size());
+        assertTrue(capturedCart.getItems().containsKey(game));
+        verify(gameService).findByProductId(1L);
+    }
+
+    @Test
+    void testDeleteFromCart_ValidUser_DeletesGameFromCart() {
+        User user = new User();
+        user.setUserId(1L);
+        ShoppingCart cart = mock(ShoppingCart.class); // Mock the ShoppingCart object
+        Game game = new Game();
+        game.setProductId(1L); // Set the productId property of the game
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(cart).removeItem(game);
+        verify(gameService).findByProductId(1L);
+    }
+    @Test
+    void testViewShoppingCart_CartNull_CreatesNewCart() {
+        User user = new User();
+        user.setUserId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(null);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("shoppingCart", viewName);
+        verify(session).setAttribute(eq("cart_" + user.getUserId()), any(ShoppingCart.class));
+    }
+
+    @Test
+    void testViewShoppingCart_CartNotEmpty_PrintsCartItems() {
+        User user = new User();
+        user.setUserId(1L);
+        ShoppingCart cart = new ShoppingCart();
+        Game game = new Game();
+        game.setProductId(1L);
+        game.setName("Test Game");
+        cart.addItem(game, 1);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+
+        String viewName = userController.viewShoppingCart(session, model);
+
+        assertEquals("shoppingCart", viewName);
+    }
+
+    @Test
+    void testDeleteFromCart_CartNull_SkipsDeletion() {
+        User user = new User();
+        user.setUserId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(null);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(gameService, never()).findByProductId(anyLong());
+    }
+
+    @Test
+    void testDeleteFromCart_GameNull_SkipsDeletion() {
+        User user = new User();
+        user.setUserId(1L);
+        ShoppingCart cart = mock(ShoppingCart.class);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+        when(gameService.findByProductId(1L)).thenReturn(null);
+
+        String viewName = userController.deleteFromCart(1L, session);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(cart, never()).removeItem(any(Game.class));
+    }
+
+    @Test
+    void testAddToCart_CartNull_CreatesNewCart() {
+        User user = new User();
+        user.setUserId(1L);
+        Game game = new Game();
+        game.setProductId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(null);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/game/list", viewName);
+        verify(session).setAttribute(eq("cart_" + user.getUserId()), any(ShoppingCart.class));
+    }
+
+    @Test
+    void testBuyFromCart_CartNull_CreatesNewCart() {
+        User buyer = new User();
+        buyer.setUserId(1L);
+        when(session.getAttribute("userLogin")).thenReturn(buyer);
+        when(session.getAttribute("cart_" + buyer.getUserId())).thenReturn(null);
+
+        String viewName = userController.buyFromCart(session, model);
+
+        assertEquals("redirect:/shopping-cart", viewName);
+        verify(session).setAttribute(eq("cart_" + buyer.getUserId()), any(ShoppingCart.class));
+    }
+    @Test
+    void testAddToCart_CartNotNull_AddsGameToExistingCart() {
+        User user = new User();
+        user.setUserId(1L);
+        Game game = new Game();
+        game.setProductId(1L);
+        ShoppingCart cart = mock(ShoppingCart.class);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("cart_" + user.getUserId())).thenReturn(cart);
+        when(gameService.findByProductId(1L)).thenReturn(game);
+
+        String viewName = userController.addToCart(1L, session);
+
+        assertEquals("redirect:/game/list", viewName);
+        verify(session, never()).setAttribute(eq("cart_" + user.getUserId()), any(ShoppingCart.class));
+        verify(cart).addItem(eq(game), eq(1));
+    }
+
+    @Test
+    void testGetProfilePage_UserIsSeller() {
+        Long userId = 1L;
+        User user = new UserBuilder("testuser", "test@example.com", "password").isSeller(true).build();
+        List<GameDTO> games = Collections.singletonList(new GameDTO(productId, name, price, quantity, category, ownerUserId, ownerUsername));
+
+        when(userService.findUserById(userId)).thenReturn(user);
+
+        when(gameService.findAllByOwner(user)).thenReturn(games);
+
+        String viewName = userController.getProfilePage(userId, model);
+
+        assertEquals("other_user_profile", viewName);
+        verify(userService).findUserById(userId);
+        verify(gameService).findAllByOwner(user);
+        verify(model).addAttribute("user", user);
+    }
+
+    @Test
+    void testExtractGameData() {
+        List<Game> games = Collections.singletonList(new Game());
+
+        when(gameService.extractGameData()).thenReturn(games);
+
+        String viewName = userController.extractGameData(model);
+
+        assertEquals("gameList", viewName);
+        verify(gameService).extractGameData();
+        verify(model).addAttribute("games", games);
+    }
+    @Test
+    void testRegister() {
+        User user = new User("testuser", "test@example.com", "password");
+
+        when(userService.registerUser(any(User.class))).thenReturn(user);
+
+        String viewName = userController.register(user);
+
+        assertEquals("redirect:/login", viewName);
+        verify(userService).registerUser(any(User.class));
+    }
+
+    @Test
+    void testNullRegister() {
+        User user = new User("testuser", "test@example.com", "password");
+
+        when(userService.registerUser(any(User.class))).thenReturn(null);
+
+        String result = userController.register(user);
+
+        assertEquals("error_page", result);
+        verify(userService).registerUser(any(User.class));
+    }
+
+    @Test
+    void testValidLogin() {
+        User user = new User("testuser", "test@example.com", "password");
+        user.setUserId(1L);
+        when(userService.authenticate("testuser", "password")).thenReturn(user);
+
+        String result = userController.login(user, session, model);
+
+        assertEquals("redirect:/personal-page", result);
+        verify(userService,times(1)).authenticate("testuser", "password");
+        verify(model, times(1)).addAttribute("userLogin", "testuser");
+        verify(session, times(1)).setAttribute("userLogin", user);
+        verify(session, times(1)).setAttribute(eq("cart_1"), any(ShoppingCart.class));
+    }
+
+    @Test
+    void testLogin_InvalidCredentials() {
+        when(userService.authenticate("testuser", "password")).thenReturn(null);
+
+        String viewName = userController.login(new User("testuser", "test@example.com", "password"), session, model);
+
+        assertEquals("error_page", viewName);
+        verify(userService).authenticate("testuser", "password");
+        verifyNoInteractions(model);
+        verifyNoInteractions(session);
+    }
+
+    @Test
+    void testListUsers() {
+        List<UserDTO> users= new ArrayList<>();
+        users.add(new UserDTO(1L, "email", "username"));
+        users.add(new UserDTO(2L, "email2", "username2"));
+
+        when(userService.listUsers()).thenReturn(users);
+
+        String result = userController.listUsers(model, session);
+
+        assertEquals("usersList", result);
+        verify(userService, times(1)).listUsers();
+    }
+
+    @Test
+    void testProfilePage_UserWithProfilePicture() {
+        User user = new User("testuser", "test@example.com", "password");
+        byte[] profilePicture = "sampleImage".getBytes();
+        user.setProfilePicture(profilePicture);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+
+        String viewName = userController.profilePage(session, model);
+
+        assertEquals("profile_page", viewName);
+        verify(model).addAttribute("authenticated", user);
+        verify(model).addAttribute("profilePictureBase64", Base64.encodeBase64String(profilePicture));
+    }
+
+    @Test
+    void testProfilePage_UserWithoutProfilePicture() {
+        User user = new User("testuser", "test@example.com", "password");
+        when(session.getAttribute("userLogin")).thenReturn(user);
+
+        String viewName = userController.profilePage(session, model);
+
+        assertEquals("profile_page", viewName);
+        verify(model).addAttribute("authenticated", user);
+        verify(model, never()).addAttribute(eq("profilePictureBase64"), any());
+    }
+
+    @Test
+    void testGetProfilePage_UserExistsWithProfilePicture() {
+        Long userId = 1L;
+        User user = new User("testuser", "test@example.com", "password");
+        byte[] profilePicture = "sampleImage".getBytes();
+        user.setProfilePicture(profilePicture);
+        when(userService.findUserById(userId)).thenReturn(user);
+
+        String viewName = userController.getProfilePage(userId, model);
+
+        assertEquals("other_user_profile", viewName);
+        verify(model).addAttribute("user", user);
+        verify(model).addAttribute("profilePictureBase64", Base64.encodeBase64String(profilePicture));
+    }
+
+    @Test
+    void testGetProfilePage_UserExistsWithoutProfilePicture() {
+        Long userId = 1L;
+        User user = new User("testuser", "test@example.com", "password");
+        when(userService.findUserById(userId)).thenReturn(user);
+
+        String viewName = userController.getProfilePage(userId, model);
+
+        assertEquals("other_user_profile", viewName);
+        verify(model).addAttribute("user", user);
+        verify(model, never()).addAttribute(eq("profilePictureBase64"), any());
     }
 }

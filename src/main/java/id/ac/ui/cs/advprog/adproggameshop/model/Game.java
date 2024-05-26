@@ -3,6 +3,7 @@ package id.ac.ui.cs.advprog.adproggameshop.model;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter @Setter
 @Entity
@@ -31,13 +32,21 @@ public class Game {
     @JoinColumn(name = "ownerId", referencedColumnName = "userId")
     private User owner;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] image;
+
+    @Transient
+    private MultipartFile imageFile;
+
     public Game() {}
-    public Game(String name, double price, String description, int quantity, String category, User owner) {
+    public Game(String name, double price, String description, int quantity, String category, User owner, MultipartFile imageFile) {
         this.name = name;
         this.price = price;
         this.description = description;
         this.quantity = quantity;
         this.category = category;
         this.owner = owner;
+        this.imageFile = imageFile;
     }
 }

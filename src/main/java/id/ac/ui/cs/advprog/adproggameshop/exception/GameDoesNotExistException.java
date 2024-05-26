@@ -11,12 +11,4 @@ public class GameDoesNotExistException extends RuntimeException {
     public GameDoesNotExistException(Game game) {
         super("The game "+ game.getName() +" no longer exists");
     }
-
-    public GameDoesNotExistException(String message) {
-        super(message);
-    }
-
-    public GameDoesNotExistException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

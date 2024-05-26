@@ -7,6 +7,7 @@ import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
+import id.ac.ui.cs.advprog.adproggameshop.utility.ReviewDTO;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public interface GameService {
 
     Game findByProductId(Long productId);
 
-    List<Review> getReviewsByGame(Game game);
+    List<ReviewDTO> getReviewsByGame(Game game);
   
     void saveReview(Review review);
 

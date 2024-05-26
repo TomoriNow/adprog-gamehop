@@ -9,22 +9,20 @@ import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameService;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
-import id.ac.ui.cs.advprog.adproggameshop.utility.CategoryOption;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameForm;
-import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
+import id.ac.ui.cs.advprog.adproggameshop.utility.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/game")
@@ -39,33 +37,27 @@ public class GameController {
     @Autowired
     public GameRepository gameRepository;
 
+    private final static String CATEGORIES_STRING = "categories";
+    private final static String GAMES_STRING = "games";
+    private final static String USER_LOGIN_SESSION = "userLogin";
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        byte[] byteArray = {1, 2, 3, 4, 5};
-        User owner = new User("username", "email", "password", 100, "bio", byteArray, false);
-        User owner1 = userService.save(owner);
-        Game game = new Game("name", 10, "description", 5, "category", owner1);
-        Game game1 = gameService.save(game);
-        return ResponseEntity.ok(game1.toString());
-    }
 
     @GetMapping("/list")
     public String gameListPage(Model model) {
         List<GameDTO> games = gameService.findAllBy();
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
-                .collect(Collectors.toList());
-        model.addAttribute("categories", categories);
-        model.addAttribute("games", games);
+                .toList();
+        model.addAttribute(CATEGORIES_STRING, categories);
+        model.addAttribute(GAMES_STRING, games);
         return "gameList";
     }
 
     @GetMapping("/list/personal")
     public String personalGameListPage(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         List<GameDTO> games = gameService.findAllByOwner(user);
-        model.addAttribute("games", games);
+        model.addAttribute(GAMES_STRING, games);
         return "personalGameList";
     }
 
@@ -73,30 +65,44 @@ public class GameController {
     public String addGamePage(GameForm gameForm, Model model) {
         List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                 .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
-                .collect(Collectors.toList());
+                .toList();
         model.addAttribute("categoryOptions", optionsList);
         return "addGame";
     }
 
     @PostMapping("/create")
-    public String addGamePost(@Valid GameForm gameForm, BindingResult bindingResult, HttpSession session, Model model) {
+    public String addGamePost(@Valid GameForm gameForm, BindingResult bindingResult, HttpSession session, Model model, @RequestParam("imageFile") MultipartFile imageFile) {
         if (bindingResult.hasErrors()) {
             List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                     .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
-                    .collect(Collectors.toList());
+                    .toList();
             model.addAttribute("categoryOptions", optionsList);
             return "addGame";
         }
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         gameForm.setOwner(user);
         Game game = gameForm.createGame();
+
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                game.setImage(imageFile.getBytes());
+            }
+        } catch (IOException e) {
+            bindingResult.rejectValue("imageFile", "error.gameForm", "Failed to upload image");
+            List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
+                    .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
+                    .toList();
+            model.addAttribute("categoryOptions", optionsList);
+            return "addGame";
+        }
+
         gameService.saveWithOwner(game, user);
-        return "redirect:/personal-page";
+        return "redirect:list/personal";
     }
 
     @PostMapping("/buy")
     public String buyGame(Model model, HttpSession session, @RequestParam String gameId) {
-        User buyer = (User) session.getAttribute("userLogin");
+        User buyer = (User) session.getAttribute(USER_LOGIN_SESSION);
         try {
             gameService.buyGame(Long.parseLong(gameId), buyer, 1, new OneClickBuy());
         } catch (RuntimeException error) {
@@ -118,8 +124,8 @@ public class GameController {
         if (categoryEnum == null) {
             List<String> categories = Arrays.stream(CategoryEnums.values())
                     .map(CategoryEnums::getLabel)
-                    .collect(Collectors.toList());
-            model.addAttribute("categories", categories);
+                    .toList();
+            model.addAttribute(CATEGORIES_STRING, categories);
             model.addAttribute("error", "Invalid category: " + category);
             return "error";
         }
@@ -129,9 +135,9 @@ public class GameController {
 
         List<String> categories = Arrays.stream(CategoryEnums.values())
                 .map(CategoryEnums::getLabel)
-                .collect(Collectors.toList());
-        model.addAttribute("categories", categories);
-        model.addAttribute("games", games);
+                .toList();
+        model.addAttribute(CATEGORIES_STRING, categories);
+        model.addAttribute(GAMES_STRING, games);
         return "gameList";
     }
     @GetMapping("/{gameId}")
@@ -141,12 +147,17 @@ public class GameController {
             return "error_page";
         }
 
-        List<Review> reviews = gameService.getReviewsByGame(game);
+        List<ReviewDTO> reviews = gameService.getReviewsByGame(game);
+
+        if (game.getImage() != null && game.getImage().length > 0) {
+            String base64Image = Base64.encodeBase64String(game.getImage());
+            model.addAttribute("gameImageBase64", base64Image);
+        }
 
         model.addAttribute("game", game);
         model.addAttribute("reviews", reviews);
 
-        User user = (User) session.getAttribute("userLogin");
+        User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         model.addAttribute("user", user);
 
         return "gameDetail";
@@ -156,7 +167,15 @@ public class GameController {
     public String addReview(@PathVariable Long gameId, @RequestParam String reviewText,
                             @RequestParam int rating, HttpSession session) {
         User user = (User) session.getAttribute("userLogin");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         Game game = gameService.findByProductId(gameId);
+
+        if (game == null) {
+            return "redirect:/game/list";
+        }
 
         Review review = new Review();
         review.setUser(user);

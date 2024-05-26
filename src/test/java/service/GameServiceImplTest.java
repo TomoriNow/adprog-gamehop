@@ -5,17 +5,17 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import id.ac.ui.cs.advprog.adproggameshop.exception.GameDoesNotExistException;
-import id.ac.ui.cs.advprog.adproggameshop.exception.NotEnoughLeftException;
+import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
 import id.ac.ui.cs.advprog.adproggameshop.model.ShoppingCart;
 import id.ac.ui.cs.advprog.adproggameshop.model.Transaction;
+import id.ac.ui.cs.advprog.adproggameshop.model.*;
+import id.ac.ui.cs.advprog.adproggameshop.repository.ReviewRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.TransactionRepository;
 import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
+import id.ac.ui.cs.advprog.adproggameshop.service.GameDataExtractor;
 import id.ac.ui.cs.advprog.adproggameshop.utility.CartBuy;
-import id.ac.ui.cs.advprog.adproggameshop.utility.GameBuyer;
 import id.ac.ui.cs.advprog.adproggameshop.utility.GameDTO;
-import id.ac.ui.cs.advprog.adproggameshop.exception.InsufficientFundsException;
-import id.ac.ui.cs.advprog.adproggameshop.utility.OneClickBuy;
+import id.ac.ui.cs.advprog.adproggameshop.utility.ReviewDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import id.ac.ui.cs.advprog.adproggameshop.model.Game;
-import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.repository.GameRepository;
 import id.ac.ui.cs.advprog.adproggameshop.service.GameServiceImpl;
 
@@ -35,6 +33,9 @@ public class GameServiceImplTest {
     private GameRepository gameRepository;
 
     @Mock
+    GameDataExtractor dataExtractor;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -42,6 +43,9 @@ public class GameServiceImplTest {
 
     @Mock
     private TransactionRepository transactionRepository;
+
+    @Mock
+    private ReviewRepository reviewRepository;
 
     @InjectMocks
     private GameServiceImpl gameService;
@@ -61,13 +65,13 @@ public class GameServiceImplTest {
 
         seller = new User();
         seller.setBalance(500);
-        seller.set_seller(true);
+        seller.setSeller(true);
         seller.setUserId(1L);
         seller.setUsername("Seller");
 
         buyer = new User();
         buyer.setBalance(1000);
-        buyer.set_seller(false);
+        buyer.setSeller(false);
         buyer.setUserId(2L);
         buyer.setUsername("Buyer");
 
@@ -168,8 +172,8 @@ public class GameServiceImplTest {
     @Test
     public void testBuyOneGameWithGameBuyer() {
         Game game1 = games.get(1);
-        Game game1After = new Game(game1.getName(), game1.getPrice(), game1.getDescription(), game1.getQuantity()-1, game1.getCategory(), game1.getOwner());
-        User buyer1 = new User(buyer.getUsername(), buyer.getEmail(), buyer.getPassword(),buyer.getBalance()-30, buyer.getBio(), buyer.getProfilePicture(), buyer.is_seller());
+        Game game1After = new Game(game1.getName(), game1.getPrice(), game1.getDescription(), game1.getQuantity()-1, game1.getCategory(), game1.getOwner(), game1.getImageFile());
+        User buyer1 = new User(buyer.getUsername(), buyer.getEmail(), buyer.getPassword(),buyer.getBalance()-30, buyer.getBio(), buyer.getProfilePicture(), buyer.isSeller());
         seller.setBalance(seller.getBalance()+30);
 
         when(gameRepository.findByProductId(game1.getProductId())).thenReturn(game1);
@@ -204,7 +208,6 @@ public class GameServiceImplTest {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.addItem(game1, 1);
 
-        System.out.println(game1);
         when(gameRepository.save(game1)).thenReturn(game1);
 
         ShoppingCart resultShoppingCart = gameService.cartBuyGames(shoppingCart, buyer);
@@ -215,10 +218,10 @@ public class GameServiceImplTest {
                 game -> game.getQuantity() == 399
         ));
         verify(userRepository, times(1)).save(argThat(
-                seller -> seller.getBalance() == 530 && seller.getUserId().equals(this.seller.getUserId())
+                tempSeller -> seller.getBalance() == 530 && tempSeller.getUserId().equals(seller.getUserId())
         ));
         verify(userRepository, times(1)).save(argThat(
-                buyer -> buyer.getBalance() == 970 && buyer.getUserId().equals(this.buyer.getUserId())
+                tempBuyer -> tempBuyer.getBalance() == 970 && tempBuyer.getUserId().equals(buyer.getUserId())
         ));
         verify(transactionRepository, times(1)).save(any(Transaction.class));
     }
@@ -235,7 +238,6 @@ public class GameServiceImplTest {
         shoppingCart.addItem(game1, 3);
         shoppingCart.addItem(game2, 5);
 
-        System.out.println(game1);
         when(gameRepository.save(game1)).thenReturn(game1);
         when(gameRepository.save(game2)).thenReturn(game2);
         ShoppingCart resultShoppingCart = gameService.cartBuyGames(shoppingCart, buyer);
@@ -249,15 +251,36 @@ public class GameServiceImplTest {
                 gameTwo -> gameTwo.getQuantity() == 15
         ));
         verify(userRepository, times(1)).save(argThat(
-                seller -> seller.getBalance() == 590 && this.seller.getUserId().equals(seller.getUserId())
+                sellerOne -> sellerOne.getBalance() == 590 && seller.getUserId().equals(sellerOne.getUserId())
         ));
         verify(userRepository, times(1)).save(argThat(
                 sellerTwo -> sellerTwo.getBalance() == 360 && sellerTwo.getUserId().equals(seller2.getUserId())
         ));
         verify(userRepository, times(2)).save(argThat(
-                buyer -> buyer.getBalance() == 610 && buyer.getUserId().equals(this.buyer.getUserId())
+                tempBuyer -> tempBuyer.getBalance() == 610 && tempBuyer.getUserId().equals(buyer.getUserId())
         ));
         verify(transactionRepository, times(2)).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testBuyTooExpensive() {
+        Game game1 = games.get(1);
+        Game game2 = games.getFirst();
+        User seller2 = new User();
+        buyer.setBalance(200);
+        seller2.setBalance(60);
+        seller2.setUserId(3L);
+        game2.setOwner(seller2);
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.addItem(game1, 3);
+        shoppingCart.addItem(game2, 5);
+
+        assertThrows(InsufficientFundsException.class,
+                () -> gameService.cartBuyGames(shoppingCart,buyer));
+
+        verify(transactionRepository, times(0)).save(any(Transaction.class));
+        verify(userRepository, times(0)).save(any(User.class));
+        verify(gameRepository, times(0)).save(any(Game.class));
     }
 
     @Test
@@ -266,11 +289,131 @@ public class GameServiceImplTest {
                 new GameDTO(1L, "Game1", 19.99, 10, "Category1", 1L, "User1"),
                 new GameDTO(2L, "Game2", 29.99, 5, "Category1", 2L, "User2")));
 
-        List<GameDTO> games = gameService.findAllByCategory("Category1");
+        List<GameDTO> games1 = gameService.findAllByCategory("Category1");
 
-        assertEquals(2, games.size());
-        assertEquals("Game1", games.get(0).getName());
-        assertEquals("Game2", games.get(1).getName());
+        assertEquals(2, games1.size());
+        assertEquals("Game1", games1.get(0).getName());
+        assertEquals("Game2", games1.get(1).getName());
+    }
+    @Test
+    public void testGetReviewsByGame_Happy() {
+        Game game = new Game();
+        game.setProductId(1L);
+        List<ReviewDTO> reviews = new ArrayList<>();
+        reviews.add(new ReviewDTO("good", 4, "seller", true));
+        reviews.add(new ReviewDTO("bad", 2, "buyer", false));
+
+        when(reviewRepository.findByGame(game)).thenReturn(reviews);
+
+        List<ReviewDTO> result = gameService.getReviewsByGame(game);
+
+        assertEquals(2, result.size());
+        verify(reviewRepository, times(1)).findByGame(game);
+    }
+
+    @Test
+    public void testGetReviewsByGame_Unhappy() {
+        Game game = new Game();
+        game.setProductId(1L);
+
+        when(reviewRepository.findByGame(game)).thenReturn(new ArrayList<>());
+
+        List<ReviewDTO> result = gameService.getReviewsByGame(game);
+
+        assertTrue(result.isEmpty());
+        verify(reviewRepository, times(1)).findByGame(game);
+    }
+
+    @Test
+    public void testSaveReview_Happy() {
+        Review review = new Review();
+
+        gameService.saveReview(review);
+
+        verify(reviewRepository, times(1)).save(review);
+    }
+
+    @Test
+    public void testSaveReview_Unhappy() {
+        Review review = null;
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            gameService.saveReview(review);
+        });
+
+        verify(reviewRepository, never()).save(any(Review.class));
+    }
+
+    @Test
+    public void testSaveWithOwnerId() {
+        Game game = games.getFirst();
+        when(userRepository.findUserByUserId(buyer.getUserId())).thenReturn(Optional.of(buyer));
+        when(gameRepository.save(game)).thenReturn(game);
+
+        Game game1 = gameService.saveWithOwner(game, buyer.getUserId());
+        assertEquals(buyer, game1.getOwner());
+        assertEquals(buyer, game.getOwner());
+        verify(userRepository, times(1)).findUserByUserId(buyer.getUserId());
+        verify(gameRepository, times(1)).save(game);
+    }
+
+    @Test
+    public void testSaveWithOwner() {
+        Game game = games.getFirst();
+        when(gameRepository.save(game)).thenReturn(game);
+
+        Game game1 = gameService.saveWithOwner(game, buyer);
+        assertEquals(buyer, game1.getOwner());
+        assertEquals(buyer, game.getOwner());
+        verify(gameRepository, times(1)).save(game);
+    }
+
+    @Test
+    public void testFindAllBy() {
+        when(gameRepository.findAllBy()).thenReturn(gameDTOS);
+
+        List<GameDTO> gameDTOResults = gameService.findAllBy();
+
+        assertEquals(gameDTOS, gameDTOResults);
+        assertEquals(gameDTOS.getFirst(),gameDTOResults.getFirst());
+        assertEquals(gameDTOResults.getLast(), gameDTOResults.getLast());
+        verify(gameRepository, times(1)).findAllBy();
+    }
+
+    @Test
+    public void testExtractGameData() {
+        when(dataExtractor.extractData()).thenReturn(games);
+
+        List<Game> gameResults = gameService.extractGameData();
+
+        assertEquals(games, gameResults);
+        assertEquals(games.getFirst(), gameResults.getFirst());
+        assertEquals(games.getLast(), gameResults.getLast());
+        verify(dataExtractor, times(1)).extractData();
+    }
+
+    @Test
+    public void testGetGameRepository() {
+        assertEquals(gameRepository, gameService.getGameRepository());
+    }
+
+    @Test
+    public void testDeleteGameById() {
+        Game game = games.getFirst();
+        gameService.deleteGameById(game.getProductId());
+
+        verify(gameRepository, times(1)).deleteByProductId(game.getProductId());
+    }
+
+    @Test
+    public void testFindByProductId() {
+        Game game = games.getFirst();
+        when(gameRepository.findByProductId(game.getProductId())).thenReturn(game);
+
+        Game gameResult = gameService.findByProductId(game.getProductId());
+
+        assertEquals(game, gameResult);
+        verify(gameRepository, times(1)).findByProductId(game.getProductId());
     }
 }
 
