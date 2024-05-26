@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -67,6 +68,7 @@ public class UserController {
     public String login(@ModelAttribute User user, HttpSession session, Model model) {
         System.out.println("Login request: " + user);
         User authenticated = userService.authenticate(user.getUsername(), user.getPassword());
+        user.setProfilePicture(null);
         if (authenticated != null) {
             model.addAttribute(USER_LOGIN_SESSION, authenticated.getUsername());
             session.setAttribute(USER_LOGIN_SESSION, authenticated);
@@ -91,13 +93,28 @@ public class UserController {
     @GetMapping("/profile-page")
     public  String profilePage(HttpSession session, Model model) {
         User user = (User) session.getAttribute(USER_LOGIN_SESSION);
-        if (user != null && user.getProfilePicture() != null) {
+        if (user != null) {
             String base64Image = Base64.encodeBase64String(user.getProfilePicture());
             model.addAttribute("profilePictureBase64", base64Image);
         }
         model.addAttribute("authenticated", user);
         return "profile_page";
     }
+
+    @GetMapping("/profile-picture/{userId}")
+    @ResponseBody
+    public ResponseEntity<String> getProfilePicture(@PathVariable Long userId) {
+        User user = userService.findUserById(userId);
+        System.out.println("called");
+        System.out.println(userId);
+        if (user != null && user.getProfilePicture() != null) {
+            String base64Image = Base64.encodeBase64String(user.getProfilePicture());
+            return ResponseEntity.ok(base64Image);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     @GetMapping("/edit-profile")
     public String editProfilePage(HttpSession session, Model model) {
@@ -131,14 +148,12 @@ public class UserController {
     @GetMapping("/profile/{userId}")
     public String getProfilePage(@PathVariable Long userId, Model model) {
         User user = userService.findUserById(userId);
+
         if (user == null) {
             return ERROR_PAGE;
         }
 
-        if (user.getProfilePicture() != null) {
-            String base64Image = Base64.encodeBase64String(user.getProfilePicture());
-            model.addAttribute("profilePictureBase64", base64Image);
-        }
+        user.setProfilePicture(null);
 
         if (user.isSeller()) {
             List<GameDTO> games = gameService.findAllByOwner(user);
