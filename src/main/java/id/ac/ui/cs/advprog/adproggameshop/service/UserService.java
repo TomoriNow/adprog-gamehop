@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.adproggameshop.service;
 
 import id.ac.ui.cs.advprog.adproggameshop.model.User;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface UserService {
     double topUp(User user, double topUpAmount);
     List<UserDTO> listUsers();
     User findUserById(Long userId);
+
+    byte[] findProfilePictureByUsername(Long userId);
 }

@@ -88,4 +88,14 @@ public class User {
         this.profilePicture = profilePicture;
         this.isSeller = isSeller;
     }
+
+    public User(Long userId, String username, String email, String password, double balance, String bio, boolean isSeller) {
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.balance = balance;
+        this.bio = bio;
+        this.isSeller = isSeller;
+    }
 }

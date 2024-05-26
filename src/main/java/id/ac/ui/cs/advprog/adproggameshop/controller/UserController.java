@@ -104,11 +104,11 @@ public class UserController {
     @GetMapping("/profile-picture/{userId}")
     @ResponseBody
     public ResponseEntity<String> getProfilePicture(@PathVariable Long userId) {
-        User user = userService.findUserById(userId);
+        byte[] profilePicture = userService.findProfilePictureByUsername(userId);
         System.out.println("called");
         System.out.println(userId);
-        if (user != null && user.getProfilePicture() != null) {
-            String base64Image = Base64.encodeBase64String(user.getProfilePicture());
+        if (profilePicture != null) {
+            String base64Image = Base64.encodeBase64String(profilePicture);
             return ResponseEntity.ok(base64Image);
         } else {
             return ResponseEntity.notFound().build();

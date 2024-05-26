@@ -5,6 +5,7 @@ import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 
@@ -39,6 +40,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public User save(User user){
         return userRepository.save(user);
+    }
+
+    @Override @Transactional
+    public byte[] findProfilePictureByUsername(Long userId) {
+        return userRepository.findProfilePictureByUsername(userId).orElse(null);
     }
 
     @Override
