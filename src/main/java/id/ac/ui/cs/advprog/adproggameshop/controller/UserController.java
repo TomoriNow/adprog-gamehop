@@ -291,5 +291,3 @@ public class UserController {
         return "redirect:/shopping-cart";
     }
 }
-
-
