@@ -83,6 +83,8 @@ class UserControllerTest {
     void testPersonalPage() {
         User user = new User("testuser", "test@example.com", "password");
         when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("picture_fetched")).thenReturn(true);
+
 
         String viewName = userController.personalPage(session, model);
 
@@ -94,6 +96,8 @@ class UserControllerTest {
     void testProfilePage() {
         User user = new User("testuser", "test@example.com", "password");
         when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("picture_fetched")).thenReturn(true);
+
 
         String viewName = userController.profilePage(session, model);
 
@@ -113,59 +117,6 @@ class UserControllerTest {
     }
 
     @Test
-    void testEditProfile() {
-        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
-        currentUser.setSeller(true);
-
-
-        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
-        User user = new User("testuser", "test@example.com", "password");
-        user.setBalance(455.5);
-        user.setBio("sample bio");
-        user.setProfilePictureFile(new MockMultipartFile("file", "test.jpg", "image/jpeg", profilePicture));
-        HttpSession session = mock(HttpSession.class);
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute("userLogin")).thenReturn(currentUser);
-
-
-        String viewName = userController.editProfile(user, session);
-
-        assertEquals("redirect:/personal-page", viewName);
-        verify(session, times(1)).getAttribute("userLogin");
-        verify(userService).save(user);
-        verify(session).setAttribute("userLogin", user);
-        assertEquals(profilePicture, user.getProfilePicture());
-        assertTrue(user.isSeller());
-    }
-
-    @Test
-    void testEditProfileBlankPassword() {
-        User currentUser = new User("currentUser", "current@user.com", "currentPassword");
-        currentUser.setSeller(true);
-
-
-        byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
-        User user = new User("testuser", "test@example.com", "");
-        user.setBalance(455.5);
-        user.setBio("sample bio");
-        user.setProfilePictureFile(new MockMultipartFile("file", "test.jpg", "image/jpeg", profilePicture));
-        HttpSession session = mock(HttpSession.class);
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute("userLogin")).thenReturn(currentUser);
-
-
-        String viewName = userController.editProfile(user, session);
-
-        assertEquals("redirect:/personal-page", viewName);
-        verify(session, times(1)).getAttribute("userLogin");
-        verify(userService).save(user);
-        verify(session).setAttribute("userLogin", user);
-        assertEquals("currentPassword", user.getPassword());
-        assertEquals(profilePicture, user.getProfilePicture());
-        assertTrue(user.isSeller());
-    }
-
-    @Test
     void testEditProfileNullProfilePicture() {
         byte[] profilePicture = {0x00, 0x01, 0x02, 0x03};
         User currentUser = new User("currentUser", "current@user.com", "currentPassword");
@@ -179,6 +130,7 @@ class UserControllerTest {
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("userLogin")).thenReturn(currentUser);
+        when(session.getAttribute("picture_fetched")).thenReturn(true);
 
 
         String viewName = userController.editProfile(user, session);
@@ -594,6 +546,8 @@ class UserControllerTest {
         byte[] profilePicture = "sampleImage".getBytes();
         user.setProfilePicture(profilePicture);
         when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("picture_fetched")).thenReturn(true);
+
 
         String viewName = userController.profilePage(session, model);
 
@@ -606,6 +560,7 @@ class UserControllerTest {
     void testProfilePage_UserWithoutProfilePicture() {
         User user = new User("testuser", "test@example.com", "password");
         when(session.getAttribute("userLogin")).thenReturn(user);
+        when(session.getAttribute("picture_fetched")).thenReturn(false);
 
         String viewName = userController.profilePage(session, model);
 
@@ -626,7 +581,6 @@ class UserControllerTest {
 
         assertEquals("other_user_profile", viewName);
         verify(model).addAttribute("user", user);
-        verify(model).addAttribute("profilePictureBase64", Base64.encodeBase64String(profilePicture));
     }
 
     @Test

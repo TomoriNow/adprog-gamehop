@@ -37,6 +37,7 @@ public class UserController {
     @Autowired
     private GameServiceImpl gameService;
 
+    private final static String FETCHED = "picture_fetched";
     private final static String GAMES_STRING = "games";
     private final static String USER_LOGIN_SESSION = "userLogin";
     private final static String ERROR_PAGE = "error_page";
@@ -71,10 +72,10 @@ public class UserController {
     public String login(@ModelAttribute User user, HttpSession session, Model model) {
         System.out.println("Login request: " + user);
         User authenticated = userService.authenticate(user.getUsername(), user.getPassword());
-        user.setProfilePicture(null);
         if (authenticated != null) {
             model.addAttribute(USER_LOGIN_SESSION, authenticated.getUsername());
             session.setAttribute(USER_LOGIN_SESSION, authenticated);
+            session.setAttribute(FETCHED, false);
             ShoppingCart cart = new ShoppingCart();
             session.setAttribute(CART_SUFFIX + authenticated.getUserId(), cart);
 
@@ -84,19 +85,36 @@ public class UserController {
         }
     }
 
-
+    @GetMapping("/login-picture/{userId}")
+    @ResponseBody
+    public ResponseEntity<String> getLoginPicture(@PathVariable Long userId, HttpSession session) {
+        byte[] profilePicture = userService.findProfilePictureByUserId(userId);
+        System.out.println("payload collected");
+        session.setAttribute(FETCHED, true);
+        if (profilePicture != null) {
+            String base64Image = Base64.encodeBase64String(profilePicture);
+            User user = (User) session.getAttribute(USER_LOGIN_SESSION);
+            user.setProfilePicture(profilePicture);
+            return ResponseEntity.ok(base64Image);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @GetMapping("/personal-page")
     public  String personalPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute(USER_LOGIN_SESSION);
+        boolean fetched = (boolean) session.getAttribute(FETCHED);
         model.addAttribute("authenticated", user);
+        model.addAttribute(FETCHED, fetched);
         return "personal_page";
     }
 
     @GetMapping("/profile-page")
     public  String profilePage(HttpSession session, Model model) {
         User user = (User) session.getAttribute(USER_LOGIN_SESSION);
-        if (user != null) {
+        boolean fetched = (boolean) session.getAttribute(FETCHED);
+        if (fetched) {
             String base64Image = Base64.encodeBase64String(user.getProfilePicture());
             model.addAttribute("profilePictureBase64", base64Image);
         }
@@ -107,7 +125,7 @@ public class UserController {
     @GetMapping("/profile-picture/{userId}")
     @ResponseBody
     public ResponseEntity<String> getProfilePicture(@PathVariable Long userId) {
-        byte[] profilePicture = userService.findProfilePictureByUsername(userId);
+        byte[] profilePicture = userService.findProfilePictureByUserId(userId);
         System.out.println("called");
         System.out.println(userId);
         if (profilePicture != null) {
@@ -129,6 +147,7 @@ public class UserController {
     @PostMapping("/edit-profile")
     public String editProfile(@ModelAttribute User user, HttpSession session) {
         User currentUser = (User) session.getAttribute(USER_LOGIN_SESSION);
+        boolean fetched = (boolean) session.getAttribute(FETCHED);
 
         if (user.getProfilePictureFile() != null && !user.getProfilePictureFile().isEmpty()) {
             try {
@@ -139,11 +158,18 @@ public class UserController {
                 byte[] profilePictureBytes = baos.toByteArray();
 
                 user.setProfilePicture(profilePictureBytes);
+                session.setAttribute(FETCHED, true);
             } catch (IOException e) {
                 return ERROR_PAGE;
             }
         } else {
-            user.setProfilePicture(currentUser.getProfilePicture());
+            if (fetched){
+                user.setProfilePicture(currentUser.getProfilePicture());
+            } else {
+                byte[] profilePicture = userService.findProfilePictureByUserId(user.getUserId());
+                user.setProfilePicture(profilePicture);
+                session.setAttribute(FETCHED, true);
+            }
         }
 
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
@@ -173,8 +199,6 @@ public class UserController {
         if (user == null) {
             return ERROR_PAGE;
         }
-
-        user.setProfilePicture(null);
 
         if (user.isSeller()) {
             List<GameDTO> games = gameService.findAllByOwner(user);

@@ -172,7 +172,7 @@
             <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="error col"></span>
         </div>
         <div class="form-group row">
-            <input th:field="*{imageFile}" type="file" class="form-control col" id="imageInput" required>
+            <input th:field="*{imageFile}" type="file" class="form-control col" id="imageInput">
             <label for="imageInput">Image:</label>
             <span th:if="${#fields.hasErrors('imageFile')}" th:errors="*{imageFile}" class="error col"></span>
         </div>

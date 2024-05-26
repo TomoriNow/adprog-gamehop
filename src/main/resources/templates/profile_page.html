@@ -82,9 +82,14 @@
         <div class="bg-white shadow rounded overflow-hidden">
             <div class="px-4 pt-0 pb-4 cover">
                 <div class="media align-items-end profile-head">
-                    <div class="profile mr-1">
+                    <div class="profile mr-1" th:if="${!picture_fetched}">
                         <img id="profileImage" alt="Profile Picture" width="130" class="rounded mb-2 img-thumbnail" style="display: none;">
                         <img id="profileImageDefault" src="../assets/default_profile.jpg" alt="Profile Picture" width="130" class="rounded mb-2 img-thumbnail">
+                    </div>
+
+                    <div class="profile mr-1" th:if="${picture_fetched}">
+                        <img id="profileImageFetched" th:if="${profilePictureBase64}" th:src="'data:image/jpeg;base64,' + ${profilePictureBase64}" alt="Profile Picture" width="130" class="rounded mb-2 img-thumbnail">
+                        <img id="profileImageFetchedDefault" th:if="${profilePictureBase64}==null" src="../assets/default_profile.jpg" alt="Profile Picture" width="130" class="rounded mb-2 img-thumbnail">
                     </div>
 
                     <div class="media-body mb-5 text-white">
@@ -124,7 +129,7 @@
     </div>
 </div>
 
-<script>
+<script th:if="${!picture_fetched}">
     async function getProfile() {
         const userId = '[[${authenticated.userId}]]';
         fetch(`/profile-picture/${userId}`)

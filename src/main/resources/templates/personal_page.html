@@ -52,6 +52,12 @@
 </div>
 
 <script src="/javascript/personalPageScript.js"></script>
-
+<script th:if="${!picture_fetched}">
+    async function getProfile() {
+        const userId = '[[${authenticated.userId}]]';
+        await fetch(`/login-picture/${userId}`)
+    }
+    getProfile()
+</script>
 </body>
 </html>

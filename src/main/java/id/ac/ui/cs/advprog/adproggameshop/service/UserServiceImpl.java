@@ -5,9 +5,7 @@ import id.ac.ui.cs.advprog.adproggameshop.repository.UserRepository;
 import id.ac.ui.cs.advprog.adproggameshop.utility.UserDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 
 import java.util.List;
 
@@ -43,8 +41,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override @Transactional
-    public byte[] findProfilePictureByUsername(Long userId) {
-        return userRepository.findProfilePictureByUsername(userId).orElse(null);
+    public byte[] findProfilePictureByUserId(Long userId) {
+        return userRepository.findProfilePictureByUserId(userId).orElse(null);
     }
 
     @Override

@@ -25,6 +25,4 @@ public class Review {
 
     @Column(name = "rating")
     private int rating;
-
-    // Constructors, getters, and setters
 }

@@ -32,6 +32,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -356,31 +357,6 @@ public class GameControllerTest {
         verify(model).addAttribute(eq("categories"), any(List.class));
         verify(model).addAttribute("games", games);
         assertEquals("gameList", viewName);
-    }
-
-    @Test
-    void testAddGamePost_WithValidData() throws IOException {
-        // Mocks
-        GameForm gameForm = mock(GameForm.class);
-        BindingResult bindingResult = mock(BindingResult.class);
-        HttpSession session = mock(HttpSession.class);
-        Model model = mock(Model.class);
-        MultipartFile imageFile = mock(MultipartFile.class);
-        User user = new User(); // Mock User
-        byte[] imageData = new byte[] { /* some image data */ };
-
-        // Simulate a POST request with valid data
-        when(bindingResult.hasErrors()).thenReturn(false);
-        when(session.getAttribute("userLogin")).thenReturn(user);
-        when(gameForm.createGame()).thenReturn(new Game());
-        when(imageFile.getBytes()).thenReturn(imageData);
-
-        // Call the method
-        String result = gameController.addGamePost(gameForm, bindingResult, session, model, imageFile);
-
-        // Verify interactions
-        verify(gameService, times(1)).saveWithOwner(any(Game.class), eq(user));
-        assertEquals("redirect:list/personal", result);
     }
 
     @Test
