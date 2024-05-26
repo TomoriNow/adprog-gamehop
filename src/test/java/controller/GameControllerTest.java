@@ -404,9 +404,9 @@ public class GameControllerTest {
         Long gameId = 1L;
         Game game = new Game();
         game.setProductId(gameId);
-        List<Review> reviews = new ArrayList<>();
-        reviews.add(new Review());
-        reviews.add(new Review());
+        List<ReviewDTO> reviews = new ArrayList<>();
+        reviews.add(new ReviewDTO("review1", 5, "user1", true));
+        reviews.add(new ReviewDTO("review2", 5, "user2", false));
         User user = new User();
 
         when(gameService.findByProductId(gameId)).thenReturn(game);
