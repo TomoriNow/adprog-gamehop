@@ -19,6 +19,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -85,7 +88,13 @@ public class GameController {
 
         try {
             if (imageFile != null && !imageFile.isEmpty()) {
-                game.setImage(imageFile.getBytes());
+                BufferedImage originalImage = ImageIO.read(imageFile.getInputStream());
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(compressImage(originalImage), "jpg", baos);
+                byte[] compressedImageBytes = baos.toByteArray();
+
+                game.setImage(compressedImageBytes);
             }
         } catch (IOException e) {
             bindingResult.rejectValue("imageFile", "error.gameForm", "Failed to upload image");
@@ -186,5 +195,14 @@ public class GameController {
         gameService.saveReview(review);
 
         return "redirect:/game/" + gameId;
+    }
+    private BufferedImage compressImage(BufferedImage originalImage) {
+        int targetWidth = 400;
+        int targetHeight = 300;
+
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        resizedImage.createGraphics().drawImage(originalImage.getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+
+        return resizedImage;
     }
 }
