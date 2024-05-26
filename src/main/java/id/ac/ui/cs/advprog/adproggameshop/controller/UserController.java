@@ -59,7 +59,6 @@ public class UserController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute User user) {
-        System.out.println("Register request: " + user);
         User registeredUser = new UserBuilder(user.getUsername(), user.getEmail(), user.getPassword())
                 .balance(0)
                 .isSeller(false)
@@ -70,7 +69,6 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute User user, HttpSession session, Model model) {
-        System.out.println("Login request: " + user);
         User authenticated = userService.authenticate(user.getUsername(), user.getPassword());
         if (authenticated != null) {
             model.addAttribute(USER_LOGIN_SESSION, authenticated.getUsername());
@@ -89,7 +87,6 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<String> getLoginPicture(@PathVariable Long userId, HttpSession session) {
         byte[] profilePicture = userService.findProfilePictureByUserId(userId);
-        System.out.println("payload collected");
         session.setAttribute(FETCHED, true);
         if (profilePicture != null) {
             String base64Image = Base64.encodeBase64String(profilePicture);
@@ -127,8 +124,6 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<String> getProfilePicture(@PathVariable Long userId) {
         byte[] profilePicture = userService.findProfilePictureByUserId(userId);
-        System.out.println("called");
-        System.out.println(userId);
         if (profilePicture != null) {
             String base64Image = Base64.encodeBase64String(profilePicture);
             return ResponseEntity.ok(base64Image);
@@ -277,11 +272,6 @@ public class UserController {
         if (cart == null) {
             cart = new ShoppingCart();
             session.setAttribute(CART_SUFFIX + user.getUserId(), cart);
-        }
-
-        System.out.println("Cart contents:");
-        for (Map.Entry<Game, Integer> entry : cart.getItems().entrySet()) {
-            System.out.println("Item: " + entry.getKey().getName() + ", Quantity: " + entry.getValue());
         }
 
         double total = cart.calculateTotal();
