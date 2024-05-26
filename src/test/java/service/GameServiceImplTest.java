@@ -172,7 +172,7 @@ public class GameServiceImplTest {
     @Test
     public void testBuyOneGameWithGameBuyer() {
         Game game1 = games.get(1);
-        Game game1After = new Game(game1.getName(), game1.getPrice(), game1.getDescription(), game1.getQuantity()-1, game1.getCategory(), game1.getOwner());
+        Game game1After = new Game(game1.getName(), game1.getPrice(), game1.getDescription(), game1.getQuantity()-1, game1.getCategory(), game1.getOwner(), game1.getImageFile());
         User buyer1 = new User(buyer.getUsername(), buyer.getEmail(), buyer.getPassword(),buyer.getBalance()-30, buyer.getBio(), buyer.getProfilePicture(), buyer.isSeller());
         seller.setBalance(seller.getBalance()+30);
 

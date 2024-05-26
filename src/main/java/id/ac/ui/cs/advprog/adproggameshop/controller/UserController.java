@@ -135,16 +135,16 @@ public class UserController {
             return ERROR_PAGE;
         }
 
+        if (user.getProfilePicture() != null) {
+            String base64Image = Base64.encodeBase64String(user.getProfilePicture());
+            model.addAttribute("profilePictureBase64", base64Image);
+        }
+
         if (user.isSeller()) {
             List<GameDTO> games = gameService.findAllByOwner(user);
             model.addAttribute(GAMES_STRING, games);
             model.addAttribute("user", user);
             return "other_user_profile";
-        }
-
-        if (user.getProfilePicture() != null) {
-            String base64Image = Base64.encodeBase64String(user.getProfilePicture());
-            model.addAttribute("profilePictureBase64", base64Image);
         }
 
         model.addAttribute("user", user);

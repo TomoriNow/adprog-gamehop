@@ -29,7 +29,9 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,7 +117,7 @@ public class GameControllerTest {
         User user = new User();
         when(session.getAttribute("userLogin")).thenReturn(user);
 
-        String viewName = gameController.addGamePost(gameForm, new BeanPropertyBindingResult(gameForm, "gameForm"), session, model);
+        String viewName = gameController.addGamePost(gameForm, new BeanPropertyBindingResult(gameForm, "gameForm"), session, model, gameForm.getImageFile());
 
         verify(gameService, times(1)).saveWithOwner(any(Game.class), eq(user));
         assertEquals("redirect:list/personal", viewName);
@@ -228,7 +230,7 @@ public class GameControllerTest {
         when(bindingResult.hasErrors()).thenReturn(true);
 
         // Call the method
-        String result = gameController.addGamePost(gameForm, bindingResult, session, model);
+        String result = gameController.addGamePost(gameForm, bindingResult, session, model, gameForm.getImageFile());
 
         // Verify interactions
         verify(model, times(1)).addAttribute(eq("categoryOptions"), anyList());
@@ -354,5 +356,87 @@ public class GameControllerTest {
         verify(model).addAttribute(eq("categories"), any(List.class));
         verify(model).addAttribute("games", games);
         assertEquals("gameList", viewName);
+    }
+
+    @Test
+    void testAddGamePost_WithValidData() throws IOException {
+        // Mocks
+        GameForm gameForm = mock(GameForm.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+        HttpSession session = mock(HttpSession.class);
+        Model model = mock(Model.class);
+        MultipartFile imageFile = mock(MultipartFile.class);
+        User user = new User(); // Mock User
+        byte[] imageData = new byte[] { /* some image data */ };
+
+        // Simulate a POST request with valid data
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+        when(gameForm.createGame()).thenReturn(new Game());
+        when(imageFile.getBytes()).thenReturn(imageData);
+
+        // Call the method
+        String result = gameController.addGamePost(gameForm, bindingResult, session, model, imageFile);
+
+        // Verify interactions
+        verify(gameService, times(1)).saveWithOwner(any(Game.class), eq(user));
+        assertEquals("redirect:list/personal", result);
+    }
+
+    @Test
+    void testAddGamePost_WithInvalidData() throws IOException {
+        // Mocks
+        GameForm gameForm = new GameForm();
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        // Call the method
+        String result = gameController.addGamePost(gameForm, bindingResult, session, model, null);
+
+        // Verify interactions
+        verify(model, times(1)).addAttribute(eq("categoryOptions"), anyList());
+        assertEquals("addGame", result);
+    }
+
+    @Test
+    void testGameDetailPage_WithExistingGame() {
+        // Mocks
+        Long gameId = 1L;
+        Game game = new Game();
+        game.setProductId(gameId);
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(new Review());
+        reviews.add(new Review());
+        User user = new User();
+
+        when(gameService.findByProductId(gameId)).thenReturn(game);
+        when(gameService.getReviewsByGame(game)).thenReturn(reviews);
+        when(session.getAttribute("userLogin")).thenReturn(user);
+
+        // Call the method
+        String result = gameController.gameDetailPage(gameId, model, session);
+
+        // Verify interactions
+        verify(gameService, times(1)).findByProductId(gameId);
+        verify(gameService, times(1)).getReviewsByGame(game);
+        verify(session, times(1)).getAttribute("userLogin");
+        assertEquals("gameDetail", result);
+    }
+
+    @Test
+    void testGameDetailPage_WithNonExistingGame() {
+        // Mocks
+        Long gameId = 1L;
+
+        when(gameService.findByProductId(gameId)).thenReturn(null);
+
+        // Call the method
+        String result = gameController.gameDetailPage(gameId, model, session);
+
+        // Verify interactions
+        verify(gameService, times(1)).findByProductId(gameId);
+        verify(gameService, never()).getReviewsByGame(any(Game.class));
+        verify(session, never()).getAttribute("userLogin");
+        assertEquals("error_page", result);
     }
 }

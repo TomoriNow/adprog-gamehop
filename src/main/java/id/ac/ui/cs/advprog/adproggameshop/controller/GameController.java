@@ -12,12 +12,15 @@ import id.ac.ui.cs.advprog.adproggameshop.service.UserService;
 import id.ac.ui.cs.advprog.adproggameshop.utility.*;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,7 +71,7 @@ public class GameController {
     }
 
     @PostMapping("/create")
-    public String addGamePost(@Valid GameForm gameForm, BindingResult bindingResult, HttpSession session, Model model) {
+    public String addGamePost(@Valid GameForm gameForm, BindingResult bindingResult, HttpSession session, Model model, @RequestParam("imageFile") MultipartFile imageFile) {
         if (bindingResult.hasErrors()) {
             List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
                     .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
@@ -79,6 +82,20 @@ public class GameController {
         User user = (User) session.getAttribute(USER_LOGIN_SESSION);
         gameForm.setOwner(user);
         Game game = gameForm.createGame();
+
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                game.setImage(imageFile.getBytes());
+            }
+        } catch (IOException e) {
+            bindingResult.rejectValue("imageFile", "error.gameForm", "Failed to upload image");
+            List<CategoryOption> optionsList = Arrays.stream(CategoryEnums.values())
+                    .map(option -> new CategoryOption(option.getLabel(), option.getLabel()))
+                    .toList();
+            model.addAttribute("categoryOptions", optionsList);
+            return "addGame";
+        }
+
         gameService.saveWithOwner(game, user);
         return "redirect:list/personal";
     }
@@ -131,6 +148,11 @@ public class GameController {
         }
 
         List<ReviewDTO> reviews = gameService.getReviewsByGame(game);
+
+        if (game.getImage() != null && game.getImage().length > 0) {
+            String base64Image = Base64.encodeBase64String(game.getImage());
+            model.addAttribute("gameImageBase64", base64Image);
+        }
 
         model.addAttribute("game", game);
         model.addAttribute("reviews", reviews);
